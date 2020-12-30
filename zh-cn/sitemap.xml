@@ -2,32 +2,32 @@
     xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     ><url>
-            <loc>https://example.com/first_post/</loc><lastmod>2020-12-30T13:47:23&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
-            <loc>https://example.com/posts/</loc><lastmod>2020-12-30T13:47:23&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
-            <loc>https://example.com/</loc><lastmod>2020-12-30T13:47:23&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
+            <loc>https://yakax.github.io/first_post/</loc><lastmod>2020-12-30T13:26:14&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://yakax.github.io/posts/</loc><lastmod>2020-12-30T13:26:14&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority></url><url>
+            <loc>https://yakax.github.io/</loc><lastmod>2020-12-30T13:26:14&#43;08:00</lastmod><changefreq>weekly</changefreq><priority>1</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
-                        href="https://example.com/en/"
+                        href="https://yakax.github.io/en/"
                         /><xhtml:link
                     rel="alternate"
                     hreflang="zh-cn"
-                    href="https://example.com/"
+                    href="https://yakax.github.io/"
                     /></url><url>
-            <loc>https://example.com/categories/</loc><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
+            <loc>https://yakax.github.io/categories/</loc><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
-                        href="https://example.com/en/categories/"
+                        href="https://yakax.github.io/en/categories/"
                         /><xhtml:link
                     rel="alternate"
                     hreflang="zh-cn"
-                    href="https://example.com/categories/"
+                    href="https://yakax.github.io/categories/"
                     /></url><url>
-            <loc>https://example.com/tags/</loc><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
+            <loc>https://yakax.github.io/tags/</loc><changefreq>weekly</changefreq><priority>0.5</priority><xhtml:link
                         rel="alternate"
                         hreflang="en"
-                        href="https://example.com/en/tags/"
+                        href="https://yakax.github.io/en/tags/"
                         /><xhtml:link
                     rel="alternate"
                     hreflang="zh-cn"
-                    href="https://example.com/tags/"
+                    href="https://yakax.github.io/tags/"
                     /></url></urlset>
