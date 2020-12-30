@@ -32,19 +32,19 @@
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">public class test {
-    public static test  t1=new test();
-    {
-        System.out.println(&#34;执行1&#34;);
-    }
-    static
-    {
-        System.out.println(&#34;执行2&#34;);
-    }
-    public static void main(String[] args) {
-        test t2=new test();
-    }
-}
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">test</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">test</span>  <span class="n">t1</span><span class="o">=</span><span class="k">new</span> <span class="n">test</span><span class="o">();</span>
+    <span class="o">{</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;执行1&#34;</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="kd">static</span>
+    <span class="o">{</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;执行2&#34;</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">test</span> <span class="n">t2</span><span class="o">=</span><span class="k">new</span> <span class="n">test</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
 </code></pre></td></tr></table>
 </div>
 </div>]]></description>
