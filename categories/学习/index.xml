@@ -1,0 +1,38 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>学习 - 分类 - yakax</title><link>https://yakax.github.io/categories/%E5%AD%A6%E4%B9%A0/</link><description>学习 - 分类 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Fri, 07 Dec 2018 15:04:00 +0000</lastBuildDate><atom:link href="https://yakax.github.io/categories/%E5%AD%A6%E4%B9%A0/" rel="self" type="application/rss+xml"/><item><title>JVM初始化顺序</title><link>https://yakax.github.io/jvm%E5%88%9D%E5%A7%8B%E5%8C%96%E9%A1%BA%E5%BA%8F/</link><pubDate>Fri, 07 Dec 2018 15:04:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/jvm%E5%88%9D%E5%A7%8B%E5%8C%96%E9%A1%BA%E5%BA%8F/</guid><description><![CDATA[<blockquote>
+<p>类的静态成员 &ndash;&gt; 类的实例成员 &ndash;&gt; 类的构造方法
+说到这里，有一个很好的问题。比如一个类中静态变量是一个该类的实例，那么此时类的初始化顺序是什么样的呢？</p>
+</blockquote>
+<h4 id="昨天在群里看到这个问题很有趣今天来分析一波">昨天在群里看到这个问题，很有趣，今天来分析一波</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">test</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">test</span>  <span class="n">t1</span><span class="o">=</span><span class="k">new</span> <span class="n">test</span><span class="o">();</span>
+    <span class="o">{</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;执行1&#34;</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="kd">static</span>
+    <span class="o">{</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;执行2&#34;</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">test</span> <span class="n">t2</span><span class="o">=</span><span class="k">new</span> <span class="n">test</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div>]]></description></item></channel></rss>
