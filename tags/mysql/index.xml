@@ -1,9 +1,9 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>MySQL - 标签 - yakax</title><link>https://yakax.github.io/tags/mysql/</link><description>MySQL - 标签 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sun, 12 Jan 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.github.io/tags/mysql/" rel="self" type="application/rss+xml"/><item><title>MySQL性能调优(7)复习补充</title><link>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%987%E5%A4%8D%E4%B9%A0%E8%A1%A5%E5%85%85/</link><pubDate>Sun, 12 Jan 2020 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%987%E5%A4%8D%E4%B9%A0%E8%A1%A5%E5%85%85/</guid><description><![CDATA[<blockquote>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>MySQL - 标签 - yakax</title><link>https://yakax.gitee.io/tags/mysql/</link><description>MySQL - 标签 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sun, 12 Jan 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.gitee.io/tags/mysql/" rel="self" type="application/rss+xml"/><item><title>MySQL性能调优(7)复习补充</title><link>https://yakax.gitee.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%987%E5%A4%8D%E4%B9%A0%E8%A1%A5%E5%85%85/</link><pubDate>Sun, 12 Jan 2020 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%987%E5%A4%8D%E4%B9%A0%E8%A1%A5%E5%85%85/</guid><description><![CDATA[<blockquote>
 <p>复习时自己产生的问题</p>
 </blockquote>
 <h3 id="log">log</h3>
 <h5 id="缓冲池-buffer-pool">缓冲池 Buffer Pool</h5>
-<p>首先，InnnoDB 的数据都是放在磁盘上的，InnoDB 操作数据有一个最小的逻辑单位，叫做页（索引页和数据页）。我们对于数据的操作，不是每次都直接操作磁盘，因为磁盘的速度太慢了。InnoDB 使用了一种缓冲池的技术，也就是把磁盘读到的页放到一 块内存区域里面。这个内存区域就叫 Buffer Pool，下一次读取相同的页，先判断是不是在缓冲池里面，如果是，就直接读取，不用再 次访问磁盘。 修改数据的时候，先修改缓冲池里面的页。内存的数据页和磁盘数据不一致的时候， 我们把它叫做脏页。InnoDB 里面有专门的后台线程把 Buffer Pool 的数据写入到磁盘， 每隔一段时间就一次性地把多个修改写入磁盘，这个动作就叫做刷脏。 Buffer Pool 是 InnoDB 里面非常重要的一个结构，它的内部又分成几块区域。这里 我们趁机到官网来认识一下 InnoDB 的内存结构和磁盘结构。</p>]]></description></item><item><title>MySQL性能调优(6)解读58同城数据库设计军规30条</title><link>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%986%E8%A7%A3%E8%AF%BB58%E5%90%8C%E5%9F%8E%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1%E5%86%9B%E8%A7%8430%E6%9D%A1/</link><pubDate>Wed, 12 Dec 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%986%E8%A7%A3%E8%AF%BB58%E5%90%8C%E5%9F%8E%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1%E5%86%9B%E8%A7%8430%E6%9D%A1/</guid><description><![CDATA[<blockquote>
+<p>首先，InnnoDB 的数据都是放在磁盘上的，InnoDB 操作数据有一个最小的逻辑单位，叫做页（索引页和数据页）。我们对于数据的操作，不是每次都直接操作磁盘，因为磁盘的速度太慢了。InnoDB 使用了一种缓冲池的技术，也就是把磁盘读到的页放到一 块内存区域里面。这个内存区域就叫 Buffer Pool，下一次读取相同的页，先判断是不是在缓冲池里面，如果是，就直接读取，不用再 次访问磁盘。 修改数据的时候，先修改缓冲池里面的页。内存的数据页和磁盘数据不一致的时候， 我们把它叫做脏页。InnoDB 里面有专门的后台线程把 Buffer Pool 的数据写入到磁盘， 每隔一段时间就一次性地把多个修改写入磁盘，这个动作就叫做刷脏。 Buffer Pool 是 InnoDB 里面非常重要的一个结构，它的内部又分成几块区域。这里 我们趁机到官网来认识一下 InnoDB 的内存结构和磁盘结构。</p>]]></description></item><item><title>MySQL性能调优(6)解读58同城数据库设计军规30条</title><link>https://yakax.gitee.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%986%E8%A7%A3%E8%AF%BB58%E5%90%8C%E5%9F%8E%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1%E5%86%9B%E8%A7%8430%E6%9D%A1/</link><pubDate>Wed, 12 Dec 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%986%E8%A7%A3%E8%AF%BB58%E5%90%8C%E5%9F%8E%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1%E5%86%9B%E8%A7%8430%E6%9D%A1/</guid><description><![CDATA[<blockquote>
 <p>军规适用场景：并发量大、数据量大的互联网业务
 <font color=red>只是解读：没必要完全效仿</font></p>
 </blockquote>
@@ -19,7 +19,7 @@
 <strong>解读：高并发大数据的互联网业务，架构设计思路是“解放数据库CPU，将计算转移到服务层”，并发量大的情况下，这些功能很可能将数据库拖死，业务逻辑放到服务层具备更好的扩展性，能够轻易实现“增机器就加性能”。数据库擅长存储与索引，CPU计算还是上移吧</strong> <font color=red>划重点：面试遇到要做存储过程的公司还是走了吧</font></li>
 <li>禁止存储大文件或者大照片
 <strong>解读：为何要让数据库做它不擅长的事情？大文件和照片存储在文件系统或者存云服务也行，数据库里存URI多好</strong></li>
-</ol>]]></description></item><item><title>MySQL性能调优(5)Innodb引擎的MVCC</title><link>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%985innodb%E5%BC%95%E6%93%8E%E7%9A%84mvcc/</link><pubDate>Tue, 11 Dec 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%985innodb%E5%BC%95%E6%93%8E%E7%9A%84mvcc/</guid><description><![CDATA[<h4 id="mvcc">MVCC</h4>
+</ol>]]></description></item><item><title>MySQL性能调优(5)Innodb引擎的MVCC</title><link>https://yakax.gitee.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%985innodb%E5%BC%95%E6%93%8E%E7%9A%84mvcc/</link><pubDate>Tue, 11 Dec 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%985innodb%E5%BC%95%E6%93%8E%E7%9A%84mvcc/</guid><description><![CDATA[<h4 id="mvcc">MVCC</h4>
 <p><font color=red>Multiversion concurrency control (多版本并发控制)
 并发访问(读或写)数据库时，对正在事务内处理的数据做多版本的管理。以达到用来避免写操作的堵塞，从而引发读操作的并发问题。</font>
 这里看一个案例</p>
@@ -39,7 +39,7 @@ update users set lastUpdate=now() where id =1;
 select * from users where id = 1;
 </code></pre></td></tr></table>
 </div>
-</div><p>先来看看MVCC的处理机制</p>]]></description></item><item><title>MySQL性能调优(4)Innodb存储引擎的事务</title><link>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%984innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E7%9A%84%E4%BA%8B%E5%8A%A1/</link><pubDate>Mon, 10 Dec 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%984innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E7%9A%84%E4%BA%8B%E5%8A%A1/</guid><description><![CDATA[<h4 id="事务">事务</h4>
+</div><p>先来看看MVCC的处理机制</p>]]></description></item><item><title>MySQL性能调优(4)Innodb存储引擎的事务</title><link>https://yakax.gitee.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%984innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E7%9A%84%E4%BA%8B%E5%8A%A1/</link><pubDate>Mon, 10 Dec 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%984innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E7%9A%84%E4%BA%8B%E5%8A%A1/</guid><description><![CDATA[<h4 id="事务">事务</h4>
 <p>数据库操作的最小工作单元，是作为单个逻辑工作单元执行的一系列操作;事务是一组不可再分割的操作集合(工作逻辑单元);</p>
 <h5 id="mysql中如何开启事务">MySQL中如何开启事务：</h5>
 <div class="highlight"><div class="chroma">
@@ -101,7 +101,7 @@ false：sql命令的提交由应用程序负责，程序必须调用commit或者
 </ul>
 <blockquote>
 <p>事务所做的修改就会永久保存，不会因为系统意外导致数据的丢失</p>
-</blockquote>]]></description></item><item><title>MySQL性能调优(2)存储引擎介绍、体系结构及运行机理</title><link>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%982%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E4%BB%8B%E7%BB%8D%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%8F%8A%E8%BF%90%E8%A1%8C%E6%9C%BA%E7%90%86/</link><pubDate>Thu, 06 Dec 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%982%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E4%BB%8B%E7%BB%8D%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%8F%8A%E8%BF%90%E8%A1%8C%E6%9C%BA%E7%90%86/</guid><description><![CDATA[<h4 id="存储引擎介绍">存储引擎介绍</h4>
+</blockquote>]]></description></item><item><title>MySQL性能调优(2)存储引擎介绍、体系结构及运行机理</title><link>https://yakax.gitee.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%982%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E4%BB%8B%E7%BB%8D%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%8F%8A%E8%BF%90%E8%A1%8C%E6%9C%BA%E7%90%86/</link><pubDate>Thu, 06 Dec 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%982%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E4%BB%8B%E7%BB%8D%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%8F%8A%E8%BF%90%E8%A1%8C%E6%9C%BA%E7%90%86/</guid><description><![CDATA[<h4 id="存储引擎介绍">存储引擎介绍</h4>
 <ul>
 <li>插拔式的插件方式（存储引擎本身是数据库服务器的组件，负责对在物理服务器层面上维护的基本数据进行实际操作）</li>
 <li>存储引擎是指定在表之上的，即一个库中的每一个表都可以指定专用的存储引擎</li>
@@ -122,7 +122,7 @@ false：sql命令的提交由应用程序负责，程序必须调用commit或者
 show engines;
 </code></pre></td></tr></table>
 </div>
-</div><p></p>]]></description></item><item><title>MySQL性能调优(3)查询优化详解</title><link>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%983%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96%E8%AF%A6%E8%A7%A3/</link><pubDate>Thu, 06 Dec 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%983%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96%E8%AF%A6%E8%A7%A3/</guid><description><![CDATA[<h4 id="查询执行路径">查询执行路径</h4>
+</div><p></p>]]></description></item><item><title>MySQL性能调优(3)查询优化详解</title><link>https://yakax.gitee.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%983%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96%E8%AF%A6%E8%A7%A3/</link><pubDate>Thu, 06 Dec 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%983%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96%E8%AF%A6%E8%A7%A3/</guid><description><![CDATA[<h4 id="查询执行路径">查询执行路径</h4>
 
 ##### MySQL 客户端/服务端通信
 - MySQL客户端与服务端的通信方式是“半双工”;
@@ -146,7 +146,7 @@ Sending data 向请求端返回数据
 </ul>
 <blockquote>
 <p><font color=red>MySQL 8.0不支持查询缓存，用户升级后将被鼓励使用服务器端查询重写或ProxySQL作为中间缓存。</font></p>
-</blockquote>]]></description></item><item><title>MySQL性能调优(1)理解底层B+tree机制</title><link>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%981%E7%90%86%E8%A7%A3%E5%BA%95%E5%B1%82b-tree%E6%9C%BA%E5%88%B6/</link><pubDate>Mon, 03 Dec 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%981%E7%90%86%E8%A7%A3%E5%BA%95%E5%B1%82b-tree%E6%9C%BA%E5%88%B6/</guid><description><![CDATA[<h4 id="索引是谁实现的">索引是谁实现的</h4>
+</blockquote>]]></description></item><item><title>MySQL性能调优(1)理解底层B+tree机制</title><link>https://yakax.gitee.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%981%E7%90%86%E8%A7%A3%E5%BA%95%E5%B1%82b-tree%E6%9C%BA%E5%88%B6/</link><pubDate>Mon, 03 Dec 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%981%E7%90%86%E8%A7%A3%E5%BA%95%E5%B1%82b-tree%E6%9C%BA%E5%88%B6/</guid><description><![CDATA[<h4 id="索引是谁实现的">索引是谁实现的</h4>
 <blockquote>
 <p>索引是存储引擎实现的：
 本文章主要对MySQL常用的MyISAM与InnoDB这两个存储引擎做分析。</p>
@@ -187,7 +187,7 @@ Sending data 向请求端返回数据
 <li>也没有利用好磁盘IO的预读能力（空间局部性原理），从而带来频繁的IO操作。空间局部性原理就是：<font color=red> 操作系统每次IO操作读取一页，他会有预读能力，把下一页或者后面几页的数据读取</font>。（注：MySQL定义的一页为16k）</li>
 </ul>
 </li>
-</ol>]]></description></item><item><title>破解最新版navicat</title><link>https://yakax.github.io/%E7%A0%B4%E8%A7%A3%E6%9C%80%E6%96%B0%E7%89%88navicat/</link><pubDate>Mon, 05 Nov 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E7%A0%B4%E8%A7%A3%E6%9C%80%E6%96%B0%E7%89%88navicat/</guid><description><![CDATA[<ol>
+</ol>]]></description></item><item><title>破解最新版navicat</title><link>https://yakax.gitee.io/%E7%A0%B4%E8%A7%A3%E6%9C%80%E6%96%B0%E7%89%88navicat/</link><pubDate>Mon, 05 Nov 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/%E7%A0%B4%E8%A7%A3%E6%9C%80%E6%96%B0%E7%89%88navicat/</guid><description><![CDATA[<ol>
 <li>参考注册机</li>
 </ol>
 <blockquote>
@@ -198,7 +198,7 @@ Sending data 向请求端返回数据
 <li>确保已关闭Navicat Premium。无需断网，无需将注册机放到Navicat Premium安装目录下。以管理员身份运行此注册机；</li>
 <li>打开注册机后， Patch勾选Backup、Host和Navicat v12，然后点击Patch按钮：
 </li>
-</ol>]]></description></item><item><title>自启动docker并安装自启动镜像MySQL8</title><link>https://yakax.github.io/%E5%AD%A6%E4%B9%A0docker%E5%B9%B6%E5%AE%89%E8%A3%85%E4%B8%80%E4%B8%AA%E8%87%AA%E5%90%AF%E5%8A%A8mysql8/</link><pubDate>Mon, 05 Nov 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E5%AD%A6%E4%B9%A0docker%E5%B9%B6%E5%AE%89%E8%A3%85%E4%B8%80%E4%B8%AA%E8%87%AA%E5%90%AF%E5%8A%A8mysql8/</guid><description><![CDATA[<p><strong>因为在10月15号换了新工作，入职了半月左右，这半月时间一直在搞前端的ts和angular，再加上在忙着自考，后端的代码一直没有碰，正好这周在家时间就圆一下我的好奇心去搞一搞docker，顺便把我ss的服务器利用一下做一个MySQL在上面，后期会上点项目上去；</strong></p>
+</ol>]]></description></item><item><title>自启动docker并安装自启动镜像MySQL8</title><link>https://yakax.gitee.io/%E5%AD%A6%E4%B9%A0docker%E5%B9%B6%E5%AE%89%E8%A3%85%E4%B8%80%E4%B8%AA%E8%87%AA%E5%90%AF%E5%8A%A8mysql8/</link><pubDate>Mon, 05 Nov 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/%E5%AD%A6%E4%B9%A0docker%E5%B9%B6%E5%AE%89%E8%A3%85%E4%B8%80%E4%B8%AA%E8%87%AA%E5%90%AF%E5%8A%A8mysql8/</guid><description><![CDATA[<p><strong>因为在10月15号换了新工作，入职了半月左右，这半月时间一直在搞前端的ts和angular，再加上在忙着自考，后端的代码一直没有碰，正好这周在家时间就圆一下我的好奇心去搞一搞docker，顺便把我ss的服务器利用一下做一个MySQL在上面，后期会上点项目上去；</strong></p>
 <h4 id="以后服务器就安装一个docker就行了">以后服务器就安装一个Docker就行了</h4>
 <ol>
 <li>本次采用的是Centos7.5版本的Linux系统，镜像是<a href="https://opsx.alibaba.com/" target="_blank" rel="noopener noreffer">阿里云</a>下载的DVD版本；（因为Docker需要内核3版本以上的Linux）；
