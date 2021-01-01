@@ -19,7 +19,27 @@
 <strong>解读：高并发大数据的互联网业务，架构设计思路是“解放数据库CPU，将计算转移到服务层”，并发量大的情况下，这些功能很可能将数据库拖死，业务逻辑放到服务层具备更好的扩展性，能够轻易实现“增机器就加性能”。数据库擅长存储与索引，CPU计算还是上移吧</strong> <font color=red>划重点：面试遇到要做存储过程的公司还是走了吧</font></li>
 <li>禁止存储大文件或者大照片
 <strong>解读：为何要让数据库做它不擅长的事情？大文件和照片存储在文件系统或者存云服务也行，数据库里存URI多好</strong></li>
-</ol>]]></description></item><item><title>MySQL性能调优(4)Innodb存储引擎的事务</title><link>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%984innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E7%9A%84%E4%BA%8B%E5%8A%A1/</link><pubDate>Mon, 10 Dec 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%984innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E7%9A%84%E4%BA%8B%E5%8A%A1/</guid><description><![CDATA[<h4 id="事务">事务</h4>
+</ol>]]></description></item><item><title>MySQL性能调优(5)Innodb引擎的MVCC</title><link>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%985innodb%E5%BC%95%E6%93%8E%E7%9A%84mvcc/</link><pubDate>Tue, 11 Dec 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%985innodb%E5%BC%95%E6%93%8E%E7%9A%84mvcc/</guid><description><![CDATA[<h4 id="mvcc">MVCC</h4>
+<p><font color=red>Multiversion concurrency control (多版本并发控制)
+并发访问(读或写)数据库时，对正在事务内处理的数据做多版本的管理。以达到用来避免写操作的堵塞，从而引发读操作的并发问题。</font>
+这里看一个案例</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">begin
+// 这里默认是加上X锁的，在未做commit/rollback操作之前
+update users set lastUpdate=now() where id =1; 
+// 在其他的事务我们能不能进行对应数据的查询 但是我这时查询是能查到的当前时间这条记录
+select * from users where id = 1;
+</code></pre></td></tr></table>
+</div>
+</div><p>先来看看MVCC的处理机制</p>]]></description></item><item><title>MySQL性能调优(4)Innodb存储引擎的事务</title><link>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%984innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E7%9A%84%E4%BA%8B%E5%8A%A1/</link><pubDate>Mon, 10 Dec 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%984innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E7%9A%84%E4%BA%8B%E5%8A%A1/</guid><description><![CDATA[<h4 id="事务">事务</h4>
 <p>数据库操作的最小工作单元，是作为单个逻辑工作单元执行的一系列操作;事务是一组不可再分割的操作集合(工作逻辑单元);</p>
 <h5 id="mysql中如何开启事务">MySQL中如何开启事务：</h5>
 <div class="highlight"><div class="chroma">
