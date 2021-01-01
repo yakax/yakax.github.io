@@ -1,0 +1,327 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>面试 - 分类 - yakax</title><link>https://yakax.github.io/categories/%E9%9D%A2%E8%AF%95/</link><description>面试 - 分类 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 03 Jul 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.github.io/categories/%E9%9D%A2%E8%AF%95/" rel="self" type="application/rss+xml"/><item><title>Java开发手册-(转自阿里云栖社区)</title><link>https://yakax.github.io/java%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C-%E8%BD%AC%E8%87%AA%E9%98%BF%E9%87%8C%E4%BA%91%E6%A0%96%E7%A4%BE%E5%8C%BA/</link><pubDate>Wed, 03 Jul 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/java%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C-%E8%BD%AC%E8%87%AA%E9%98%BF%E9%87%8C%E4%BA%91%E6%A0%96%E7%A4%BE%E5%8C%BA/</guid><description><![CDATA[<p><a href="https://github.com/alibaba/p3c" target="_blank" rel="noopener noreffer">Java开发手册下载链接</a></p>
+<p><font color=red>1-0.9=0.1是天经地义的，但在计算机的世界里，0.1恰恰是无法精确表示的一个小数，只有2的幂次倍小数才能够精确表示，如：0.5、0.25、0.125等。由于0.1是近似表达，在各种情形中的计算存在数位的取舍精度不一样，所以1-0.9未必等于0.9-0.8，所以浮点数之间的等值判断，基本数据类型不能用==来比较，包装数据类型不能用equals来判断。包装类型运算也是调用的浮点类型的计算</font></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">public class FloatPrimitiveTest {
+    public static void main(String[] args) {
+        float a = 1.0f - 0.9f;
+        float b = 0.9f - 0.8f;
+        if (a == b) {
+            System.out.println(&#34;true&#34;);
+        } else {
+            System.out.println(&#34;false&#34;);
+        }
+    }
+}
+输出------------false
+
+
+public class FloatWrapperTest {
+    public static void main(String[] args) {
+        Float a = Float.valueOf(1.0f - 0.9f);
+        Float b = Float.valueOf(0.9f - 0.8f);
+        if (a.equals(b)) {
+            System.out.println(&#34;true&#34;);
+        } else {
+            System.out.println(&#34;false&#34;);
+        }
+    }
+}
+输出--------false
+正例--------------------------------
+(1) 指定一个误差范围，两个浮点数的差值在此范围之内，则认为是相等的。
+ float a = 1.0f - 0.9f;
+ float b = 0.9f - 0.8f;
+ float diff = 1e-6f;
+ if (Math.abs(a - b) &lt; diff) {
+     System.out.println(&#34;true&#34;);
+ }
+(2) 使用 BigDecimal 来定义值，再进行浮点数的运算操作。
+ BigDecimal a = new BigDecimal(&#34;1.0&#34;);
+ BigDecimal b = new BigDecimal(&#34;0.9&#34;);
+ BigDecimal c = new BigDecimal(&#34;0.8&#34;);
+ BigDecimal x = a.subtract(b);
+ BigDecimal y = b.subtract(c);
+ if (x.equals(y)) {
+     System.out.println(&#34;true&#34;);
+ }
+
+</code></pre></td></tr></table>
+</div>
+</div>]]></description></item><item><title>方法外对象地址交换</title><link>https://yakax.github.io/%E6%96%B9%E6%B3%95%E5%A4%96%E5%AF%B9%E8%B1%A1%E5%9C%B0%E5%9D%80%E4%BA%A4%E6%8D%A2/</link><pubDate>Tue, 02 Apr 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E6%96%B9%E6%B3%95%E5%A4%96%E5%AF%B9%E8%B1%A1%E5%9C%B0%E5%9D%80%E4%BA%A4%E6%8D%A2/</guid><description><![CDATA[<h4 id="面试题如下">面试题如下</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">public class Cat {
+    private int inr;
+    private Cat(int inr) {
+        this.inr = inr;
+    }
+    private static void print(Cat cat) {
+        System.out.println(cat.inr);
+    }
+    private void setInr(int inr) {
+        this.inr = inr;
+    }
+    public static void main(String[] args) {
+        Cat A = new Cat(100);
+        Cat B = new Cat(101);
+        System.out.println(A);
+        System.out.println(B);
+        swap(A, B);
+        Cat.print(A);
+        Cat.print(B);
+    }
+    private static void swap(Cat A, Cat B) {
+        Cat temp = A;
+        A = B;
+        B = temp;
+        System.out.println(A.inr);
+        System.out.println(B.inr);
+//        temp = new Cat(400);
+//        B.setInr(400);
+//        System.out.println(temp.inr);
+//        System.out.println(B.inr);
+    }
+}
+</code></pre></td></tr></table>
+</div>
+</div>]]></description></item><item><title>java中有了基本类型为什么还要有包装类型</title><link>https://yakax.github.io/java%E4%B8%AD%E6%9C%89%E4%BA%86%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%98%E8%A6%81%E6%9C%89%E5%8C%85%E8%A3%85%E7%B1%BB%E5%9E%8B/</link><pubDate>Tue, 13 Nov 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/java%E4%B8%AD%E6%9C%89%E4%BA%86%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%98%E8%A6%81%E6%9C%89%E5%8C%85%E8%A3%85%E7%B1%BB%E5%9E%8B/</guid><description><![CDATA[<p><strong>Java努力让一切都变为对象。但是为了方便还是保留了基本类型</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">基本类型</th>
+<th style="text-align:center">包装器类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">boolean</td>
+<td style="text-align:center">Boolean</td>
+</tr>
+<tr>
+<td style="text-align:center">char</td>
+<td style="text-align:center">Character</td>
+</tr>
+<tr>
+<td style="text-align:center">int</td>
+<td style="text-align:center">Integer</td>
+</tr>
+<tr>
+<td style="text-align:center">byte</td>
+<td style="text-align:center">Byte</td>
+</tr>
+<tr>
+<td style="text-align:center">long</td>
+<td style="text-align:center">Long</td>
+</tr>
+<tr>
+<td style="text-align:center">short</td>
+<td style="text-align:center">Short</td>
+</tr>
+<tr>
+<td style="text-align:center">float</td>
+<td style="text-align:center">Float</td>
+</tr>
+<tr>
+<td style="text-align:center">double</td>
+<td style="text-align:center">Double</td>
+</tr>
+</tbody>
+</table>
+<h4 id="实际在开发中的用处">实际在开发中的用处</h4>
+<p>我们知道Java是一个面相对象的编程语言，基本类型并不具有对象的性质，为了让基本类型也具有对象的特征，就出现了包装类型（如我们在使用集合时就一定要使用包装类型而非基本类型），它相当于将基本类型“包装起来”，使得它具有了对象的性质，并且为其添加了属性和方法，丰富了基本类型的操作。比如list 他的类型就必须写包装类型。</p>]]></description></item><item><title>switch中的参数可以为那些类型</title><link>https://yakax.github.io/switch%E4%B8%AD%E7%9A%84%E5%8F%82%E6%95%B0%E5%8F%AF%E4%BB%A5%E4%B8%BA%E9%82%A3%E4%BA%9B%E7%B1%BB%E5%9E%8B/</link><pubDate>Tue, 13 Nov 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/switch%E4%B8%AD%E7%9A%84%E5%8F%82%E6%95%B0%E5%8F%AF%E4%BB%A5%E4%B8%BA%E9%82%A3%E4%BA%9B%E7%B1%BB%E5%9E%8B/</guid><description><![CDATA[<p><strong>之前面试被问懵了一个很简单的问题，switch中的参数支持string吗，我当时想都没想，直接回答string可以为switch的参数，因为在我写的代码中我的确拿string当过参数：然而面试官说不可以。
+(经过我的验证，我发现jdk1.7以后switch就支持String类型了；面试官傻逼！)</strong></p>
+<h4 id="官方示例">官方示例</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">https://docs.oracle.com/javase/tutorial/java/nutsandbolts/switch.html
+</code></pre></td></tr></table>
+</div>
+</div>]]></description></item><item><title>序列化的作用</title><link>https://yakax.github.io/%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E4%BD%9C%E7%94%A8/</link><pubDate>Tue, 09 Oct 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E4%BD%9C%E7%94%A8/</guid><description><![CDATA[<h4 id="序列化的作用">序列化的作用</h4>
+<ol>
+<li>序列化</li>
+</ol>
+<blockquote>
+<p>有的时候我们想要把一个Java对象变成字节流的形式以便存储在文件或者网络传输：比如序列化成json格式通过http发送出去。</p>
+</blockquote>
+<ol start="2">
+<li>反序列化</li>
+</ol>
+<blockquote>
+<p>有的时候我们想要从一个字节流中恢复一个Java对象。：比如在网络中接受到一个json格式字符串，把它转化为某个对象。</p>
+</blockquote>]]></description></item><item><title>谈谈Java多线程与高并发</title><link>https://yakax.github.io/%E8%B0%88%E8%B0%88java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%8E%E9%AB%98%E5%B9%B6%E5%8F%91/</link><pubDate>Mon, 08 Oct 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E8%B0%88%E8%B0%88java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%8E%E9%AB%98%E5%B9%B6%E5%8F%91/</guid><description><![CDATA[<h4 id="目前我接触的多线程编程基本上都是基于javautilconcurrent-这个包下的开发的下面就以这个包来分析java的多线程与高并发">目前我接触的多线程编程基本上都是基于java.util.concurrent 这个包下的开发的，下面就以这个包来分析Java的多线程与高并发</h4>
+<h4 id="分析面试题">分析面试题</h4>
+<ol>
+<li>在java中wait和sleep方法的不同？</li>
+</ol>
+<blockquote>
+<p>最大的不同是在等待时wait会释放锁，而sleep一直持有锁。Wait通常被用于线程间交互，sleep通常被用于暂停执行。</p>
+</blockquote>
+<ol start="2">
+<li>创建多线程的三种方法</li>
+</ol>
+<blockquote>
+<p>1.继承Thread()
+2.实现Runnable()接口
+3.实现Callable接口</p>
+</blockquote>
+<ol start="3">
+<li>继承Thread与实现Runnable区别</li>
+</ol>
+<blockquote>
+<p>类可能只要求可执行即可,因此继承整个Thread类的开销过大</p>
+</blockquote>
+<ol start="4">
+<li>Runnable和Callable的区别</li>
+</ol>
+<blockquote>
+<p>Runnable接口中的run()方法的返回值是void;而Callable接口中的call()方法是有返回值的,和Future/FutureTask配合可以用来获取异步执行的结果。</p>
+</blockquote>
+<ol start="5">
+<li>notify作用</li>
+</ol>
+<blockquote>
+<p>1.notify：唤醒一个正在wait当前对象锁的线程，并让它拿到对象锁
+2.notifyAll：唤醒所有正在wait前对象锁的线程
+3.在调用wait，notify，notifyall的时候当前线程必须获得这个对象的锁。</p>
+</blockquote>
+<ol start="6">
+<li>线程的5种状态
+<a data-fancybox="gallery" href="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2018-11-5/8.png">
+    
+</a></li>
+</ol>]]></description></item><item><title>关于类型转换与运算问题</title><link>https://yakax.github.io/%E7%B1%BB%E5%9E%8B%E7%9A%84%E8%BD%AC%E6%8D%A2%E5%9F%BA%E6%9C%AC%E9%97%AE%E9%A2%98/</link><pubDate>Sun, 07 Oct 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E7%B1%BB%E5%9E%8B%E7%9A%84%E8%BD%AC%E6%8D%A2%E5%9F%BA%E6%9C%AC%E9%97%AE%E9%A2%98/</guid><description><![CDATA[<p><strong>一个经典的类型转换问题</strong></p>
+<blockquote>
+<p>高位转低位需要强制转换，低位转高位是自动转换，表达式两侧的转换规则是向左边的类型看齐</p>
+</blockquote>
+<ol>
+<li>short s1=1;s1=s1+1;</li>
+</ol>
+<blockquote>
+<p>s1+1值是自动转换int类型，而是s1是short类型 所以会提示你转为short类型，s1= (short) (s1+1)就正确了。</p>
+</blockquote>
+<ol start="2">
+<li>short s1=1;s1=+=1; 这个为什么不报错</li>
+</ol>
+<blockquote>
+<p>因为java语言规范中关于复合赋值的解释是这样的：e1+=e2实际上是e1=(T1)(e1+e2),这里的T1的数据类型。所以不会报错。</p>
+</blockquote>]]></description></item><item><title>理解java反射</title><link>https://yakax.github.io/%E7%90%86%E8%A7%A3java%E5%8F%8D%E5%B0%84/</link><pubDate>Sun, 07 Oct 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E7%90%86%E8%A7%A3java%E5%8F%8D%E5%B0%84/</guid><description><![CDATA[<p><strong>Java 反射是可以让我们在运行时获取类的方法、属性、父类、接口等类的内部信息的机制</strong></p>
+<h4 id="为什么用反射">为什么用反射</h4>
+<p>假如你写了一段代码：Object o=new Object();
+运行了起来！扔给jvm去跑，跑完就over了，jvm关闭，你的程序也停止了;
+想想上面的程序对象是自己new的，程序相当于写死了给jvm去跑。假如一个服务器上突然遇到某个请求哦要用到某个类，哎呀但没加载进jvm，是不是要停下来自己写段代码，new一下，哦启动一下服务器，（脑残）！
+反射是什么呢？当我们的程序在运行时，需要动态的加载一些类这些类可能之前用不到所以不用加载到jvm，而是在运行时根据需要才加载，这样的好处对于服务器来说不言而喻。</p>
+<blockquote>
+<p>反射是框架的灵魂</p>
+</blockquote>]]></description></item><item><title>谈谈对JVM内存分配</title><link>https://yakax.github.io/%E8%B0%88%E8%B0%88%E5%AF%B9jvm%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D/</link><pubDate>Fri, 05 Oct 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E8%B0%88%E8%B0%88%E5%AF%B9jvm%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D/</guid><description><![CDATA[<p><strong>JVM的分区可分为三个：堆（heap）、栈（stack）和方法区（method）：堆主要用来存放对象的，栈主要是用来执行程序的</strong></p>
+<h4 id="堆区">堆区</h4>
+<ol>
+<li>存储的是对象，并且JVM只有一个堆区，被所有线程共享。</li>
+<li>比如new string等等对象</li>
+<li>由于要在运行时动态分配内存，存取速度较慢</li>
+<li>先进先出</li>
+</ol>
+<h4 id="栈区">栈区</h4>
+<ol>
+<li>每个线程包含自己的一个栈区，栈中只保存基本数据类型的对象和自定义对象的<strong>引用</strong>记住是引用地址，指向堆中的对象</li>
+<li>栈与栈之间不能直接访问</li>
+<li>存取速度快，但是生命周期是固定的区域。</li>
+<li>先进后出</li>
+</ol>
+<blockquote>
+<p>栈有一个很重要的特殊性，就是存在栈中的数据可以共享。假设我们同时定义：
+int a = 3;
+int b = 3；
+编译器先处理int a = 3；首先它会在栈中创建一个变量为a的引用，然后查找栈中是否有3这个值，如果没找到，就将3存放进来，然后将a指向3。接着处理int b = 3；在创建完b的引用变量后，因为在栈中已经有3这个值，便将b直接指向3。这样，就出现了a与b同时均指向3的情况。</p>
+</blockquote>]]></description></item><item><title>Mybatis与hibernate</title><link>https://yakax.github.io/mybatis%E4%B8%8Ehibernate/</link><pubDate>Wed, 03 Oct 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/mybatis%E4%B8%8Ehibernate/</guid><description><![CDATA[<p><strong>总的来说，Hibernate使用的是封装好的，通用的SQL来应付所有场景，而Mybatis是针对响应的场景设计的SQL。Mybatis的SQL会更灵活、可控性更好、更优化</strong></p>
+<blockquote>
+<ul>
+<li>Hibernate的查询会将表中的所有字段查询出来，这一点会有性能消耗。</li>
+<li>Hibernate也可以自己写SQL来指定需要查询的字段，但这样就破坏了Hibernate开发的简洁性。</li>
+<li>Mybatis的SQL是手动编写的，所以可以按需求指定查询的字段。</li>
+<li>hibernate迁移性相对mybatis较好，因为hibernate不是依赖数据库。</li>
+</ul>
+</blockquote>]]></description></item></channel></rss>

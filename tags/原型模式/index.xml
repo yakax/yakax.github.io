@@ -1,0 +1,7 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>原型模式 - 标签 - yakax</title><link>https://yakax.github.io/tags/%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F/</link><description>原型模式 - 标签 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 29 Jan 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.github.io/tags/%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F/" rel="self" type="application/rss+xml"/><item><title>原型设计模式</title><link>https://yakax.github.io/%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F/</link><pubDate>Tue, 29 Jan 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F/</guid><description><![CDATA[<h4 id="应用场景">应用场景</h4>
+<p>原型模式就是从一个对象再创建另外一个可定制的对象，而且不需要知道任何创建的细节。
+所谓原型模式，就是 Java 中的克隆技术，以某个对象为原型。复制出新的对象。显然新的对象具备原
+型对象的特点，效率高（<font color=red>避免了重新执行构造过程步骤,而且实例的创建开销比较大或者需要输入较多参数</font>）。</p>
+<h4 id="浅克隆">浅克隆</h4>
+<h5 id="说明">说明</h5>
+<p>浅复制仅仅复制所克隆的对象，而不复制它所引用的对象。 Object类提供的方法clone只是拷贝本对象，其对象内部的数组、引用对象等都不拷贝，还是指向原生对象的内部元素地址</p>]]></description></item></channel></rss>

@@ -1,0 +1,97 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>基础 - 标签 - yakax</title><link>https://yakax.github.io/tags/%E5%9F%BA%E7%A1%80/</link><description>基础 - 标签 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 03 Jul 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.github.io/tags/%E5%9F%BA%E7%A1%80/" rel="self" type="application/rss+xml"/><item><title>Java开发手册-(转自阿里云栖社区)</title><link>https://yakax.github.io/java%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C-%E8%BD%AC%E8%87%AA%E9%98%BF%E9%87%8C%E4%BA%91%E6%A0%96%E7%A4%BE%E5%8C%BA/</link><pubDate>Wed, 03 Jul 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/java%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C-%E8%BD%AC%E8%87%AA%E9%98%BF%E9%87%8C%E4%BA%91%E6%A0%96%E7%A4%BE%E5%8C%BA/</guid><description><![CDATA[<p><a href="https://github.com/alibaba/p3c" target="_blank" rel="noopener noreffer">Java开发手册下载链接</a></p>
+<p><font color=red>1-0.9=0.1是天经地义的，但在计算机的世界里，0.1恰恰是无法精确表示的一个小数，只有2的幂次倍小数才能够精确表示，如：0.5、0.25、0.125等。由于0.1是近似表达，在各种情形中的计算存在数位的取舍精度不一样，所以1-0.9未必等于0.9-0.8，所以浮点数之间的等值判断，基本数据类型不能用==来比较，包装数据类型不能用equals来判断。包装类型运算也是调用的浮点类型的计算</font></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">public class FloatPrimitiveTest {
+    public static void main(String[] args) {
+        float a = 1.0f - 0.9f;
+        float b = 0.9f - 0.8f;
+        if (a == b) {
+            System.out.println(&#34;true&#34;);
+        } else {
+            System.out.println(&#34;false&#34;);
+        }
+    }
+}
+输出------------false
+
+
+public class FloatWrapperTest {
+    public static void main(String[] args) {
+        Float a = Float.valueOf(1.0f - 0.9f);
+        Float b = Float.valueOf(0.9f - 0.8f);
+        if (a.equals(b)) {
+            System.out.println(&#34;true&#34;);
+        } else {
+            System.out.println(&#34;false&#34;);
+        }
+    }
+}
+输出--------false
+正例--------------------------------
+(1) 指定一个误差范围，两个浮点数的差值在此范围之内，则认为是相等的。
+ float a = 1.0f - 0.9f;
+ float b = 0.9f - 0.8f;
+ float diff = 1e-6f;
+ if (Math.abs(a - b) &lt; diff) {
+     System.out.println(&#34;true&#34;);
+ }
+(2) 使用 BigDecimal 来定义值，再进行浮点数的运算操作。
+ BigDecimal a = new BigDecimal(&#34;1.0&#34;);
+ BigDecimal b = new BigDecimal(&#34;0.9&#34;);
+ BigDecimal c = new BigDecimal(&#34;0.8&#34;);
+ BigDecimal x = a.subtract(b);
+ BigDecimal y = b.subtract(c);
+ if (x.equals(y)) {
+     System.out.println(&#34;true&#34;);
+ }
+
+</code></pre></td></tr></table>
+</div>
+</div>]]></description></item></channel></rss>

@@ -1,0 +1,209 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>MySQL - 标签 - yakax</title><link>https://yakax.github.io/tags/mysql/</link><description>MySQL - 标签 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sun, 12 Jan 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.github.io/tags/mysql/" rel="self" type="application/rss+xml"/><item><title>MySQL性能调优(7)复习补充</title><link>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%987%E5%A4%8D%E4%B9%A0%E8%A1%A5%E5%85%85/</link><pubDate>Sun, 12 Jan 2020 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%987%E5%A4%8D%E4%B9%A0%E8%A1%A5%E5%85%85/</guid><description><![CDATA[<blockquote>
+<p>复习时自己产生的问题</p>
+</blockquote>
+<h3 id="log">log</h3>
+<h5 id="缓冲池-buffer-pool">缓冲池 Buffer Pool</h5>
+<p>首先，InnnoDB 的数据都是放在磁盘上的，InnoDB 操作数据有一个最小的逻辑单位，叫做页（索引页和数据页）。我们对于数据的操作，不是每次都直接操作磁盘，因为磁盘的速度太慢了。InnoDB 使用了一种缓冲池的技术，也就是把磁盘读到的页放到一 块内存区域里面。这个内存区域就叫 Buffer Pool，下一次读取相同的页，先判断是不是在缓冲池里面，如果是，就直接读取，不用再 次访问磁盘。 修改数据的时候，先修改缓冲池里面的页。内存的数据页和磁盘数据不一致的时候， 我们把它叫做脏页。InnoDB 里面有专门的后台线程把 Buffer Pool 的数据写入到磁盘， 每隔一段时间就一次性地把多个修改写入磁盘，这个动作就叫做刷脏。 Buffer Pool 是 InnoDB 里面非常重要的一个结构，它的内部又分成几块区域。这里 我们趁机到官网来认识一下 InnoDB 的内存结构和磁盘结构。</p>]]></description></item><item><title>MySQL性能调优(6)解读58同城数据库设计军规30条</title><link>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%986%E8%A7%A3%E8%AF%BB58%E5%90%8C%E5%9F%8E%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1%E5%86%9B%E8%A7%8430%E6%9D%A1/</link><pubDate>Wed, 12 Dec 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%986%E8%A7%A3%E8%AF%BB58%E5%90%8C%E5%9F%8E%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1%E5%86%9B%E8%A7%8430%E6%9D%A1/</guid><description><![CDATA[<blockquote>
+<p>军规适用场景：并发量大、数据量大的互联网业务
+<font color=red>只是解读：没必要完全效仿</font></p>
+</blockquote>
+<h4 id="基础规范">基础规范</h4>
+<ol>
+<li>必须使用InnoDB存储引擎
+<strong>解读：支持事务、行级锁、并发性能更好、CPU及内存缓存页优化使得资源利用率更高</strong></li>
+<li>必须使用UTF8字符集不过现在基本上用 UTF8MB4
+**解读：万国码，无需转码，无乱码风险，节省空间 UTF8MB4支持图像兼容4字节 **</li>
+<li>数据表、数据字段必须加入中文注释
+<strong>解读：N年后谁tm知道这个r1,r2,r3字段是干嘛的</strong></li>
+<li>禁止使用存储过程、视图、触发器、Event
+<strong>解读：高并发大数据的互联网业务，架构设计思路是“解放数据库CPU，将计算转移到服务层”，并发量大的情况下，这些功能很可能将数据库拖死，业务逻辑放到服务层具备更好的扩展性，能够轻易实现“增机器就加性能”。数据库擅长存储与索引，CPU计算还是上移吧</strong> <font color=red>划重点：面试遇到要做存储过程的公司还是走了吧</font></li>
+<li>禁止存储大文件或者大照片
+<strong>解读：为何要让数据库做它不擅长的事情？大文件和照片存储在文件系统或者存云服务也行，数据库里存URI多好</strong></li>
+</ol>]]></description></item><item><title>MySQL性能调优(5)Innodb引擎的MVCC</title><link>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%985innodb%E5%BC%95%E6%93%8E%E7%9A%84mvcc/</link><pubDate>Tue, 11 Dec 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%985innodb%E5%BC%95%E6%93%8E%E7%9A%84mvcc/</guid><description><![CDATA[<h4 id="mvcc">MVCC</h4>
+<p><font color=red>Multiversion concurrency control (多版本并发控制)
+并发访问(读或写)数据库时，对正在事务内处理的数据做多版本的管理。以达到用来避免写操作的堵塞，从而引发读操作的并发问题。</font>
+这里看一个案例</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">begin
+// 这里默认是加上X锁的，在未做commit/rollback操作之前
+update users set lastUpdate=now() where id =1; 
+// 在其他的事务我们能不能进行对应数据的查询 但是我这时查询是能查到的当前时间这条记录
+select * from users where id = 1;
+</code></pre></td></tr></table>
+</div>
+</div><p>先来看看MVCC的处理机制</p>]]></description></item><item><title>MySQL性能调优(4)Innodb存储引擎的事务</title><link>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%984innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E7%9A%84%E4%BA%8B%E5%8A%A1/</link><pubDate>Mon, 10 Dec 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%984innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E7%9A%84%E4%BA%8B%E5%8A%A1/</guid><description><![CDATA[<h4 id="事务">事务</h4>
+<p>数据库操作的最小工作单元，是作为单个逻辑工作单元执行的一系列操作;事务是一组不可再分割的操作集合(工作逻辑单元);</p>
+<h5 id="mysql中如何开启事务">MySQL中如何开启事务：</h5>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">begin / start transaction -- 手工
+commit / rollback -- 事务提交或回滚
+set session autocommit = on/off; -- 设定事务是否自动开启
+</code></pre></td></tr></table>
+</div>
+</div><h5 id="jdbc编程开启事务">JDBC编程开启事务</h5>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">connection.setAutoCommit(boolean);
+true：sql命令的提交（commit）由驱动程序负责 
+false：sql命令的提交由应用程序负责，程序必须调用commit或者rollback方法// connection.commit()
+</code></pre></td></tr></table>
+</div>
+</div><h5 id="事务的acid特性">事务的ACID特性</h5>
+<ul>
+<li>原子性（Atomicity）</li>
+</ul>
+<blockquote>
+<p>最小的工作单元，整个工作单元要么一起提交成功，要么全部失败回滚</p>
+</blockquote>
+<ul>
+<li>一致性（Consistency）</li>
+</ul>
+<blockquote>
+<p>事务中操作的数据及状态改变是一致的，即写入资料的结果必须完全符合预设的规则，不会因为出现系统意外等原因导致状态的不一致</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">原子性和一致性的的侧重点不同：原子性关注状态，要么全部成功，要么全部失败，不存在部分成功的状态。
+而一致性关注数据的可见性，中间状态的数据对外部不可见，只有最初状态和最终状态的数据对外可见。
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>隔离性（Isolation）</li>
+</ul>
+<blockquote>
+<p>一个事务所操作的数据在提交之前，对其他事务的可见性设定（一般设定为不可见）</p>
+</blockquote>
+<ul>
+<li>持久性（Durability）</li>
+</ul>
+<blockquote>
+<p>事务所做的修改就会永久保存，不会因为系统意外导致数据的丢失</p>
+</blockquote>]]></description></item><item><title>MySQL性能调优(2)存储引擎介绍、体系结构及运行机理</title><link>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%982%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E4%BB%8B%E7%BB%8D%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%8F%8A%E8%BF%90%E8%A1%8C%E6%9C%BA%E7%90%86/</link><pubDate>Thu, 06 Dec 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%982%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E4%BB%8B%E7%BB%8D%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%8F%8A%E8%BF%90%E8%A1%8C%E6%9C%BA%E7%90%86/</guid><description><![CDATA[<h4 id="存储引擎介绍">存储引擎介绍</h4>
+<ul>
+<li>插拔式的插件方式（存储引擎本身是数据库服务器的组件，负责对在物理服务器层面上维护的基本数据进行实际操作）</li>
+<li>存储引擎是指定在表之上的，即一个库中的每一个表都可以指定专用的存储引擎</li>
+<li>最新的MySQL 8.0 发布之后，对数据库数据字典方面做了较大的改进。</li>
+</ul>
+<blockquote>
+<p>首先是，将所有原先存放于数据字典文件中的信息，全部存放到数据库系统表中，即将之前版本的.frm,.opt,.par,.TRN,.TRG,.isl文件都移除了，不再通过文件的方式存储数据字典信息。
+其次是对INFORMATION_SCHEM，MySQL，sys系统库中的存储引擎做了改进，原先使用MyISAM存储引擎的数据字典表都改为使用InnoDB存储引擎存放。
+从不支持事务的MyISAM存储引擎转变到支持事务的InnoDB存储引擎，为原子DDL的实现，提供了可能性。</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">// 查看数据库当前支持的存储引擎
+show engines;
+</code></pre></td></tr></table>
+</div>
+</div><p></p>]]></description></item><item><title>MySQL性能调优(3)查询优化详解</title><link>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%983%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96%E8%AF%A6%E8%A7%A3/</link><pubDate>Thu, 06 Dec 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%983%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96%E8%AF%A6%E8%A7%A3/</guid><description><![CDATA[<h4 id="查询执行路径">查询执行路径</h4>
+
+##### MySQL 客户端/服务端通信
+- MySQL客户端与服务端的通信方式是“半双工”;
+- 客户端一旦开始发送消息，另一端要接收完整个消息才能响应。客户端一旦开始接收数据没法停下来发送指令。
+- 对于一个MySQL连接，或者说一个线程，时刻都有一个状态来标识这个连接正在做什么
+- 查看命令 show full processlist / show processlist
+我正在通过navicat向虚拟机里面的数据库导入数据
+
+```
+Sleep 线程正在等待客户端发送数据
+Query 连接线程正在执行查询
+Locked 线程正在等待表锁的释放
+Sorting result 线程正在对结果进行排序
+Sending data 向请求端返回数据
+可通过kill {id}的方式进行连接的杀掉
+```
+[官网状态全集](https://dev.mysql.com/doc/refman/8.0/en/general-thread-states.html)
+<h5 id="查询缓存">查询缓存</h5>
+<ul>
+<li>前话：为什么MySQL默认关闭了缓存开启？？</li>
+</ul>
+<blockquote>
+<p><font color=red>MySQL 8.0不支持查询缓存，用户升级后将被鼓励使用服务器端查询重写或ProxySQL作为中间缓存。</font></p>
+</blockquote>]]></description></item><item><title>MySQL性能调优(1)理解底层B+tree机制</title><link>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%981%E7%90%86%E8%A7%A3%E5%BA%95%E5%B1%82b-tree%E6%9C%BA%E5%88%B6/</link><pubDate>Mon, 03 Dec 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%981%E7%90%86%E8%A7%A3%E5%BA%95%E5%B1%82b-tree%E6%9C%BA%E5%88%B6/</guid><description><![CDATA[<h4 id="索引是谁实现的">索引是谁实现的</h4>
+<blockquote>
+<p>索引是存储引擎实现的：
+本文章主要对MySQL常用的MyISAM与InnoDB这两个存储引擎做分析。</p>
+</blockquote>
+<h4 id="索引是什么">索引是什么</h4>
+<blockquote>
+<p>索引是为了加速对表中的数据行的检索而创建的一种分散存储的<font color=red >数据结构</font>。
+</p>
+</blockquote>
+<h4 id="为什么要用索引">为什么要用索引</h4>
+<ol>
+<li>索引能极大的减少存储引擎需要扫描的数据量。(比如全表扫描就是在找数据)</li>
+<li>索引可以把随机IO变成顺序IO。（因为索引是有序的这样就能保证找数据的时候稳定性,在程序中不允许有不稳定因素。）</li>
+</ol>
+<h4 id="为什么mysql要用btree来实现索引">为什么MySQL要用b+tree来实现索引</h4>
+<blockquote>
+<p>在这里先推荐一个网址来学习二叉树由来<a href="https://www.cs.usfca.edu/~galles/visualization/Algorithms.html" target="_blank" rel="noopener noreffer">地址</a>。</p>
+</blockquote>
+<ol>
+<li>
+<p>先来看看二叉查找树 Binary Search Tree
+<a data-fancybox="gallery" href="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/28.png">
+    
+</a></p>
+</li>
+<li>
+<p>在来看看平衡二叉查找树（所有节点数高度不会超过1）AVL Trees (Balanced binary search trees)记住图上的磁盘块上存储了数据区的磁盘地址。
+<a data-fancybox="gallery" href="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/29.png">
+    
+</a></p>
+</li>
+<li>
+<p>说说为什么MySQL没有选择这些算法而去选择B+Tree</p>
+<ul>
+<li>它太深了,数据存在的（高）深度决定着他的IO操作次数，IO操作耗时大这个大家都是知道的。</li>
+<li>他太小了,IO操作是很耗时，他一次IO也只能加载一个关键字；保存的东西太少了。</li>
+<li>没有很好的利用操作磁盘IO的数据交换特性(操作系统通过硬盘读取数据一次IO操作读取的大小是4k(页为单位))<font color=red> 这就是为什么SSD在分区时选择4k对其的原因，能使他大大提升读写性能。</font> 二叉树每个节点只有一个关键字，他是存满不了4k的，这样会浪费资源。</li>
+<li>也没有利用好磁盘IO的预读能力（空间局部性原理），从而带来频繁的IO操作。空间局部性原理就是：<font color=red> 操作系统每次IO操作读取一页，他会有预读能力，把下一页或者后面几页的数据读取</font>。（注：MySQL定义的一页为16k）</li>
+</ul>
+</li>
+</ol>]]></description></item><item><title>破解最新版navicat</title><link>https://yakax.github.io/%E7%A0%B4%E8%A7%A3%E6%9C%80%E6%96%B0%E7%89%88navicat/</link><pubDate>Mon, 05 Nov 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E7%A0%B4%E8%A7%A3%E6%9C%80%E6%96%B0%E7%89%88navicat/</guid><description><![CDATA[<ol>
+<li>参考注册机</li>
+</ol>
+<blockquote>
+<p><a href="https://www.lanzous.com/i9o3eej">https://www.lanzous.com/i9o3eej</a></p>
+</blockquote>
+<ol start="2">
+<li>下载Navicat注册机然后自行下载最新版navicat</li>
+<li>确保已关闭Navicat Premium。无需断网，无需将注册机放到Navicat Premium安装目录下。以管理员身份运行此注册机；</li>
+<li>打开注册机后， Patch勾选Backup、Host和Navicat v12，然后点击Patch按钮：
+</li>
+</ol>]]></description></item><item><title>自启动docker并安装自启动镜像MySQL8</title><link>https://yakax.github.io/%E5%AD%A6%E4%B9%A0docker%E5%B9%B6%E5%AE%89%E8%A3%85%E4%B8%80%E4%B8%AA%E8%87%AA%E5%90%AF%E5%8A%A8mysql8/</link><pubDate>Mon, 05 Nov 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E5%AD%A6%E4%B9%A0docker%E5%B9%B6%E5%AE%89%E8%A3%85%E4%B8%80%E4%B8%AA%E8%87%AA%E5%90%AF%E5%8A%A8mysql8/</guid><description><![CDATA[<p><strong>因为在10月15号换了新工作，入职了半月左右，这半月时间一直在搞前端的ts和angular，再加上在忙着自考，后端的代码一直没有碰，正好这周在家时间就圆一下我的好奇心去搞一搞docker，顺便把我ss的服务器利用一下做一个MySQL在上面，后期会上点项目上去；</strong></p>
+<h4 id="以后服务器就安装一个docker就行了">以后服务器就安装一个Docker就行了</h4>
+<ol>
+<li>本次采用的是Centos7.5版本的Linux系统，镜像是<a href="https://opsx.alibaba.com/" target="_blank" rel="noopener noreffer">阿里云</a>下载的DVD版本；（因为Docker需要内核3版本以上的Linux）；
+<a data-fancybox="gallery" href="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2018-11-5/1.png">
+    
+</a></li>
+<li>执行一键安装脚本</li>
+</ol>]]></description></item></channel></rss>

@@ -1,0 +1,16 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Spring5源码分析 - 标签 - yakax</title><link>https://yakax.github.io/tags/spring5%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</link><description>Spring5源码分析 - 标签 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 25 Mar 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.github.io/tags/spring5%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="self" type="application/rss+xml"/><item><title>Spring5源码分析(1)设计思想与结构</title><link>https://yakax.github.io/spring%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%901%E8%AE%BE%E8%AE%A1%E6%80%9D%E6%83%B3%E4%B8%8E%E7%BB%93%E6%9E%84/</link><pubDate>Mon, 25 Mar 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/spring%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%901%E8%AE%BE%E8%AE%A1%E6%80%9D%E6%83%B3%E4%B8%8E%E7%BB%93%E6%9E%84/</guid><description><![CDATA[<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">源码地址(带有中文注解)git@github.com:yakax/spring-framework-5.0.2.RELEASE--.git 
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="spring-的设计初衷其实就是为了简化我们的开发">Spring 的设计初衷其实就是为了简化我们的开发</h4>
+<ol>
+<li>基于 POJO 的轻量级和最小侵入性编程；</li>
+<li>通过依赖注入和面向接口松耦合；</li>
+<li>基于切面和惯性进行声明式编程；</li>
+<li>通过切面和模板减少样板式代码；</li>
+</ol>
+<p><font color=red><strong>而他主要是通过：面向 Bean(BOP)、依赖注入（DI）以及面向切面（AOP）这三种方式来达成的。</strong></font></p>]]></description></item></channel></rss>

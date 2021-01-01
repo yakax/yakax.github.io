@@ -1,0 +1,432 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>Mybatis3源码分析(1)生命周期与核心配置解读以及批量操作 - yakax</title><meta name=Description content><meta property="og:title" content="Mybatis3源码分析(1)生命周期与核心配置解读以及批量操作"><meta property="og:description" content="单独用mybatis编程式进行DB操作
+
+
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+
+
+--------------------利用mapper
+String resource = &#34;mybatis-config.xml&#34;;
+InputStream inputStream = Resources.getResourceAsStream(resource);
+SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+SqlSession session = sqlSessionFactory.openSession();
+try {
+    BlogMapper mapper = session.getMapper(BlogMapper.class);
+    Blog blog = mapper.selectBlogById(1);
+    System.out.println(blog);
+} finally {
+    session.close();
+}
+--------------------利用mybatis的接口
+String resource = &#34;mybatis-config.xml&#34;;
+InputStream inputStream = Resources.getResourceAsStream(resource);
+SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+SqlSession session = sqlSessionFactory.openSession(); // ExecutorType.BATCH
+try {
+    Blog blog = (Blog) session.selectOne(&#34;com.yakax.mapper.BlogMapper.selectBlogById&#34;, 1);
+    System.out.println(blog);
+} finally {
+    session.close();
+}"><meta property="og:type" content="article"><meta property="og:url" content="https://yakax.github.io/mybatis3%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%901%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E4%B8%8E%E6%A0%B8%E5%BF%83%E9%85%8D%E7%BD%AE%E8%A7%A3%E8%AF%BB%E4%BB%A5%E5%8F%8A%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C/"><meta property="og:image" content="https://yakax.github.io/images/1.png"><meta property="article:published_time" content="2019-05-02T00:00:00+00:00"><meta property="article:modified_time" content="2019-05-02T00:00:00+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://yakax.github.io/images/1.png"><meta name=twitter:title content="Mybatis3源码分析(1)生命周期与核心配置解读以及批量操作"><meta name=twitter:description content="单独用mybatis编程式进行DB操作
+
+
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+
+
+--------------------利用mapper
+String resource = &#34;mybatis-config.xml&#34;;
+InputStream inputStream = Resources.getResourceAsStream(resource);
+SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+SqlSession session = sqlSessionFactory.openSession();
+try {
+    BlogMapper mapper = session.getMapper(BlogMapper.class);
+    Blog blog = mapper.selectBlogById(1);
+    System.out.println(blog);
+} finally {
+    session.close();
+}
+--------------------利用mybatis的接口
+String resource = &#34;mybatis-config.xml&#34;;
+InputStream inputStream = Resources.getResourceAsStream(resource);
+SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+SqlSession session = sqlSessionFactory.openSession(); // ExecutorType.BATCH
+try {
+    Blog blog = (Blog) session.selectOne(&#34;com.yakax.mapper.BlogMapper.selectBlogById&#34;, 1);
+    System.out.println(blog);
+} finally {
+    session.close();
+}"><meta name=application-name content="yakax"><meta name=apple-mobile-web-app-title content="yakax"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:'==document.location.protocol?'https:':'http:')+"//widget.daovoice.io/widget/af744044.js","daovoice")
+daovoice('init',{app_id:"af744044"});daovoice('update');</script><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://yakax.github.io/mybatis3%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%901%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E4%B8%8E%E6%A0%B8%E5%BF%83%E9%85%8D%E7%BD%AE%E8%A7%A3%E8%AF%BB%E4%BB%A5%E5%8F%8A%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C/><link rel=prev href=https://yakax.github.io/%E6%96%B9%E6%B3%95%E5%A4%96%E5%AF%B9%E8%B1%A1%E5%9C%B0%E5%9D%80%E4%BA%A4%E6%8D%A2/><link rel=next href=https://yakax.github.io/mybatis3%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%902%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B8%8E%E7%BC%93%E5%AD%98/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Mybatis3源码分析(1)生命周期与核心配置解读以及批量操作","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/yakax.github.io\/mybatis3%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%901%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E4%B8%8E%E6%A0%B8%E5%BF%83%E9%85%8D%E7%BD%AE%E8%A7%A3%E8%AF%BB%E4%BB%A5%E5%8F%8A%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C\/"},"image":["https:\/\/yakax.github.io\/images\/avatar.png"],"genre":"posts","keywords":"Mybatis3源码分析","wordcount":5499,"url":"https:\/\/yakax.github.io\/mybatis3%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%901%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E4%B8%8E%E6%A0%B8%E5%BF%83%E9%85%8D%E7%BD%AE%E8%A7%A3%E8%AF%BB%E4%BB%A5%E5%8F%8A%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C\/","datePublished":"2019-05-02T00:00:00+00:00","dateModified":"2019-05-02T00:00:00+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"yakax","logo":"https:\/\/yakax.github.io\/images\/avatar.png"},"author":{"@type":"Person","name":"yakax"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':('auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark'))&&document.body.setAttribute('theme','dark');</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class="fas fa-crosshairs fa-sm"></i></span><span id=id-1 class=typeit></span></a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>所有文章 </a><a class=menu-item href=/tags/>标签 </a><a class=menu-item href=/categories/>分类 </a><a class=menu-item href=/about/>关于 </a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i></a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop><input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span></span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class="fas fa-crosshairs fa-sm"></i></span><span id=id-2 class=typeit></span></a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/>所有文章</a><a class=menu-item href=/tags/>标签</a><a class=menu-item href=/categories/>分类</a><a class=menu-item href=/about/>关于</a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">Mybatis3源码分析(1)生命周期与核心配置解读以及批量操作</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>yakax</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/mybatis/><i class="far fa-folder fa-fw"></i>Mybatis</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2019-05-02>2019-05-02</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 5499 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 11 分钟&nbsp;<span id=/mybatis3%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%901%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E4%B8%8E%E6%A0%B8%E5%BF%83%E9%85%8D%E7%BD%AE%E8%A7%A3%E8%AF%BB%E4%BB%A5%E5%8F%8A%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C/ class=leancloud_visitors data-flag-title=Mybatis3源码分析(1)生命周期与核心配置解读以及批量操作>
+<i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
+</span>&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><ul><li><a href=#单独用mybatis编程式进行db操作>单独用mybatis编程式进行DB操作</a></li><li><a href=#生命周期>生命周期</a><ul><li><a href=#sqlsessionfactorybuiler>SqlSessionFactoryBuiler</a></li><li><a href=#sqlsessionfactory>SqlSessionFactory</a></li><li><a href=#sqlsession>SqlSession</a></li><li><a href=#mapper>Mapper</a></li><li><a href=#总结生命周期>总结生命周期</a></li></ul></li><li><a href=#核心配置解读>核心配置解读</a><ul><li><a href=#configuration>configuration</a><ul><li><a href=#属性properties>属性（properties）</a></li><li><a href=#设置settings>设置（settings）</a></li><li><a href=#类型别名typealiases>类型别名（typeAliases）</a></li><li><a href=#类型处理器typehandlers重点>类型处理器（typeHandlers）【重点】</a><ul><li><a href=#案例>案例</a></li></ul></li><li><a href=#objectfactory对象工厂>objectFactory（对象工厂）</a></li><li><a href=#插件plugins>插件（plugins）</a></li><li><a href=#环境配置environments>环境配置（environments）</a><ul><li><a href=#transactionmanager>transactionManager</a></li><li><a href=#datasource>dataSource</a></li></ul></li><li><a href=#数据库厂商标识databaseidprovider>数据库厂商标识（databaseIdProvider）</a></li><li><a href=#映射器mappers>映射器（mappers）</a></li><li><a href=#总结>总结</a></li></ul></li><li><a href=#动态sql>动态SQL</a></li></ul></li><li><a href=#批量操作>批量操作</a><ul><li><a href=#foreach>foreach</a></li><li><a href=#使用batch-executor查询>使用Batch Executor查询</a><ul><li><a href=#statement与preparedstatement-的区别>statement与PreparedStatement 的区别</a></li></ul></li></ul></li></ul></li></ul></nav></div></div><div class=content id=content><h3 id=单独用mybatis编程式进行db操作>单独用mybatis编程式进行DB操作</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>--------------------利用mapper
+String resource = &#34;mybatis-config.xml&#34;;
+InputStream inputStream = Resources.getResourceAsStream(resource);
+SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+SqlSession session = sqlSessionFactory.openSession();
+try {
+    BlogMapper mapper = session.getMapper(BlogMapper.class);
+    Blog blog = mapper.selectBlogById(1);
+    System.out.println(blog);
+} finally {
+    session.close();
+}
+--------------------利用mybatis的接口
+String resource = &#34;mybatis-config.xml&#34;;
+InputStream inputStream = Resources.getResourceAsStream(resource);
+SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+SqlSession session = sqlSessionFactory.openSession(); // ExecutorType.BATCH
+try {
+    Blog blog = (Blog) session.selectOne(&#34;com.yakax.mapper.BlogMapper.selectBlogById&#34;, 1);
+    System.out.println(blog);
+} finally {
+    session.close();
+}
+</code></pre></td></tr></table></div></div><p><font color=red>这案例非常重要，后面分析源码还是基于它。</font></p><h3 id=生命周期>生命周期</h3><p>我们先从官网介绍开始一步步开始看,我们从每个对象的作用的角度来理解一下，只有理解了它们是干什么的，才知道什么时候应该创建，什么时候应该销毁。</p><h4 id=sqlsessionfactorybuiler>SqlSessionFactoryBuiler</h4><p>首先是SqlSessionFactoryBuiler。它是用来构建SqlSessionFactory的，而SqlSessionFactory只需要一个，所以只要构建了这一个SqlSessionFactory，它的使命就完成了，也就没有存在的意义了。所以它的生命周期只存在于<font color=red>方法的局部</font>。而SqlSessionFactoryBuilder一般都是配置文件构建SqlSessionFactory。</p><h4 id=sqlsessionfactory>SqlSessionFactory</h4><p>SqlSessionFactory 是用来创建 SqlSession 的，每次应用程序访问数据库，都需要创建一个会话。因为我们一直有创建会话的需要，所以 SqlSessionFactory 应该存在于应用的<font color=red>整个生命周期中（作用域是应用作用域）</font>。创建 SqlSession 只需要一个实例来做这件事就行了，否则会产生很多的混乱，和浪费资源。所以我们要采用单例模式</p><h4 id=sqlsession>SqlSession</h4><p>SqlSession 是一个会话，因为它不是线程安全的，不能在线程间共享。所以我们在请求开始的时候创建一个 SqlSession 对象，在请求结束或者说方法执行完毕的时候要及时关闭它<font color=red>（一次请求或者操作中）</font>。</p><h4 id=mapper>Mapper</h4><p>Mapper（实际上是一个代理对象）是从 SqlSession 中获取的。它的作用是发送 SQL来操作数据库的数据。它应该在一个<font color=red> SqlSession 事务方法之内</font>。</p><h4 id=总结生命周期>总结生命周期</h4><table><thead><tr><th>对象</th><th>生命周期</th></tr></thead><tbody><tr><td>SqlSessionFactoryBuiler</td><td>方法局部（method）</td></tr><tr><td>SqlSessionFactory（单例）</td><td>应用级别（application）</td></tr><tr><td>SqlSession</td><td>请求和操作（request/method）</td></tr><tr><td>Mapper</td><td>方法（method）</td></tr></tbody></table><h3 id=核心配置解读>核心配置解读</h3><blockquote><p>虽然说现在基本上都是springboot开发，但是我们学习mybatis还是得从他的配置文件开始学习。</p></blockquote><h4 id=configuration>configuration</h4><p>configuration 是整个配置文件的根标签，实际上也对应着 MyBatis 里面最重要的配置类 Configuration。它贯穿 MyBatis 执行流程的每一个环节。我们打开这个类看一下，这里面有很多的属性，跟其他的子标签也能对应上。<font color=red>注意：MyBatis 全局配置文件顺序是固定的，否则启动的时候会报错。</font>
+我们可以通过build进去找到XMLConfigBuilder在里面他会new一个Configuration；这个configuration就是我们配置类对应的类，并且我们可以在里面看到许多设置的默认值。
+<a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/17.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/17.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/17.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/17.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/17.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/17.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/17.png></a></p><h5 id=属性properties>属性（properties）</h5><p>为了避免直接把参数写死在 xml 配置文件中，我们可以把这些参数单独放在properties 文件中，用 properties 标签引入进来，然后在 xml 配置文件中用${}引用就可以了。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>&lt;properties resource=&#34;db.properties&#34;&gt;&lt;/properties&gt;
+这样也可以把数据库的信息分离出来；把配置文件放在外部，避免修改后重新编译打包，只需要重启应用；
+</code></pre></td></tr></table></div></div><h5 id=设置settings>设置（settings）</h5><p>这是 MyBatis 中极为重要的调整设置，它们会改变 MyBatis 的运行时行为。 描述了设置中各项的意图、默认值等。<font color=red>核心配置</font>。具体可以看官网<a href=http://www.mybatis.org/mybatis-3/zh/configuration.html target=_blank rel="noopener noreffer">链接</a>。主要的东西就是懒加载(通过代理用于关联查询)，缓存，查询执行器，日志。</p><h5 id=类型别名typealiases>类型别名（typeAliases）</h5><p>TypeAlias 是类型的别名，跟 Linux 系统里面的 alias 一样，主要用来简化全路径类名的拼写。比如我们的参数类型和返回值类型都可能会用到我们的 Bean，如果每个地方都配置全路径的话，那么内容就比较多，还可能会写错。我们可以为自己的 Bean 创建别名，既可以指定单个类，也可以指定一个 package，自动转换。配置了别名以后，只需要写别名就可以了，比如 com.yakax.Blog都只要写 blog 就可以了。我们也可以指定某个包下面，这样包下面的全部默认都简写了。MyBatis 里面有系统预先定义好的类型别名，也是在TypeAliasRegistry 中。
+<a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/18.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/18.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/18.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/18.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/18.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/18.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/18.png></a></p><h5 id=类型处理器typehandlers重点>类型处理器（typeHandlers）【重点】</h5><p>由于 Java 类型和数据库的 JDBC 类型不是一一对应的（比如 String 与 varchar），所以我们把 Java 对象转换为数据库的值，和把数据库的值转换成 Java 对象，需要经过一定的转换，这两个方向的转换就要用到 TypeHandler。这就是为什么数据库类型是varchar而mybatis 晓得对应string 类型一样。因为 MyBatis 已经内置了很多 TypeHandler（在mybatis源码 type 包下），它们全部全部注册在 TypeHandlerRegistry 中，他们都继承了抽象类 BaseTypeHandler，泛型就是要处理的 Java 数据类型。</p><h6 id=案例>案例</h6><p>在开发过程中，我们常常把一些易变动的数据，或者易变动的对象存储为json字符串到数据库中(MySQL从5.7开始就有json格式和json查询语法)，而以前的操作就是,我们查询出来利用string类型接收json字符串，然后在自己利用json解析转成对象封装到VO给前端；而typehandlers可以帮我们解决这一点。
+数据库字段与数据(一个id，一个对象，一个list，[对象里面也存在list])</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>数据库
+create table blogdo (id int not null,blog json null,blog_list json null);
+数据
+id=1;
+blog={&#34;bid&#34;: 1, &#34;name&#34;: &#34;yakax&#34;, &#34;naList&#34;: [{&#34;na&#34;: &#34;123&#34;}, {&#34;na&#34;: &#34;234&#34;}], &#34;authorId&#34;: 120};
+blog_list=[{&#34;bid&#34;: 1, &#34;name&#34;: &#34;yakax&#34;, &#34;naList&#34;: [{&#34;na&#34;: &#34;123&#34;}], &#34;authorId&#34;: 120}, {&#34;bid&#34;: 1, &#34;name&#34;: &#34;yakax&#34;, &#34;naList&#34;: [{&#34;na&#34;: &#34;123&#34;}], &#34;authorId&#34;: 120}];
+</code></pre></td></tr></table></div></div><p>DO与json对象</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>这个是数据库查询转换后的对象
+@Data
+@TableName(&#34;blogdo&#34;)
+public class BlogDO {
+    private Integer id;
+    private Blog blog;
+    private List&lt;Blog&gt; blogList;
+}
+JSON 对象
+@Data
+public class Blog {
+     private Integer bid;
+    private String name;
+    private Integer authorId;
+    private List&lt;Json&gt; naList;
+}
+@Data
+public class Json {
+    private String na;
+}
+</code></pre></td></tr></table></div></div><p><font color=red>建立处理对象的TypeHandler</font></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>@MappedTypes({Blog.class, List.class, Json.class})//要处理对应得Java类型
+@MappedJdbcTypes(value = JdbcType.BLOB)//要对什么数据库类型进行操作
+public class MyTypeHandlerone&lt;E&gt; extends BaseTypeHandler&lt;E&gt; {
+
+    /**
+     * 处理的类型(注册类型与传类型进来)
+     */
+    private Class&lt;E&gt; type;
+
+    /**
+     * 注册类型
+     * @param type
+     */
+    public MyTypeHandlerone(Class&lt;E&gt; type) {
+        if (type == null) {
+            throw new IllegalArgumentException(&#34;Type argument cannot be null&#34;);
+        }
+        this.type = type;
+    }
+    
+    /**
+     * 设置非空参数
+     */
+    @Override
+    public void setNonNullParameter(PreparedStatement preparedStatement, int i, E t, JdbcType jdbcType) throws SQLException {
+        // set进入数据库
+        preparedStatement.setString(i, JSON.toJSONString(t));
+    }
+
+    /**
+     * 获取空结果集（根据列名），一般都是调用这个
+     */
+    @Override
+    public E getNullableResult(ResultSet resultSet, String s) throws SQLException {
+        String sqlJson = resultSet.getString(s);
+        if (null != sqlJson) {
+            return JSONObject.parseObject(sqlJson, type);
+        }
+        return null;
+    }
+
+    /**
+     * 获取空结果集（根据下标值）
+     */
+    @Override
+    public E getNullableResult(ResultSet resultSet, int i) throws SQLException {
+        String sqlJson = resultSet.getString(i);
+        if (null != sqlJson) {
+            return JSONObject.parseObject(sqlJson, type);
+        }
+        return null;
+    }
+
+    /**
+     * 存储过程用的
+     */
+    @Override
+    public E getNullableResult(CallableStatement callableStatement, int i) throws SQLException {
+        String sqlJson = callableStatement.getString(i);
+        if (null != sqlJson) {
+            return JSONObject.parseObject(sqlJson, type);
+        }
+        return null;
+    }
+}
+</code></pre></td></tr></table></div></div><p><font color=red>然后在配置中心增加type-handlers-package=包地址</font></p><ul><li>测试</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>  BlogDO blogdo = blogMapper.selectById(1);
+  log.info(blogdo.toString());
+</code></pre></td></tr></table></div></div><p><a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/23.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/23.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/23.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/23.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/23.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/23.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/23.png></a></p><blockquote><p>从上图中可以看出，typehandlers已经帮我们转化好数据了，注意看数据格式，<font color=red>如果是对象，那么对象下面注册了的东西他都会转化，如果是list，那么他存储对象是用JSONobject，存值是hashMap，存储list是用JSONArray</font>；</p></blockquote><ul><li>我们看看他是在什么时候怎么注册进入的
+<a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/2.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/2.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/2.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/2.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/2.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/2.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/2.png></a></li><li>程序启动时调用构造方法-然后进入TypeHandlerRegistry进行注册，
+<a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/20.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/20.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/20.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/20.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/20.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/20.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/20.png></a></li><li>我们可以看到这个类里面有很多预置的类型对应
+<a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/21.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/21.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/21.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/21.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/21.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/21.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/21.png></a></li><li>这里我们可以看到我们的JAVA类型已经注册进来了
+<a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/19.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/19.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/19.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/19.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/19.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/19.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/19.png></a></li><li>这里也看到他有专门的一个map来存储我们自定义的handler
+<a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/22.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/22.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/22.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/22.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/22.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/22.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/22.png></a>
+<font color=blue>这就是mybatis自定义typehandlers的查询流程-循环根据MappedTypes({Blog.class, List.class, Json.class})调用构造方法-然后注册到map中-然后根据@MappedJdbcTypes(value = JdbcType.BLOB)执行那些数据要返回指定的对象，然后通过JSON转换；新增操作原理相同调用的是自定义TypeHandler的setNonNullParameter方法转换成JSON字符串添加到数据库中;</font></li></ul><h5 id=objectfactory对象工厂>objectFactory（对象工厂）</h5><p>MyBatis 每次创建结果对象的新实例时，它都会使用一个对象工厂（ObjectFactory）实例来完成。 默认的对象工厂需要做的仅仅是实例化目标类，要么通过默认构造方法，要么在参数映射存在的时候通过参数构造方法来实例化。意思就是我们查询出来的数据映射给对象的时候我们可以从中修改了在返回出来。这个操作我用的比较少，反正理解为mybatis创建实例的工厂就行了。什么时候创建：返回结果集的时候创建。</p><blockquote><p>摘自官网————ObjectFactory 接口很简单，它包含两个创建用的方法，一个是处理默认构造方法的，另外一个是处理带参数的构造方法的。 最后，setProperties 方法可以被用来配置 ObjectFactory，在初始化你的 ObjectFactory 实例后， objectFactory 元素体中定义的属性会被传递给 setProperties 方法。</p></blockquote><h5 id=插件plugins>插件（plugins）</h5><p>这是mybatis一个很强大的机制，他可以拦截mybatis的4大对象：我会在后面单独分析</p><blockquote><p>MyBatis 允许你在已映射语句执行过程中的某一点进行拦截调用。默认情况下，MyBatis 允许使用插件来拦截的方法调用包括：</p></blockquote><p>{% raw %}</p><table><tr><th width=20%>类/接口</th><th width=80%>方法</th></tr><tr><td>Executor</td><td>update, query, flushStatements, commit, rollback, getTransaction, close, isClosed</td></tr><tr><td>ParameterHandler</td><td>getParameterObject, setParameters</td></tr><tr><td>ResultSetHandler</td><td>handleResultSets, handleOutputParameters</td></tr><tr><td>StatementHandler</td><td>prepare, parameterize, batch, update, query</td></tr></table>{% endraw %}<h5 id=环境配置environments>环境配置（environments）</h5><p><font color=red>一个 environment 标签就是一个数据源，代表一个数据库。这里面有两个关键的标签，一个是事务管理器，一个是数据源。</font>
+这也就是Mybatis多数据源多重数据库配置的标签。</p><h6 id=transactionmanager>transactionManager</h6><p>如果配置的是 JDBC，则会使用 Connection 对象的 commit()、rollback()、close()管理事务。
+如果配置成 MANAGED，会把事务交给容器来管理，比如 JBOSS，Weblogic。因为我们跑的是本地程序，如果配置成 MANAGE 不会有任何事务。
+如果是Spring + MyBatis,则没有必要配置,因为我们会直接在上下文里面配置数据源，覆盖 MyBatis 的配置；用到spring 的事务来管理。</p><h6 id=datasource>dataSource</h6><p>我们项目一般是集成spring的所以这个到时候数据源和事务都会交给spring来管理。</p><h5 id=数据库厂商标识databaseidprovider>数据库厂商标识（databaseIdProvider）</h5><p>为了支持多数据库</p><h5 id=映射器mappers>映射器（mappers）</h5><p>这是让mybatis启动的时候去扫描我们配置的mapper.xml文件。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>cache – 给定命名空间的缓存配置（是否开启二级缓存）。
+cache-ref – 其他命名空间缓存配置的引用。这两个标签我准备缓存的时候会详细写。
+resultMap - 是最复杂也是最强大的元素，用来描述如何从数据库结果集中来加载对象。
+sql – 可被其他语句引用的可重用语句块
+insert – 映射插入语句
+update – 映射更新语句
+delete – 映射删除语句
+select – 映射查询语句
+</code></pre></td></tr></table></div></div><p>resultMap与resultType</p><blockquote><p>其实mybatis查询出来的数据都是通过map的方式赋值的，而resultType就是对应的类型；resultMap是我们自定义的类型，一般用于对象不确定或者对应字段需要自定义的时候。</p></blockquote><h5 id=总结>总结</h5><p>{% raw %}</p><table><tr><th width=20%>配置名称</th><th width=20%>配置含义</th><th width=60%>配置简介</th></tr><tr><td>configuration</td><td>包裹所有配置标签</td><td>整个配置文件的顶级标签</td></tr><tr><td>properties</td><td>属性</td><td>该标签可以引入外部配置的属性，也可以自己配置。该配置标签所在的同一个配置文件的其他配置均可以引用此配置中的属性</td></tr><tr><td>setting</td><td>全局配置参数</td><td>用来配置一些改变运行时行为的信息，例如是否使用缓存机制，是否使用延迟加载，是否使用错误处理机制等。</td></tr><tr><td>typeAliases</td><td>类型别名</td><td>用来设置一些别名来代替 Java 的长类型声明（如 java.lang.int变为 int），减少配置编码的冗余</td></tr><tr><td>typeHandlers</td><td>类型处理器</td><td>将数据库获取的值以合适的方式转换为 Java 类型，或者将 Java类型的参数转换为数据库对应的类型</td></tr><tr><td>objectFactory</td><td>对象工厂</td><td>实例化目标类的工厂类配置</td></tr><tr><td>plugins</td><td>插件</td><td>可以通过插件修改 MyBatis 的核心行为，例如对语句执行的某一点进行拦截调用</td></tr><tr><td>environments</td><td>环境集合属性对象</td><td>数据库环境信息的集合。在一个配置文件中，可以有多种数据库环境集合，这样可以使 MyBatis 将 SQL 同时映射至多个数据库</td></tr><tr><td>environment</td><td>环境子属性对象</td><td>数据库环境配置的详细配置</td></tr><tr><td>transactionManager</td><td>事务管理</td><td>指定 MyBatis 的事务管理器</td></tr><tr><td>dataSource</td><td>数据源</td><td>使用其中的 type 指定数据源的连接类型，在标签对中可以使用property 属性指定数据库连接池的其他信息</td></tr><tr><td>mappers</td><td>映射器</td><td>配置 SQL 映射文件的位置，告知 MyBatis 去哪里加载 SQL 映射文件</td></tr></table>{% endraw %}<h4 id=动态sql>动态SQL</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>## if 判断
+## choose (when, otherwise)
+SELECT * FROM tbl_emp e
+&lt;where&gt;
+    &lt;choose&gt;
+        &lt;when test=&#34;empId !=null&#34;&gt;
+            e.emp_id = #{emp_id, jdbcType=INTEGER}
+        &lt;/when&gt;
+        &lt;otherwise&gt;
+         AND e.email = #{email, jdbcType=VARCHAR}
+        &lt;/otherwise&gt;
+    &lt;/choose&gt;
+&lt;/where&gt;
+类似于JAVA中的case when default
+## trim (where, set) 
+去处一些多余的符号的，比如拼接insert语句时最后一个逗号；
+&lt;trim prefix=&#34;(&#34; suffix=&#34;)&#34; suffixOverrides=&#34;,&#34;&gt;
+    &lt;if test=&#34;deptId != null&#34;&gt;
+        dept_id,
+    &lt;/if&gt;
+&lt;/trim&gt;
+foreach 循环
+</code></pre></td></tr></table></div></div><h3 id=批量操作>批量操作</h3><p>开发中批量插入肯定不能使用java 的循环来插入:增删改查批量同理主要是sql的组装。
+<font color=red>数据库默认接收数据包大小是4M(max_allowed_packet)所以如果批量过大，会报错</font></p><h4 id=foreach>foreach</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>insert into 表名(列名) values (插入的字段值),（插入的字段值），......
+</code></pre></td></tr></table></div></div><h4 id=使用batch-executor查询>使用Batch Executor查询</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>使用Batch Executor 需要开启setting里面的defaultExecutorType 里面有三个参数
+也可以在会话 SqlSession session = sqlSessionFactory.openSession(ExecutorType.BATCH);
+SIMPLE 默认 普通的sql 对应jdbc的statement
+REUSE 执行器会重用预处理语句对应jdbc PreparedStatement ------也就是说我们执行的sql 他会先缓存起来，要用的时候通过缓存拿
+BATCH 重用语句并执行批量更新
+</code></pre></td></tr></table></div></div><h5 id=statement与preparedstatement-的区别>statement与PreparedStatement 的区别</h5><ol><li>PreparedStatement对象不仅包含了SQL语句，而且大多数情况下这个语句已经被预编译过，因而当其执行时，只需应用程序运行SQL语句，而不必先编译。加快了访问数据库的速度。这种转换也给你带来很大的便利，不必重复SQL语句的句法，而只需更改其中变量的值，便可重新执行SQL语句。</li><li>PreparedStatement接口代表预编译的语句，它主要的优势在于可以减少SQL的编译错误并增加SQL的安全性（减少SQL注射攻击的可能性）因为Statement 接口不接受参数， PreparedStatement 接口运行时接受输入的参数<font color=red>这也就是$与#的区别</font></li><li>statement每次执行sql是需要编译的。</li></ol></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2019-05-02</span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/mybatis3%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/>Mybatis3源码分析</a></section><section><span><a href=javascript:void(0); onclick=window.history.back();>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/%E6%96%B9%E6%B3%95%E5%A4%96%E5%AF%B9%E8%B1%A1%E5%9C%B0%E5%9D%80%E4%BA%A4%E6%8D%A2/ class=prev rel=prev title=方法外对象地址交换><i class="fas fa-angle-left fa-fw"></i>方法外对象地址交换</a>
+<a href=/mybatis3%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%902%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B8%8E%E7%BC%93%E5%AD%98/ class=next rel=next title=Mybatis3源码分析(2)体系结构与缓存>Mybatis3源码分析(2)体系结构与缓存<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments><div id=valine class=comment></div><noscript>Please enable JavaScript to view the comments powered by <a href=https://valine.js.org/>Valine</a>.</noscript></div></article></div></main><script src=https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css><script src=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js></script><footer class=footer><div class=footer-container><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2018 - 2021</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>yakax</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i></a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=/lib/valine/valine.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/typeit@7.0.4/dist/typeit.min.js></script><script type=text/javascript>window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{"valine":{"appId":"oIoCMPOVr3i61isIop1jPYdP-gzGzoHsz","appKey":"IluQB7WNkIfKRAtgW35kEB7H","avatar":"mp","el":"#valine","emojiCDN":"https://cdn.jsdelivr.net/npm/emoji-datasource-google@5.0.1/img/google/64/","emojiMaps":{"100":"1f4af.png","alien":"1f47d.png","anger":"1f4a2.png","angry":"1f620.png","anguished":"1f627.png","astonished":"1f632.png","black_heart":"1f5a4.png","blue_heart":"1f499.png","blush":"1f60a.png","bomb":"1f4a3.png","boom":"1f4a5.png","broken_heart":"1f494.png","brown_heart":"1f90e.png","clown_face":"1f921.png","cold_face":"1f976.png","cold_sweat":"1f630.png","confounded":"1f616.png","confused":"1f615.png","cry":"1f622.png","crying_cat_face":"1f63f.png","cupid":"1f498.png","dash":"1f4a8.png","disappointed":"1f61e.png","disappointed_relieved":"1f625.png","dizzy":"1f4ab.png","dizzy_face":"1f635.png","drooling_face":"1f924.png","exploding_head":"1f92f.png","expressionless":"1f611.png","face_vomiting":"1f92e.png","face_with_cowboy_hat":"1f920.png","face_with_hand_over_mouth":"1f92d.png","face_with_head_bandage":"1f915.png","face_with_monocle":"1f9d0.png","face_with_raised_eyebrow":"1f928.png","face_with_rolling_eyes":"1f644.png","face_with_symbols_on_mouth":"1f92c.png","face_with_thermometer":"1f912.png","fearful":"1f628.png","flushed":"1f633.png","frowning":"1f626.png","ghost":"1f47b.png","gift_heart":"1f49d.png","green_heart":"1f49a.png","grimacing":"1f62c.png","grin":"1f601.png","grinning":"1f600.png","hankey":"1f4a9.png","hear_no_evil":"1f649.png","heart":"2764-fe0f.png","heart_decoration":"1f49f.png","heart_eyes":"1f60d.png","heart_eyes_cat":"1f63b.png","heartbeat":"1f493.png","heartpulse":"1f497.png","heavy_heart_exclamation_mark_ornament":"2763-fe0f.png","hole":"1f573-fe0f.png","hot_face":"1f975.png","hugging_face":"1f917.png","hushed":"1f62f.png","imp":"1f47f.png","innocent":"1f607.png","japanese_goblin":"1f47a.png","japanese_ogre":"1f479.png","joy":"1f602.png","joy_cat":"1f639.png","kiss":"1f48b.png","kissing":"1f617.png","kissing_cat":"1f63d.png","kissing_closed_eyes":"1f61a.png","kissing_heart":"1f618.png","kissing_smiling_eyes":"1f619.png","laughing":"1f606.png","left_speech_bubble":"1f5e8-fe0f.png","love_letter":"1f48c.png","lying_face":"1f925.png","mask":"1f637.png","money_mouth_face":"1f911.png","nauseated_face":"1f922.png","nerd_face":"1f913.png","neutral_face":"1f610.png","no_mouth":"1f636.png","open_mouth":"1f62e.png","orange_heart":"1f9e1.png","partying_face":"1f973.png","pensive":"1f614.png","persevere":"1f623.png","pleading_face":"1f97a.png","pouting_cat":"1f63e.png","purple_heart":"1f49c.png","rage":"1f621.png","relaxed":"263a-fe0f.png","relieved":"1f60c.png","revolving_hearts":"1f49e.png","right_anger_bubble":"1f5ef-fe0f.png","robot_face":"1f916.png","rolling_on_the_floor_laughing":"1f923.png","scream":"1f631.png","scream_cat":"1f640.png","see_no_evil":"1f648.png","shushing_face":"1f92b.png","skull":"1f480.png","skull_and_crossbones":"2620-fe0f.png","sleeping":"1f634.png","sleepy":"1f62a.png","slightly_frowning_face":"1f641.png","slightly_smiling_face":"1f642.png","smile":"1f604.png","smile_cat":"1f638.png","smiley":"1f603.png","smiley_cat":"1f63a.png","smiling_face_with_3_hearts":"1f970.png","smiling_imp":"1f608.png","smirk":"1f60f.png","smirk_cat":"1f63c.png","sneezing_face":"1f927.png","sob":"1f62d.png","space_invader":"1f47e.png","sparkling_heart":"1f496.png","speak_no_evil":"1f64a.png","speech_balloon":"1f4ac.png","star-struck":"1f929.png","stuck_out_tongue":"1f61b.png","stuck_out_tongue_closed_eyes":"1f61d.png","stuck_out_tongue_winking_eye":"1f61c.png","sunglasses":"1f60e.png","sweat":"1f613.png","sweat_drops":"1f4a6.png","sweat_smile":"1f605.png","thinking_face":"1f914.png","thought_balloon":"1f4ad.png","tired_face":"1f62b.png","triumph":"1f624.png","two_hearts":"1f495.png","unamused":"1f612.png","upside_down_face":"1f643.png","weary":"1f629.png","white_frowning_face":"2639-fe0f.png","white_heart":"1f90d.png","wink":"1f609.png","woozy_face":"1f974.png","worried":"1f61f.png","yawning_face":"1f971.png","yellow_heart":"1f49b.png","yum":"1f60b.png","zany_face":"1f92a.png","zipper_mouth_face":"1f910.png","zzz":"1f4a4.png"},"enableQQ":false,"highlight":true,"lang":"zh-cn","pageSize":10,"placeholder":"来都来了，说两句把。 支持MD","recordIP":true,"visitor":true}},"data":{"id-1":"yakax.blog","id-2":"yakax.blog"},"lightGallery":{"actualSize":false,"exThumbImage":"data-thumbnail","hideBarsDelay":2000,"selector":".lightgallery","speed":400,"thumbContHeight":80,"thumbWidth":80,"thumbnail":true},"search":{"algoliaAppID":"XQCZLRU4IH","algoliaIndex":"blog","algoliaSearchKey":"2850ce47940fd2479113f229a321fa9d","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":150,"type":"algolia"},"typeit":{"cursorChar":"_","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":200}};</script><script type=text/javascript src=/js/theme.min.js></script></body></html>

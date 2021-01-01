@@ -1,0 +1,67 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>抽象工厂模式 - 标签 - yakax</title><link>https://yakax.github.io/tags/%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/</link><description>抽象工厂模式 - 标签 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 10 Jan 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.github.io/tags/%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/" rel="self" type="application/rss+xml"/><item><title>抽象工厂模式</title><link>https://yakax.github.io/%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/</link><pubDate>Thu, 10 Jan 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/</guid><description><![CDATA[<blockquote>
+<p>因为抽象工厂模式在spring中用的比较多，例如spring的心脏BeanFactory就是利用抽象工厂模式来管理bean的。最主要的就是把具体功能抽象出来</p>
+</blockquote>
+<h4 id="上代码">上代码</h4>
+<p>先建立产品的接口方法类</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">/**
+ * 定义一个牛奶的接口
+ */
+public interface Milk {
+    String getName();
+}
+</code></pre></td></tr></table>
+</div>
+</div><p>产品实现功能</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">/**
+ * 伊利产品
+ */
+public class Erie implements Milk {
+    @Override
+    public String getName() {
+        return &#34;伊利&#34;;
+    }
+}
+/**
+ * 蒙牛产品
+ */
+public class Mengniu implements Milk {
+    @Override
+    public String getName() {
+        return &#34;蒙牛&#34;;
+    }
+}
+</code></pre></td></tr></table>
+</div>
+</div>]]></description></item></channel></rss>

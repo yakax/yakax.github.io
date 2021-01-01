@@ -1,0 +1,130 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>云原生 - 分类 - yakax</title><link>https://yakax.github.io/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/</link><description>云原生 - 分类 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 24 Jul 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.github.io/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/" rel="self" type="application/rss+xml"/><item><title>Docker分布式部署zookeeper集群</title><link>https://yakax.github.io/docker%E5%88%86%E5%B8%83%E5%BC%8F%E9%83%A8%E7%BD%B2zookeeper%E9%9B%86%E7%BE%A4/</link><pubDate>Wed, 24 Jul 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/docker%E5%88%86%E5%B8%83%E5%BC%8F%E9%83%A8%E7%BD%B2zookeeper%E9%9B%86%E7%BE%A4/</guid><description><![CDATA[<h4 id="准备">准备</h4>
+<ul>
+<li>3台机器</li>
+<li><a href="https://yakax.github.io/2018/11/05/%E5%AD%A6%E4%B9%A0docker%E5%B9%B6%E5%AE%89%E8%A3%85%E4%B8%80%E4%B8%AA%E8%87%AA%E5%90%AF%E5%8A%A8MySQL8/" target="_blank" rel="noopener noreffer">安装docker</a></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">HOST1: centos7.5 :172.16.217.135 zk1
+HOST2: centos7.5 :172.16.217.136 zk2
+HOST3: centos7.5 :172.16.217.137 zk3
+</code></pre></td></tr></table>
+</div>
+</div>]]></description></item><item><title>完整安装kubernetes集群环境(不需要科学上网)</title><link>https://yakax.github.io/%E5%AE%8C%E6%95%B4%E5%AE%89%E8%A3%85kubernetes%E9%9B%86%E7%BE%A4%E7%8E%AF%E5%A2%83%E4%B8%8D%E9%9C%80%E8%A6%81%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%BD%91/</link><pubDate>Mon, 14 Jan 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E5%AE%8C%E6%95%B4%E5%AE%89%E8%A3%85kubernetes%E9%9B%86%E7%BE%A4%E7%8E%AF%E5%A2%83%E4%B8%8D%E9%9C%80%E8%A6%81%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%BD%91/</guid><description><![CDATA[<h2 id="1准备基础环境">1.准备基础环境</h2>
+<p>我们将使用kubeadm部署3个节点的 Kubernetes Cluster</p>
+<p><strong>节点详细信息：</strong></p>
+<table>
+<thead>
+<tr>
+<th>节点主机名</th>
+<th>节点IP</th>
+<th>节点角色</th>
+<th>操作系统</th>
+<th>节点配置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>k8s-master</td>
+<td>192.168.217.131</td>
+<td>master</td>
+<td>CentOS7.6</td>
+<td>2C4G</td>
+</tr>
+<tr>
+<td>k8s-node1</td>
+<td>192.168.217.132</td>
+<td>node</td>
+<td>CentOS7.6</td>
+<td>2C4G</td>
+</tr>
+<tr>
+<td>k8s-node2</td>
+<td>192.168.217.133</td>
+<td>node</td>
+<td>CentOS7.6</td>
+<td>2C4G</td>
+</tr>
+</tbody>
+</table>
+<p><strong>节点组件分布：</strong>
+Master 和 Node 节点由于分工不一样，所以安装的服务不同，最终安装完毕，Master 和 Node 启动的核心服务分别如下：</p>
+<table>
+<thead>
+<tr>
+<th>Master节点</th>
+<th>Node节点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>kube-apiserver</td>
+<td>kube-flannel</td>
+</tr>
+<tr>
+<td>kube-scheduler</td>
+<td>other apps</td>
+</tr>
+<tr>
+<td>kube-proxy</td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td>etcd</td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td>coredns</td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td>kube-flannel</td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td>无特殊说明以下操作在所有节点执行：</td>
+<td></td>
+</tr>
+</tbody>
+</table>]]></description></item><item><title>学习docker常用命令</title><link>https://yakax.github.io/%E5%AD%A6%E4%B9%A0docker%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</link><pubDate>Wed, 02 Jan 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E5%AD%A6%E4%B9%A0docker%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</guid><description><![CDATA[<p><a href="https://yakax.github.io/2018/11/05/%E5%AD%A6%E4%B9%A0docker%E5%B9%B6%E5%AE%89%E8%A3%85%E4%B8%80%E4%B8%AA%E8%87%AA%E5%90%AF%E5%8A%A8MySQL8/" target="_blank" rel="noopener noreffer">docker的配置安装</a></p>
+<h4 id="基本命令">基本命令</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">docker info  docker基本信息
+docker --help  帮助信息 比如docker search --help 这样就可以查看search语法
+docker version  docker版本号
+docker images  显示镜像
+docker search 镜像名  搜索docker镜像
+docker pull 镜像名  拉取镜像到本地
+docker rmi 镜像id 删除镜像
+</code></pre></td></tr></table>
+</div>
+</div>]]></description></item><item><title>初入学习git</title><link>https://yakax.github.io/%E5%88%9D%E5%85%A5%E5%AD%A6%E4%B9%A0git/</link><pubDate>Mon, 17 Dec 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E5%88%9D%E5%85%A5%E5%AD%A6%E4%B9%A0git/</guid><description><![CDATA[<h4 id="git与svn的区别">git与svn的区别</h4>
+<ol>
+<li>首先核心的点就是git是分布式的，而svn不是分布式的</li>
+<li>git中每一个开发人员的电脑上都有一个Local Repository,所以即使没有网络也一样可以Commit，查看历史版本记录，创建项 目分支等操作，等网络再次连接上Push到Server端；这也就是为什么git适合分布式的原因。</li>
+<li>svn相当于知识在本地拷贝了一份服务器上的代码，本地需要看日志记录是需要联网。</li>
+<li>svn比较简单只是需要一个放代码的地方拿下来用就ok。这种属于集中式的代码管理。</li>
+</ol>]]></description></item><item><title>自启动docker并安装自启动镜像MySQL8</title><link>https://yakax.github.io/%E5%AD%A6%E4%B9%A0docker%E5%B9%B6%E5%AE%89%E8%A3%85%E4%B8%80%E4%B8%AA%E8%87%AA%E5%90%AF%E5%8A%A8mysql8/</link><pubDate>Mon, 05 Nov 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E5%AD%A6%E4%B9%A0docker%E5%B9%B6%E5%AE%89%E8%A3%85%E4%B8%80%E4%B8%AA%E8%87%AA%E5%90%AF%E5%8A%A8mysql8/</guid><description><![CDATA[<p><strong>因为在10月15号换了新工作，入职了半月左右，这半月时间一直在搞前端的ts和angular，再加上在忙着自考，后端的代码一直没有碰，正好这周在家时间就圆一下我的好奇心去搞一搞docker，顺便把我ss的服务器利用一下做一个MySQL在上面，后期会上点项目上去；</strong></p>
+<h4 id="以后服务器就安装一个docker就行了">以后服务器就安装一个Docker就行了</h4>
+<ol>
+<li>本次采用的是Centos7.5版本的Linux系统，镜像是<a href="https://opsx.alibaba.com/" target="_blank" rel="noopener noreffer">阿里云</a>下载的DVD版本；（因为Docker需要内核3版本以上的Linux）；
+<a data-fancybox="gallery" href="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2018-11-5/1.png">
+    
+</a></li>
+<li>执行一键安装脚本</li>
+</ol>]]></description></item></channel></rss>

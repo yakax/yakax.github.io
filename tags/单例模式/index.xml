@@ -1,0 +1,27 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>单例模式 - 标签 - yakax</title><link>https://yakax.github.io/tags/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/</link><description>单例模式 - 标签 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 14 Nov 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.github.io/tags/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/" rel="self" type="application/rss+xml"/><item><title>单例设计模式</title><link>https://yakax.github.io/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/</link><pubDate>Wed, 14 Nov 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/</guid><description><![CDATA[<h4 id="单例的好处">单例的好处</h4>
+<p>单例模式的初衷就是为了使资源能够共享，只需要赋值或者初始化一次，大家都能够重复利用。
+一个类Class只有一个实例存在。 使用Singleton的好处还在于可以节省内存，因为它限制了实例的个数，有利于Java垃圾回收；常见的单例有枚举常量类、IOC容器、配置项等等。</p>
+<h4 id="普通单例模式-饿汉式">普通单例模式-饿汉式</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">public class Singleton {
+    private static Singleton singleton = new Singleton();
+    private Singleton() {
+    }
+    public static Singleton getInstance() {
+        return singleton;
+    }
+}
+</code></pre></td></tr></table>
+</div>
+</div><p>饿汉式单例，就是一个私有的构造方法加一个私有的静态当前类实例对象和一个公有的静态获取实例方法组成由于类实例对象为静态变量，所以在加载类的时候我们就会创建类的实例对象，这样的话比较消耗内存，浪费性能。</p>]]></description></item></channel></rss>

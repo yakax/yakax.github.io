@@ -1,0 +1,182 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>MySQL性能调优(3)查询优化详解 - yakax</title><meta name=Description content><meta property="og:title" content="MySQL性能调优(3)查询优化详解"><meta property="og:description" content="查询执行路径
+
+##### MySQL 客户端/服务端通信
+- MySQL客户端与服务端的通信方式是“半双工”;
+- 客户端一旦开始发送消息，另一端要接收完整个消息才能响应。客户端一旦开始接收数据没法停下来发送指令。
+- 对于一个MySQL连接，或者说一个线程，时刻都有一个状态来标识这个连接正在做什么
+- 查看命令 show full processlist / show processlist
+我正在通过navicat向虚拟机里面的数据库导入数据
+
+```
+Sleep 线程正在等待客户端发送数据
+Query 连接线程正在执行查询
+Locked 线程正在等待表锁的释放
+Sorting result 线程正在对结果进行排序
+Sending data 向请求端返回数据
+可通过kill {id}的方式进行连接的杀掉
+```
+[官网状态全集](https://dev.mysql.com/doc/refman/8.0/en/general-thread-states.html)
+查询缓存
+
+前话：为什么MySQL默认关闭了缓存开启？？
+
+
+MySQL 8.0不支持查询缓存，用户升级后将被鼓励使用服务器端查询重写或ProxySQL作为中间缓存。"><meta property="og:type" content="article"><meta property="og:url" content="https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%983%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96%E8%AF%A6%E8%A7%A3/"><meta property="og:image" content="https://yakax.github.io/images/1.png"><meta property="article:published_time" content="2018-12-06T00:00:00+00:00"><meta property="article:modified_time" content="2018-12-06T00:00:00+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://yakax.github.io/images/1.png"><meta name=twitter:title content="MySQL性能调优(3)查询优化详解"><meta name=twitter:description content="查询执行路径
+
+##### MySQL 客户端/服务端通信
+- MySQL客户端与服务端的通信方式是“半双工”;
+- 客户端一旦开始发送消息，另一端要接收完整个消息才能响应。客户端一旦开始接收数据没法停下来发送指令。
+- 对于一个MySQL连接，或者说一个线程，时刻都有一个状态来标识这个连接正在做什么
+- 查看命令 show full processlist / show processlist
+我正在通过navicat向虚拟机里面的数据库导入数据
+
+```
+Sleep 线程正在等待客户端发送数据
+Query 连接线程正在执行查询
+Locked 线程正在等待表锁的释放
+Sorting result 线程正在对结果进行排序
+Sending data 向请求端返回数据
+可通过kill {id}的方式进行连接的杀掉
+```
+[官网状态全集](https://dev.mysql.com/doc/refman/8.0/en/general-thread-states.html)
+查询缓存
+
+前话：为什么MySQL默认关闭了缓存开启？？
+
+
+MySQL 8.0不支持查询缓存，用户升级后将被鼓励使用服务器端查询重写或ProxySQL作为中间缓存。"><meta name=application-name content="yakax"><meta name=apple-mobile-web-app-title content="yakax"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:'==document.location.protocol?'https:':'http:')+"//widget.daovoice.io/widget/af744044.js","daovoice")
+daovoice('init',{app_id:"af744044"});daovoice('update');</script><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%983%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96%E8%AF%A6%E8%A7%A3/><link rel=prev href=https://yakax.github.io/idea%E4%B8%80%E5%AE%9A%E8%A6%81%E6%94%B9%E7%9A%84%E5%87%A0%E6%9D%A1%E9%85%8D%E7%BD%AE/><link rel=next href=https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%982%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E4%BB%8B%E7%BB%8D%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%8F%8A%E8%BF%90%E8%A1%8C%E6%9C%BA%E7%90%86/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"MySQL性能调优(3)查询优化详解","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/yakax.github.io\/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%983%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96%E8%AF%A6%E8%A7%A3\/"},"image":["https:\/\/yakax.github.io\/images\/avatar.png"],"genre":"posts","keywords":"MySQL","wordcount":3459,"url":"https:\/\/yakax.github.io\/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%983%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96%E8%AF%A6%E8%A7%A3\/","datePublished":"2018-12-06T00:00:00+00:00","dateModified":"2018-12-06T00:00:00+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"yakax","logo":"https:\/\/yakax.github.io\/images\/avatar.png"},"author":{"@type":"Person","name":"yakax"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':('auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark'))&&document.body.setAttribute('theme','dark');</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class="fas fa-crosshairs fa-sm"></i></span><span id=id-1 class=typeit></span></a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>所有文章 </a><a class=menu-item href=/tags/>标签 </a><a class=menu-item href=/categories/>分类 </a><a class=menu-item href=/about/>关于 </a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i></a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop><input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span></span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class="fas fa-crosshairs fa-sm"></i></span><span id=id-2 class=typeit></span></a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/>所有文章</a><a class=menu-item href=/tags/>标签</a><a class=menu-item href=/categories/>分类</a><a class=menu-item href=/about/>关于</a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">MySQL性能调优(3)查询优化详解</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>yakax</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/><i class="far fa-folder fa-fw"></i>MySQL性能调优</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2018-12-06>2018-12-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3459 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 7 分钟&nbsp;<span id=/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%983%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96%E8%AF%A6%E8%A7%A3/ class=leancloud_visitors data-flag-title=MySQL性能调优(3)查询优化详解>
+<i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
+</span>&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><ul><li><ul><li><a href=#查询执行路径>查询执行路径</a><ul><li><a href=#查询缓存>查询缓存</a><ul><li><a href=#下面是了解缓存应该知道的知识>下面是了解缓存应该知道的知识：</a></li></ul></li></ul></li><li><a href=#查询优化处理>查询优化处理</a><ul><li><a href=#如何找到最优执行计划>如何找到最优执行计划</a></li></ul></li><li><a href=#查询执行引擎>查询执行引擎</a><ul><li><a href=#执行计划顺序>执行计划顺序</a></li><li><a href=#查询类型select_type>查询类型select_type</a></li><li><a href=#执行计划table>执行计划table</a></li><li><a href=#执行计划type>执行计划type</a></li><li><a href=#其他关键字>其他关键字</a></li><li><a href=#额外信息extra>额外信息Extra</a></li><li><a href=#分析一个组合查询>分析一个组合查询</a></li></ul></li><li><a href=#执行引擎>执行引擎</a></li><li><a href=#返回客户端>返回客户端</a></li><li><a href=#慢查询日志>慢查询日志</a><ul><li><a href=#慢日志文件查看>慢日志文件查看</a></li><li><a href=#mysql自带的分析工具>MySQL自带的分析工具</a></li></ul></li></ul></li></ul></li></ul></nav></div></div><div class=content id=content><h4 id=查询执行路径>查询执行路径</h4><img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/15.png>
+##### MySQL 客户端/服务端通信
+- MySQL客户端与服务端的通信方式是“半双工”;
+- 客户端一旦开始发送消息，另一端要接收完整个消息才能响应。客户端一旦开始接收数据没法停下来发送指令。
+- 对于一个MySQL连接，或者说一个线程，时刻都有一个状态来标识这个连接正在做什么
+- 查看命令 show full processlist / show processlist
+我正在通过navicat向虚拟机里面的数据库导入数据
+<img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/16.png>
+```
+Sleep 线程正在等待客户端发送数据
+Query 连接线程正在执行查询
+Locked 线程正在等待表锁的释放
+Sorting result 线程正在对结果进行排序
+Sending data 向请求端返回数据
+可通过kill {id}的方式进行连接的杀掉
+```
+[官网状态全集](https://dev.mysql.com/doc/refman/8.0/en/general-thread-states.html)<h5 id=查询缓存>查询缓存</h5><ul><li>前话：为什么MySQL默认关闭了缓存开启？？</li></ul><blockquote><p><font color=red>MySQL 8.0不支持查询缓存，用户升级后将被鼓励使用服务器端查询重写或ProxySQL作为中间缓存。</font></p></blockquote><h6 id=下面是了解缓存应该知道的知识>下面是了解缓存应该知道的知识：</h6><ul><li>工作原理：</li></ul><blockquote><p>缓存SELECT操作的结果集和SQL语句；
+新的SELECT语句，先去查询缓存，判断是否存在可用的记录集；</p></blockquote><ul><li>判断标准：</li></ul><blockquote><p>与缓存的SQL语句，是否完全一样(包括语句内的空格)，区分大小写 (简单认为存储了一个key-value结构，key为sql，value为sql查询结果集)</p></blockquote><ul><li>不会缓存的情况<ul><li>当查询语句中有一些不确定的数据时，则不会被缓存。如包含函数NOW()，CURRENT_DATE()等类似的函数，或者用户自定义的函数，存储函数，用户变量等都不会被缓存</li><li>当查询的结果大于query_cache_limit(查询缓存返回行数)设置的值时，结果不会被缓存</li><li>对于InnoDB引擎来说，当一个语句在事务中修改了某个表，那么在这个事务提交之前，所有与这个表相关的查询都无法被缓存。因此长时间执行事务，会大大降低缓存命中率</li><li>查询的表是系统表</li><li>查询语句不涉及到表</li><li>当前表在之前做过其他增删改，这个表中其他数据做的缓存都会失效、</li></ul><blockquote><p>比如当前表中一行数据你做了缓存，表中其他数据更改了，也会影响这行数据的缓存失效。</p></blockquote></li></ul><h4 id=查询优化处理>查询优化处理</h4><ol><li>解析sql</li></ol><blockquote><p>通过lex词法分析,yacc语法分析将sql语句解析成解析树<a href=https://www.ibm.com/developerworks/cn/linux/sdk/lex/ target=_blank rel="noopener noreffer">学习连接</a></p></blockquote><ol start=2><li>预处理阶段</li></ol><blockquote><p>根据MySQL的语法的规则进一步检查解析树的合法性，如：检查数据的表和列是否存在，解析名字和别名的设置。还会进行权限的验证</p></blockquote><ol start=3><li>查询优化器</li></ol><blockquote><p>优化器的主要作用就是找到最优的执行计划</p></blockquote><h5 id=如何找到最优执行计划>如何找到最优执行计划</h5><ul><li>使用等价变化规则</li></ul><blockquote><p>5 = 5 and a > 5 改写成 a > 5
+a &lt; b and a = 5 改写成 b > 5 and a = 5
+基于联合索引，调整条件位置等</p></blockquote><ul><li>优化count 、min、max等函数</li></ul><blockquote><p>min函数只需找索引最左边(因为innodb本身索引有序)
+max函数只需找索引最右边(因为innodb本身索引有序)
+<img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/17.png>
+myisam引擎count(*)</p></blockquote><ul><li>覆盖索引扫描</li></ul><blockquote><p>比如你查询返回的字段命中了索引，他就会直接返回数据：这里我给uname建立了索引
+<img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/18.png></p></blockquote><ul><li>子查询优化（我们做优化的话：最好就是把子查询改成连接查询）</li></ul><blockquote><p>子查询合并。即把多个子查询合并成一个子查询，作用是减少元组扫描的次数
+子查询反嵌套。也称作子查询上拉，即将子查询重写为等价的多表连接
+聚集子查询消除。即聚集函数上推，将消除聚集函数的子查询与父查询做外连接</p></blockquote><ul><li>提前终止查询
+用了limit关键字(他就索引limit长度的数据)或者使用不存在的条件;</li><li>IN的优化</li></ul><blockquote><p>先进性排序，再采用二分查找的方式;
+在条件多的情况下，or还是会一个个去扫描判断，而in他会先找到中间的在判断;再根据大小判断。这样就会减少多余的扫描。</p></blockquote><p><font color=blue>MySQL的查询优化器是基于成本计算的原则。他会尝试各种执行计划。数据抽样的方式进行试验（随机的读取一个4K的数据块进行分析）</font></p><h4 id=查询执行引擎>查询执行引擎</h4><h5 id=执行计划顺序>执行计划顺序</h5><p>select查询的序列号，标识执行的顺序</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>1. id相同是相当于一组，执行顺序由上至下
+2. id不同，如果是子查询，id的序号会递增，id值越大优先级越高，越先被执行
+3. id相同又不同即两种情况同时存在，id如果相同，可以认为是一组，从上往下顺序执行；在所有组中，id值越大，优先级越高，越先执行
+</code></pre></td></tr></table></div></div><h5 id=查询类型select_type>查询类型select_type</h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>查询的类型，主要是用于区分普通查询、联合查询、子查询等
+SIMPLE：简单的select查询，查询中不包含子查询或者union
+PRIMARY：查询中包含子部分，最外层查询则被标记为primary
+SUBQUERY/MATERIALIZED：SUBQUERY表示在select 或 where列表中包含了子查询
+MATERIALIZED表示where 后面in条件的子查询
+UNION：若第二个select出现在union之后，则被标记为union
+UNION RESULT：从union表获取结果的select
+</code></pre></td></tr></table></div></div><h5 id=执行计划table>执行计划table</h5><p>查询涉及到的表,直接显示表名或者表的别名</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>&lt;unionM,N&gt; 由ID为M,N 查询union产生的结果
+&lt;subqueyN&gt; 由ID为N查询生产的结果
+</code></pre></td></tr></table></div></div><h5 id=执行计划type>执行计划type</h5><p><font color=red>所以优化得至少在range及以上</font></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>访问类型，sql查询优化中一个很重要的指标，结果值从好到坏依次是：system &gt; const &gt; eq_ref &gt; ref &gt; range &gt; index &gt; ALL
+system：表只有一行记录（等于系统表），const类型的特例，基本不会出现，可以忽略不计
+const：表示通过索引一次就找到了，const用于比较primary key 或者 unique索引
+eq_ref：唯一索引扫描，对于每个索引键，表中只有一条记录与之匹配。常见于主键 或 唯一索引扫描
+ref：非唯一性索引扫描，返回匹配某个单独值的所有行，本质是也是一种索引访问
+range：只检索给定&lt;font color=red&gt;范围&lt;/font&gt;的行，使用一个索引来选择行
+index：Full Index Scan，索引全表扫描，把索引从头到尾扫一遍
+ALL：Full Table Scan，遍历全表以找到匹配的行
+</code></pre></td></tr></table></div></div><h5 id=其他关键字>其他关键字</h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>possible_keys:查询过程中有可能用到的索引
+key:实际使用的索引，如果为NULL，则没有使用索引 
+rows:根据表统计信息或者索引选用情况，大致估算出找到所需的记录所需要读取的行数
+filtered:它指返回结果的行占需要读到的行(rows列的值)的百分比表示返回结果的行数占需读取行数的百分比,filtered的值越大越好
+</code></pre></td></tr></table></div></div><h5 id=额外信息extra>额外信息Extra</h5><ol><li>Using filesort ：</li></ol><blockquote><p>MySQL对数据使用一个外部的文件内容进行了排序，而不是按照表内的索引进行排序读取</p></blockquote><ol start=2><li>Using temporary：</li></ol><blockquote><p>使用临时表保存中间结果，也就是说MySQL在对查询结果排序时使用了临时表，常见于order by 或 group by但是innodb用id排序分组是不会出现临时表的。</p></blockquote><ol start=3><li>Using index：</li></ol><blockquote><p>表示相应的select操作中使用了覆盖索引（Covering Index），避免了访问表的数据行，效率高</p></blockquote><ol start=4><li>Using where ：</li></ol><blockquote><p>使用了where过滤条件</p></blockquote><ol start=5><li>select tables optimized away：</li></ol><blockquote><p>基于索引优化MIN/MAX操作或者MyISAM存储引擎优化COUNT(*)操作，不必等到执行阶段在进行计算，查询执行计划生成的阶段即可完成优化</p></blockquote><h5 id=分析一个组合查询>分析一个组合查询</h5><p><img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/19.png></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>这条语句就是把两个子查询查出来再结合
+这里有个特殊情况：id等于null那个是最后执行的，因为他需要的到其他查询结果结合。
+//--------------------------------
+1. 这里就看id最大的4：select_type是subquery说明是子查询；type为ref非唯一性索引扫描；用到了id和address索引。
+2. id为3的开始执行，select_type为union说明第二个select出现在union之后，则被标记为union；
+3. id等于2和id等于1就是之前的子查询与查询；并且用到了主键索引。
+4. 然后最后再把1和3合并；这里可以看出组合查询使用到了临时表。
+</code></pre></td></tr></table></div></div><h4 id=执行引擎>执行引擎</h4><p>调用插件式的存储引擎的原子API的功能进行执行计划的执行</p><h4 id=返回客户端>返回客户端</h4><p>增量的返回结果：</p><blockquote><p>开始生成第一条结果时,MySQL就开始往请求方逐步返回数据
+好处： MySQL服务器无须保存过多的数据，浪费内存用户体验好，马上就拿到了数据</p></blockquote><h4 id=慢查询日志>慢查询日志</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>// 查看是否打开慢查询日志
+show variables like &#39;slow_query_log&#39;
+// 打开慢查询日志
+set global slow_query_log = on
+//  保存日志位置
+set global slow_query_log_file =&#39;/var/lib/mysql/gupaoedu-slow.log&#39;
+ // 没有命中索引的都保存
+set global log_queries_not_using_indexes = on
+// 超过多少秒记录日志
+set global long_query_time = 0.1 (秒)
+//查看是否开启
+show variables like &#39;slow_query%&#39;;
+</code></pre></td></tr></table></div></div><h5 id=慢日志文件查看>慢日志文件查看</h5><p><img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/20.png></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>Time ：日志记录的时间
+User@Host：执行的用户及主机
+Query_time：查询耗费时间 Lock_time 锁表时间 Rows_sent发送给请求方的记录条数 Rows_examined 语句扫描的记录条数
+SET timestamp 语句执行的时间点
+select .... 执行的具体语句
+</code></pre></td></tr></table></div></div><h5 id=mysql自带的分析工具>MySQL自带的分析工具</h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>mysqldumpslow -t 10 -s at /var/lib/mysql/gupaoedu-slow.log
+</code></pre></td></tr></table></div></div><p><img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/21.png></p></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2018-12-06</span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/mysql/>MySQL</a></section><section><span><a href=javascript:void(0); onclick=window.history.back();>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/idea%E4%B8%80%E5%AE%9A%E8%A6%81%E6%94%B9%E7%9A%84%E5%87%A0%E6%9D%A1%E9%85%8D%E7%BD%AE/ class=prev rel=prev title=IDEA一定要改的几条配置><i class="fas fa-angle-left fa-fw"></i>IDEA一定要改的几条配置</a>
+<a href=/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%982%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E4%BB%8B%E7%BB%8D%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%8F%8A%E8%BF%90%E8%A1%8C%E6%9C%BA%E7%90%86/ class=next rel=next title=MySQL性能调优(2)存储引擎介绍、体系结构及运行机理>MySQL性能调优(2)存储引擎介绍、体系结构及运行机理<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments><div id=valine class=comment></div><noscript>Please enable JavaScript to view the comments powered by <a href=https://valine.js.org/>Valine</a>.</noscript></div></article></div></main><script src=https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css><script src=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js></script><footer class=footer><div class=footer-container><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2018 - 2021</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>yakax</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i></a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=/lib/valine/valine.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/typeit@7.0.4/dist/typeit.min.js></script><script type=text/javascript>window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{"valine":{"appId":"oIoCMPOVr3i61isIop1jPYdP-gzGzoHsz","appKey":"IluQB7WNkIfKRAtgW35kEB7H","avatar":"mp","el":"#valine","emojiCDN":"https://cdn.jsdelivr.net/npm/emoji-datasource-google@5.0.1/img/google/64/","emojiMaps":{"100":"1f4af.png","alien":"1f47d.png","anger":"1f4a2.png","angry":"1f620.png","anguished":"1f627.png","astonished":"1f632.png","black_heart":"1f5a4.png","blue_heart":"1f499.png","blush":"1f60a.png","bomb":"1f4a3.png","boom":"1f4a5.png","broken_heart":"1f494.png","brown_heart":"1f90e.png","clown_face":"1f921.png","cold_face":"1f976.png","cold_sweat":"1f630.png","confounded":"1f616.png","confused":"1f615.png","cry":"1f622.png","crying_cat_face":"1f63f.png","cupid":"1f498.png","dash":"1f4a8.png","disappointed":"1f61e.png","disappointed_relieved":"1f625.png","dizzy":"1f4ab.png","dizzy_face":"1f635.png","drooling_face":"1f924.png","exploding_head":"1f92f.png","expressionless":"1f611.png","face_vomiting":"1f92e.png","face_with_cowboy_hat":"1f920.png","face_with_hand_over_mouth":"1f92d.png","face_with_head_bandage":"1f915.png","face_with_monocle":"1f9d0.png","face_with_raised_eyebrow":"1f928.png","face_with_rolling_eyes":"1f644.png","face_with_symbols_on_mouth":"1f92c.png","face_with_thermometer":"1f912.png","fearful":"1f628.png","flushed":"1f633.png","frowning":"1f626.png","ghost":"1f47b.png","gift_heart":"1f49d.png","green_heart":"1f49a.png","grimacing":"1f62c.png","grin":"1f601.png","grinning":"1f600.png","hankey":"1f4a9.png","hear_no_evil":"1f649.png","heart":"2764-fe0f.png","heart_decoration":"1f49f.png","heart_eyes":"1f60d.png","heart_eyes_cat":"1f63b.png","heartbeat":"1f493.png","heartpulse":"1f497.png","heavy_heart_exclamation_mark_ornament":"2763-fe0f.png","hole":"1f573-fe0f.png","hot_face":"1f975.png","hugging_face":"1f917.png","hushed":"1f62f.png","imp":"1f47f.png","innocent":"1f607.png","japanese_goblin":"1f47a.png","japanese_ogre":"1f479.png","joy":"1f602.png","joy_cat":"1f639.png","kiss":"1f48b.png","kissing":"1f617.png","kissing_cat":"1f63d.png","kissing_closed_eyes":"1f61a.png","kissing_heart":"1f618.png","kissing_smiling_eyes":"1f619.png","laughing":"1f606.png","left_speech_bubble":"1f5e8-fe0f.png","love_letter":"1f48c.png","lying_face":"1f925.png","mask":"1f637.png","money_mouth_face":"1f911.png","nauseated_face":"1f922.png","nerd_face":"1f913.png","neutral_face":"1f610.png","no_mouth":"1f636.png","open_mouth":"1f62e.png","orange_heart":"1f9e1.png","partying_face":"1f973.png","pensive":"1f614.png","persevere":"1f623.png","pleading_face":"1f97a.png","pouting_cat":"1f63e.png","purple_heart":"1f49c.png","rage":"1f621.png","relaxed":"263a-fe0f.png","relieved":"1f60c.png","revolving_hearts":"1f49e.png","right_anger_bubble":"1f5ef-fe0f.png","robot_face":"1f916.png","rolling_on_the_floor_laughing":"1f923.png","scream":"1f631.png","scream_cat":"1f640.png","see_no_evil":"1f648.png","shushing_face":"1f92b.png","skull":"1f480.png","skull_and_crossbones":"2620-fe0f.png","sleeping":"1f634.png","sleepy":"1f62a.png","slightly_frowning_face":"1f641.png","slightly_smiling_face":"1f642.png","smile":"1f604.png","smile_cat":"1f638.png","smiley":"1f603.png","smiley_cat":"1f63a.png","smiling_face_with_3_hearts":"1f970.png","smiling_imp":"1f608.png","smirk":"1f60f.png","smirk_cat":"1f63c.png","sneezing_face":"1f927.png","sob":"1f62d.png","space_invader":"1f47e.png","sparkling_heart":"1f496.png","speak_no_evil":"1f64a.png","speech_balloon":"1f4ac.png","star-struck":"1f929.png","stuck_out_tongue":"1f61b.png","stuck_out_tongue_closed_eyes":"1f61d.png","stuck_out_tongue_winking_eye":"1f61c.png","sunglasses":"1f60e.png","sweat":"1f613.png","sweat_drops":"1f4a6.png","sweat_smile":"1f605.png","thinking_face":"1f914.png","thought_balloon":"1f4ad.png","tired_face":"1f62b.png","triumph":"1f624.png","two_hearts":"1f495.png","unamused":"1f612.png","upside_down_face":"1f643.png","weary":"1f629.png","white_frowning_face":"2639-fe0f.png","white_heart":"1f90d.png","wink":"1f609.png","woozy_face":"1f974.png","worried":"1f61f.png","yawning_face":"1f971.png","yellow_heart":"1f49b.png","yum":"1f60b.png","zany_face":"1f92a.png","zipper_mouth_face":"1f910.png","zzz":"1f4a4.png"},"enableQQ":false,"highlight":true,"lang":"zh-cn","pageSize":10,"placeholder":"来都来了，说两句把。 支持MD","recordIP":true,"visitor":true}},"data":{"id-1":"yakax.blog","id-2":"yakax.blog"},"lightGallery":{"actualSize":false,"exThumbImage":"data-thumbnail","hideBarsDelay":2000,"selector":".lightgallery","speed":400,"thumbContHeight":80,"thumbWidth":80,"thumbnail":true},"search":{"algoliaAppID":"XQCZLRU4IH","algoliaIndex":"blog","algoliaSearchKey":"2850ce47940fd2479113f229a321fa9d","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":150,"type":"algolia"},"typeit":{"cursorChar":"_","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":200}};</script><script type=text/javascript src=/js/theme.min.js></script></body></html>

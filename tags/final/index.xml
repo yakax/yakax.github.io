@@ -1,0 +1,14 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>final - 标签 - yakax</title><link>https://yakax.github.io/tags/final/</link><description>final - 标签 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 29 Sep 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.github.io/tags/final/" rel="self" type="application/rss+xml"/><item><title>final、static、volatile、synchronized常见面试问题</title><link>https://yakax.github.io/final%E4%B8%8Estatic-%E5%B8%B8%E8%A7%81%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/</link><pubDate>Sat, 29 Sep 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/final%E4%B8%8Estatic-%E5%B8%B8%E8%A7%81%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/</guid><description><![CDATA[<p><strong>记住两点 final不可改变 static 静态全局.</strong></p>
+<h4 id="finalfinallyfinalize的区别">final、finally、finalize的区别</h4>
+<ol>
+<li>final 用于声明属性,方法和类, 分别表示属性<strong>不可变</strong>, 方法<strong>不可覆盖</strong>, 类<strong>不可继承</strong>.</li>
+<li>finally 是异常处理语句结构的一部分，表示总是执行.</li>
+<li>finalize 是Object类的一个方法，在垃圾收集器执行的时候会调用被回收对象的此方法，可以覆盖此方法提供垃圾收集时的其他资源回收，例如关闭文件等. JVM不保证此方法总被调用.</li>
+</ol>
+<h4 id="static关键字">Static关键字</h4>
+<blockquote>
+<p>static 关键字可以用来修饰类的变量，方法和 <strong>内部类</strong>。static 是静态的意思，也就它定义的东西是全局的意思，属于全局与类相关，不与具体实例相关。就是说它调用的时候，只是<strong>ClassName.method()</strong>,而不是 <strong>new ClassName().method()</strong>。new ClassName()不就是一个对象了吗？static 的变量和方法不可以这样调用的。它不与具体的实例有关。</p>
+</blockquote>
+<ul>
+<li>JAVA类首次装入时，会对静态成员变量或方法进行一次初始化分配内存空间,但方法不被调用是不会执行的。所以静态内部类在调用时才加载分配空间。仔细一想：静态内部类其实和外部类的静态变量，静态方法一样，只要被调用了都会让外部类的被加载。</li>
+</ul>]]></description></item></channel></rss>

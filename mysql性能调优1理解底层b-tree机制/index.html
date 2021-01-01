@@ -1,0 +1,139 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>MySQL性能调优(1)理解底层B+tree机制 - yakax</title><meta name=Description content><meta property="og:title" content="MySQL性能调优(1)理解底层B+tree机制"><meta property="og:description" content="索引是谁实现的
+
+索引是存储引擎实现的：
+本文章主要对MySQL常用的MyISAM与InnoDB这两个存储引擎做分析。
+
+索引是什么
+
+索引是为了加速对表中的数据行的检索而创建的一种分散存储的数据结构。
+
+
+为什么要用索引
+
+索引能极大的减少存储引擎需要扫描的数据量。(比如全表扫描就是在找数据)
+索引可以把随机IO变成顺序IO。（因为索引是有序的这样就能保证找数据的时候稳定性,在程序中不允许有不稳定因素。）
+
+为什么MySQL要用b+tree来实现索引
+
+在这里先推荐一个网址来学习二叉树由来地址。
+
+
+
+先来看看二叉查找树 Binary Search Tree
+
+    
+
+
+
+在来看看平衡二叉查找树（所有节点数高度不会超过1）AVL Trees (Balanced binary search trees)记住图上的磁盘块上存储了数据区的磁盘地址。
+
+    
+
+
+
+说说为什么MySQL没有选择这些算法而去选择B+Tree
+
+它太深了,数据存在的（高）深度决定着他的IO操作次数，IO操作耗时大这个大家都是知道的。
+他太小了,IO操作是很耗时，他一次IO也只能加载一个关键字；保存的东西太少了。
+没有很好的利用操作磁盘IO的数据交换特性(操作系统通过硬盘读取数据一次IO操作读取的大小是4k(页为单位)) 这就是为什么SSD在分区时选择4k对其的原因，能使他大大提升读写性能。 二叉树每个节点只有一个关键字，他是存满不了4k的，这样会浪费资源。
+也没有利用好磁盘IO的预读能力（空间局部性原理），从而带来频繁的IO操作。空间局部性原理就是： 操作系统每次IO操作读取一页，他会有预读能力，把下一页或者后面几页的数据读取。（注：MySQL定义的一页为16k）"><meta property="og:type" content="article"><meta property="og:url" content="https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%981%E7%90%86%E8%A7%A3%E5%BA%95%E5%B1%82b-tree%E6%9C%BA%E5%88%B6/"><meta property="og:image" content="https://yakax.github.io/images/1.png"><meta property="article:published_time" content="2018-12-03T00:00:00+00:00"><meta property="article:modified_time" content="2018-12-03T00:00:00+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://yakax.github.io/images/1.png"><meta name=twitter:title content="MySQL性能调优(1)理解底层B+tree机制"><meta name=twitter:description content="索引是谁实现的
+
+索引是存储引擎实现的：
+本文章主要对MySQL常用的MyISAM与InnoDB这两个存储引擎做分析。
+
+索引是什么
+
+索引是为了加速对表中的数据行的检索而创建的一种分散存储的数据结构。
+
+
+为什么要用索引
+
+索引能极大的减少存储引擎需要扫描的数据量。(比如全表扫描就是在找数据)
+索引可以把随机IO变成顺序IO。（因为索引是有序的这样就能保证找数据的时候稳定性,在程序中不允许有不稳定因素。）
+
+为什么MySQL要用b+tree来实现索引
+
+在这里先推荐一个网址来学习二叉树由来地址。
+
+
+
+先来看看二叉查找树 Binary Search Tree
+
+    
+
+
+
+在来看看平衡二叉查找树（所有节点数高度不会超过1）AVL Trees (Balanced binary search trees)记住图上的磁盘块上存储了数据区的磁盘地址。
+
+    
+
+
+
+说说为什么MySQL没有选择这些算法而去选择B+Tree
+
+它太深了,数据存在的（高）深度决定着他的IO操作次数，IO操作耗时大这个大家都是知道的。
+他太小了,IO操作是很耗时，他一次IO也只能加载一个关键字；保存的东西太少了。
+没有很好的利用操作磁盘IO的数据交换特性(操作系统通过硬盘读取数据一次IO操作读取的大小是4k(页为单位)) 这就是为什么SSD在分区时选择4k对其的原因，能使他大大提升读写性能。 二叉树每个节点只有一个关键字，他是存满不了4k的，这样会浪费资源。
+也没有利用好磁盘IO的预读能力（空间局部性原理），从而带来频繁的IO操作。空间局部性原理就是： 操作系统每次IO操作读取一页，他会有预读能力，把下一页或者后面几页的数据读取。（注：MySQL定义的一页为16k）"><meta name=application-name content="yakax"><meta name=apple-mobile-web-app-title content="yakax"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:'==document.location.protocol?'https:':'http:')+"//widget.daovoice.io/widget/af744044.js","daovoice")
+daovoice('init',{app_id:"af744044"});daovoice('update');</script><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%981%E7%90%86%E8%A7%A3%E5%BA%95%E5%B1%82b-tree%E6%9C%BA%E5%88%B6/><link rel=prev href=https://yakax.github.io/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/><link rel=next href=https://yakax.github.io/linkedlist%E7%9C%9F%E7%9A%84%E6%98%AF%E6%9F%A5%E6%89%BE%E6%85%A2%E5%A2%9E%E5%88%A0%E5%BF%AB%E5%90%97/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"MySQL性能调优(1)理解底层B+tree机制","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/yakax.github.io\/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%981%E7%90%86%E8%A7%A3%E5%BA%95%E5%B1%82b-tree%E6%9C%BA%E5%88%B6\/"},"image":["https:\/\/yakax.github.io\/images\/avatar.png"],"genre":"posts","keywords":"MySQL","wordcount":2733,"url":"https:\/\/yakax.github.io\/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%981%E7%90%86%E8%A7%A3%E5%BA%95%E5%B1%82b-tree%E6%9C%BA%E5%88%B6\/","datePublished":"2018-12-03T00:00:00+00:00","dateModified":"2018-12-03T00:00:00+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"yakax","logo":"https:\/\/yakax.github.io\/images\/avatar.png"},"author":{"@type":"Person","name":"yakax"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':('auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark'))&&document.body.setAttribute('theme','dark');</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class="fas fa-crosshairs fa-sm"></i></span><span id=id-1 class=typeit></span></a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>所有文章 </a><a class=menu-item href=/tags/>标签 </a><a class=menu-item href=/categories/>分类 </a><a class=menu-item href=/about/>关于 </a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i></a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop><input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span></span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class="fas fa-crosshairs fa-sm"></i></span><span id=id-2 class=typeit></span></a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/>所有文章</a><a class=menu-item href=/tags/>标签</a><a class=menu-item href=/categories/>分类</a><a class=menu-item href=/about/>关于</a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">MySQL性能调优(1)理解底层B+tree机制</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>yakax</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/><i class="far fa-folder fa-fw"></i>MySQL性能调优</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2018-12-03>2018-12-03</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 2733 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 6 分钟&nbsp;<span id=/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%981%E7%90%86%E8%A7%A3%E5%BA%95%E5%B1%82b-tree%E6%9C%BA%E5%88%B6/ class=leancloud_visitors data-flag-title=MySQL性能调优(1)理解底层B+tree机制>
+<i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
+</span>&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><ul><li><ul><li><a href=#索引是谁实现的>索引是谁实现的</a></li><li><a href=#索引是什么>索引是什么</a></li><li><a href=#为什么要用索引>为什么要用索引</a></li><li><a href=#为什么mysql要用btree来实现索引>为什么MySQL要用b+tree来实现索引</a></li><li><a href=#多路平衡查找树b-tree>多路平衡查找树B-Tree</a></li><li><a href=#加强版多路平衡查找树btree>加强版多路平衡查找树B+Tree</a></li><li><a href=#在存储引擎myisam中btree的体现形式>在存储引擎MyISAM中B+Tree的体现形式</a></li><li><a href=#在存储引擎innodb中btree的体现形式>在存储引擎Innodb中B+Tree的体现形式</a></li><li><a href=#innodb与myisam对比索引流程>Innodb与MyISAM对比索引流程</a></li><li><a href=#补充知识>补充知识</a><ul><li><ul><li><a href=#列的离散性>列的离散性:</a></li><li><a href=#最左匹配原则>最左匹配原则：</a></li><li><a href=#联合索引>联合索引</a></li><li><a href=#常用解决方案误区>常用解决方案误区</a></li><li><a href=#覆盖索引>覆盖索引</a></li></ul></li></ul></li><li><a href=#理解一下>理解一下</a></li><li><a href=#来一首打油诗>来一首打油诗</a></li></ul></li></ul></li></ul></nav></div></div><div class=content id=content><h4 id=索引是谁实现的>索引是谁实现的</h4><blockquote><p>索引是存储引擎实现的：
+本文章主要对MySQL常用的MyISAM与InnoDB这两个存储引擎做分析。</p></blockquote><h4 id=索引是什么>索引是什么</h4><blockquote><p>索引是为了加速对表中的数据行的检索而创建的一种分散存储的<font color=red>数据结构</font>。
+<img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/27.png></p></blockquote><h4 id=为什么要用索引>为什么要用索引</h4><ol><li>索引能极大的减少存储引擎需要扫描的数据量。(比如全表扫描就是在找数据)</li><li>索引可以把随机IO变成顺序IO。（因为索引是有序的这样就能保证找数据的时候稳定性,在程序中不允许有不稳定因素。）</li></ol><h4 id=为什么mysql要用btree来实现索引>为什么MySQL要用b+tree来实现索引</h4><blockquote><p>在这里先推荐一个网址来学习二叉树由来<a href=https://www.cs.usfca.edu/~galles/visualization/Algorithms.html target=_blank rel="noopener noreffer">地址</a>。</p></blockquote><ol><li><p>先来看看二叉查找树 Binary Search Tree
+<a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/28.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/28.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/28.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/28.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/28.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/28.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/28.png></a></p></li><li><p>在来看看平衡二叉查找树（所有节点数高度不会超过1）AVL Trees (Balanced binary search trees)记住图上的磁盘块上存储了数据区的磁盘地址。
+<a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/29.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/29.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/29.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/29.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/29.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/29.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/29.png></a></p></li><li><p>说说为什么MySQL没有选择这些算法而去选择B+Tree</p><ul><li>它太深了,数据存在的（高）深度决定着他的IO操作次数，IO操作耗时大这个大家都是知道的。</li><li>他太小了,IO操作是很耗时，他一次IO也只能加载一个关键字；保存的东西太少了。</li><li>没有很好的利用操作磁盘IO的数据交换特性(操作系统通过硬盘读取数据一次IO操作读取的大小是4k(页为单位))<font color=red> 这就是为什么SSD在分区时选择4k对其的原因，能使他大大提升读写性能。</font> 二叉树每个节点只有一个关键字，他是存满不了4k的，这样会浪费资源。</li><li>也没有利用好磁盘IO的预读能力（空间局部性原理），从而带来频繁的IO操作。空间局部性原理就是：<font color=red> 操作系统每次IO操作读取一页，他会有预读能力，把下一页或者后面几页的数据读取</font>。（注：MySQL定义的一页为16k）</li></ul></li></ol><h4 id=多路平衡查找树b-tree>多路平衡查找树B-Tree</h4><p><img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/30.png></p><ol><li>上图是一个二三树（没画完 画不下了）。2路以上为多路。关键字个数为路数-1。</li><li>从IO太深了来看，他就比平衡二叉树好的多，他一个节点就可以存储更多的数据，这里设置的是3路，我们可以改成更多路。一个节点存储更多关键字。</li><li>还可以把一个节点大小设置为16k这样</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback> 用id做索引 int大小 4byte+冗余4byte   节点16k*1024byte
+ 那么我可以保存16*1024/8 个关键字
+ 这就是为什么我们字段大小要设计精确，不要有太多的冗余
+</code></pre></td></tr></table></div></div><ol start=4><li>这里的关键字多了，也就解决了空间局部性原理，读取更多数据。</li></ol><h4 id=加强版多路平衡查找树btree>加强版多路平衡查找树B+Tree</h4><p><img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/31.png></p><ol><li>B+非叶节点不保存数据相关信息，只保存关键字和子节点的引用（扫库扫表能力更强，磁盘读写能力更强）。</li><li>B+关键字对应的数据保存在叶子节点中（查询更稳定）。</li><li>B+对排序有天然的优势，叶子结点是顺序排列（排序能力更强）。</li><li>采用的是左闭合区间，这样就是关键字于区间就是相同个数。</li></ol><h4 id=在存储引擎myisam中btree的体现形式>在存储引擎MyISAM中B+Tree的体现形式</h4><p>1.用单独文件(后缀myd文件)来存放索引数据，是通过页子节点保存数据地址</p><blockquote><p>单个索引
+<img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/32.png>
+多个索引 （对应的数据是同一条就是指向一个位置）
+<img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/33.png></p></blockquote><h4 id=在存储引擎innodb中btree的体现形式>在存储引擎Innodb中B+Tree的体现形式</h4><p><img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/34.png>
+<img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/35.png></p><ol><li>Innodb中的索引是与数据存放在一起的，是以主键为索引来组织数据的存储。<font color=red>如果没有主键，那么他会默认生成一个int长度为6 byte的隐藏主键。</font></li><li>Innodb中辅助索引，他会存放主键索引，找辅助数据时，他会再索引一遍主键索引。</li><li>聚集索引只在innodb中会出现，因为他是基于主键的索引，有序的。</li></ol><h4 id=innodb与myisam对比索引流程>Innodb与MyISAM对比索引流程</h4><p><img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/36.png></p><h4 id=补充知识>补充知识</h4><h6 id=列的离散性>列的离散性:</h6><p>离散性越高、选择性就越好（列数据差别越大，离散性越好）。</p><h6 id=最左匹配原则>最左匹配原则：</h6><p>对索引中关键字进行计算（对比），一定是从左往右依次进行，且不可跳过。</p><h6 id=联合索引>联合索引</h6><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>//单列索引是特殊的联合索引
+单列索引:节点中关键字[name]
+联合索引:节点中关键字[name,phoneNum]
+</code></pre></td></tr></table></div></div><ul><li>联合索引列选择原则</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>经常用的列优先 【最左匹配原则】
+选择性（离散度）高的列优先【离散度高原则】
+宽度小的列优先【最少空间原则】
+</code></pre></td></tr></table></div></div><h6 id=常用解决方案误区>常用解决方案误区</h6><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>经排查发现最常用的sql语句：
+Select * from users where name = ? ;
+Select * from users where name = ? and phoneNum = ?;
+机灵的李二狗的解决方案：
+create index idx_name on users(name);×
+create index idx_name_phoneNum on users(name,phoneNum);
+</code></pre></td></tr></table></div></div><p>这上面的两种查询：只有第二种方案才能都命中索引。</p><h6 id=覆盖索引>覆盖索引</h6><ul><li>如果查询列可通过索引节点中的关键字直接返回，则该索引称之为覆盖索引。</li><li>覆盖索引可减少数据库IO，将随机IO变为顺序IO，可提高查询性能</li><li>如果我们建立了一个联合索引：name+phone</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>select name,phone from user where name=?;
+</code></pre></td></tr></table></div></div><ul><li>这就叫覆盖索引。他就不需要遍历到页子节点，直接就返回关键字数据了。这也就是很多公司不让用select* 的原因。 因为索引的过程是一个顺序的IO 全表扫描是一个随机IO。这一点就体现了索引的效率。</li></ul><h4 id=理解一下>理解一下</h4><ul><li>索引列的数据长度能少则少。</li></ul><blockquote><p>长度决定磁盘块关键字多少，一次IO操作得到的数据量。</p></blockquote><ul><li>索引一定不是越多越好，越全越好，一定是建合适的。</li></ul><blockquote><p>因为索引在增删改的时候，数据库都会去维护索引。</p></blockquote><ul><li>匹配列前缀可用到索引 like 9999%，like %9999%、like
+%9999用不到索引；</li></ul><blockquote><p>like 9999% 他是可能用到索引可能用不到索引，因为列离散性太差的话，数据量大的话。数据库觉得你索引用上与没用上效率差不多，他就不会用索引。其余两个最左匹配原则索引会失效。</p></blockquote><ul><li>Where 条件中 not in 和 &lt;>操作无法使用索引；</li></ul><blockquote><p>因为在索引查找中B+Tree他是根据区间查找数据，如果是不等于：他是不知道去哪个区间的。</p></blockquote><ul><li>匹配范围值，order by 也可用到索引；</li></ul><blockquote><p>MYISAM本身是具有排序功能的，还有就是索引是根据区间找数据，所以匹配范围值可以用到索引(单个索引)。
+多用指定列查询，只返回自己想到的数据列，少用select *；</p></blockquote><ul><li>联合索引中如果不是按照索引最左列开始查找，无法使用索引；</li></ul><blockquote><p>最左匹配原则。</p></blockquote><ul><li>联合索引中精确匹配最左前列并范围匹配另外一列可以用到索引；</li></ul><blockquote><p>最左匹配原则。精确就直接指向那条路，然后再范围。</p></blockquote><ul><li>联合索引中如果查询中有某个列的范围查询，则其右边的所有列都无法使用索引；</li></ul><blockquote><p>因为他毕竟是个机器 (mysql的索引机制，第一步就是要确立，搜索的顺序) age>18 他可以通过关键的比对确认走那边子树，但是通过age>18 又加上name=张三这样的条件，他无法确认你要搜索的顺序。</p></blockquote><ul><li>索引列少计算</li></ul><blockquote><p>索引列不能参与计算，保持列“干净”。比如from_unixtime(create_time) = ’2017-05-29’就不能使用到索引，原因很简单，b+树中存的都是数据表中的字段值，但进行检索时，需要把所有元素都应用函数才能比较，显然成本太大。
+为了解决索引列上计算引起的索引失效问题，将计算放到索引列外的表达式上,所以语句应该写成create_time = unix_timestamp(’2017-05-29’)</p></blockquote><h4 id=来一首打油诗>来一首打油诗</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>全值匹配我最爱,最左前缀要遵守；
+带头大哥不能死,中间兄弟不能断；
+索引列上少计算,范围之后全失效；
+LIKE百分写最右,覆盖索引不写星；
+不等空值还有or,索引失效要少用；
+</code></pre></td></tr></table></div></div></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2018-12-03</span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/mysql/>MySQL</a></section><section><span><a href=javascript:void(0); onclick=window.history.back();>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/ class=prev rel=prev title=单例设计模式><i class="fas fa-angle-left fa-fw"></i>单例设计模式</a>
+<a href=/linkedlist%E7%9C%9F%E7%9A%84%E6%98%AF%E6%9F%A5%E6%89%BE%E6%85%A2%E5%A2%9E%E5%88%A0%E5%BF%AB%E5%90%97/ class=next rel=next title=LinkedList真的是查找慢增删快吗>LinkedList真的是查找慢增删快吗<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments><div id=valine class=comment></div><noscript>Please enable JavaScript to view the comments powered by <a href=https://valine.js.org/>Valine</a>.</noscript></div></article></div></main><script src=https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css><script src=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js></script><footer class=footer><div class=footer-container><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2018 - 2021</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>yakax</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i></a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=/lib/valine/valine.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/typeit@7.0.4/dist/typeit.min.js></script><script type=text/javascript>window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{"valine":{"appId":"oIoCMPOVr3i61isIop1jPYdP-gzGzoHsz","appKey":"IluQB7WNkIfKRAtgW35kEB7H","avatar":"mp","el":"#valine","emojiCDN":"https://cdn.jsdelivr.net/npm/emoji-datasource-google@5.0.1/img/google/64/","emojiMaps":{"100":"1f4af.png","alien":"1f47d.png","anger":"1f4a2.png","angry":"1f620.png","anguished":"1f627.png","astonished":"1f632.png","black_heart":"1f5a4.png","blue_heart":"1f499.png","blush":"1f60a.png","bomb":"1f4a3.png","boom":"1f4a5.png","broken_heart":"1f494.png","brown_heart":"1f90e.png","clown_face":"1f921.png","cold_face":"1f976.png","cold_sweat":"1f630.png","confounded":"1f616.png","confused":"1f615.png","cry":"1f622.png","crying_cat_face":"1f63f.png","cupid":"1f498.png","dash":"1f4a8.png","disappointed":"1f61e.png","disappointed_relieved":"1f625.png","dizzy":"1f4ab.png","dizzy_face":"1f635.png","drooling_face":"1f924.png","exploding_head":"1f92f.png","expressionless":"1f611.png","face_vomiting":"1f92e.png","face_with_cowboy_hat":"1f920.png","face_with_hand_over_mouth":"1f92d.png","face_with_head_bandage":"1f915.png","face_with_monocle":"1f9d0.png","face_with_raised_eyebrow":"1f928.png","face_with_rolling_eyes":"1f644.png","face_with_symbols_on_mouth":"1f92c.png","face_with_thermometer":"1f912.png","fearful":"1f628.png","flushed":"1f633.png","frowning":"1f626.png","ghost":"1f47b.png","gift_heart":"1f49d.png","green_heart":"1f49a.png","grimacing":"1f62c.png","grin":"1f601.png","grinning":"1f600.png","hankey":"1f4a9.png","hear_no_evil":"1f649.png","heart":"2764-fe0f.png","heart_decoration":"1f49f.png","heart_eyes":"1f60d.png","heart_eyes_cat":"1f63b.png","heartbeat":"1f493.png","heartpulse":"1f497.png","heavy_heart_exclamation_mark_ornament":"2763-fe0f.png","hole":"1f573-fe0f.png","hot_face":"1f975.png","hugging_face":"1f917.png","hushed":"1f62f.png","imp":"1f47f.png","innocent":"1f607.png","japanese_goblin":"1f47a.png","japanese_ogre":"1f479.png","joy":"1f602.png","joy_cat":"1f639.png","kiss":"1f48b.png","kissing":"1f617.png","kissing_cat":"1f63d.png","kissing_closed_eyes":"1f61a.png","kissing_heart":"1f618.png","kissing_smiling_eyes":"1f619.png","laughing":"1f606.png","left_speech_bubble":"1f5e8-fe0f.png","love_letter":"1f48c.png","lying_face":"1f925.png","mask":"1f637.png","money_mouth_face":"1f911.png","nauseated_face":"1f922.png","nerd_face":"1f913.png","neutral_face":"1f610.png","no_mouth":"1f636.png","open_mouth":"1f62e.png","orange_heart":"1f9e1.png","partying_face":"1f973.png","pensive":"1f614.png","persevere":"1f623.png","pleading_face":"1f97a.png","pouting_cat":"1f63e.png","purple_heart":"1f49c.png","rage":"1f621.png","relaxed":"263a-fe0f.png","relieved":"1f60c.png","revolving_hearts":"1f49e.png","right_anger_bubble":"1f5ef-fe0f.png","robot_face":"1f916.png","rolling_on_the_floor_laughing":"1f923.png","scream":"1f631.png","scream_cat":"1f640.png","see_no_evil":"1f648.png","shushing_face":"1f92b.png","skull":"1f480.png","skull_and_crossbones":"2620-fe0f.png","sleeping":"1f634.png","sleepy":"1f62a.png","slightly_frowning_face":"1f641.png","slightly_smiling_face":"1f642.png","smile":"1f604.png","smile_cat":"1f638.png","smiley":"1f603.png","smiley_cat":"1f63a.png","smiling_face_with_3_hearts":"1f970.png","smiling_imp":"1f608.png","smirk":"1f60f.png","smirk_cat":"1f63c.png","sneezing_face":"1f927.png","sob":"1f62d.png","space_invader":"1f47e.png","sparkling_heart":"1f496.png","speak_no_evil":"1f64a.png","speech_balloon":"1f4ac.png","star-struck":"1f929.png","stuck_out_tongue":"1f61b.png","stuck_out_tongue_closed_eyes":"1f61d.png","stuck_out_tongue_winking_eye":"1f61c.png","sunglasses":"1f60e.png","sweat":"1f613.png","sweat_drops":"1f4a6.png","sweat_smile":"1f605.png","thinking_face":"1f914.png","thought_balloon":"1f4ad.png","tired_face":"1f62b.png","triumph":"1f624.png","two_hearts":"1f495.png","unamused":"1f612.png","upside_down_face":"1f643.png","weary":"1f629.png","white_frowning_face":"2639-fe0f.png","white_heart":"1f90d.png","wink":"1f609.png","woozy_face":"1f974.png","worried":"1f61f.png","yawning_face":"1f971.png","yellow_heart":"1f49b.png","yum":"1f60b.png","zany_face":"1f92a.png","zipper_mouth_face":"1f910.png","zzz":"1f4a4.png"},"enableQQ":false,"highlight":true,"lang":"zh-cn","pageSize":10,"placeholder":"来都来了，说两句把。 支持MD","recordIP":true,"visitor":true}},"data":{"id-1":"yakax.blog","id-2":"yakax.blog"},"lightGallery":{"actualSize":false,"exThumbImage":"data-thumbnail","hideBarsDelay":2000,"selector":".lightgallery","speed":400,"thumbContHeight":80,"thumbWidth":80,"thumbnail":true},"search":{"algoliaAppID":"XQCZLRU4IH","algoliaIndex":"blog","algoliaSearchKey":"2850ce47940fd2479113f229a321fa9d","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":150,"type":"algolia"},"typeit":{"cursorChar":"_","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":200}};</script><script type=text/javascript src=/js/theme.min.js></script></body></html>

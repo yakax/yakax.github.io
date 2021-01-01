@@ -1,0 +1,233 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Mybatis - 分类 - yakax</title><link>https://yakax.github.io/categories/mybatis/</link><description>Mybatis - 分类 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 21 May 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.github.io/categories/mybatis/" rel="self" type="application/rss+xml"/><item><title>Mybatis3源码分析(6)简单手写思路及面试题</title><link>https://yakax.github.io/mybatis3%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%906%E7%AE%80%E5%8D%95%E6%89%8B%E5%86%99%E6%80%9D%E8%B7%AF%E5%8F%8A%E9%9D%A2%E8%AF%95%E9%A2%98/</link><pubDate>Tue, 21 May 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/mybatis3%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%906%E7%AE%80%E5%8D%95%E6%89%8B%E5%86%99%E6%80%9D%E8%B7%AF%E5%8F%8A%E9%9D%A2%E8%AF%95%E9%A2%98/</guid><description>&lt;p>手写基本流程
+&lt;a data-fancybox="gallery" href="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mybatis6/1.png">
+&lt;/a>&lt;/p></description></item><item><title>Mybatis3源码分析(5)spring集成分析与mybatis所用到的设计模式</title><link>https://yakax.github.io/mybatis3%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%905spring%E9%9B%86%E6%88%90%E5%88%86%E6%9E%90%E4%B8%8Emybatis%E6%89%80%E7%94%A8%E5%88%B0%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</link><pubDate>Sun, 19 May 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/mybatis3%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%905spring%E9%9B%86%E6%88%90%E5%88%86%E6%9E%90%E4%B8%8Emybatis%E6%89%80%E7%94%A8%E5%88%B0%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</guid><description><![CDATA[<p>这里我们以传统的 Spring 为例，因为配置更直观，在 Spring 中使用配置类注解是一样的。在前面文章里面，我基于编程式的工程已经弄清楚了 MyBatis 的工作流程、核心模块和底层原理。编程式的工程，也就是 MyBatis 的原生 API 里面有三个核心对象：
+<strong>SqlSessionFactory、SqlSession、MapperProxy</strong>
+大部分时候我们不会在项目中单独使用 MyBatis 的工程，而是集成到 Spring 里面使用，但是却没有看到这三个对象在代码里面的出现。我们直接注入了一个 Mapper 接口，调用它的方法。
+所以有几个关键的问题，我要弄清楚：</p>
+<ol>
+<li>SqlSessionFactory 是什么时候创建的？</li>
+<li>SqlSession 去哪里了？为什么不用它来 getMapper？</li>
+<li>为什么@Autowired 注入一个接口，在使用的时候却变成了代理对象？在 IOC的容器里面我们注入的是什么？ 注入的时候发生了什么事情？</li>
+</ol>]]></description></item><item><title>Mybatis3源码分析(4)插件分析</title><link>https://yakax.github.io/mybatis3%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%904%E6%8F%92%E4%BB%B6%E5%88%86%E6%9E%90/</link><pubDate>Thu, 16 May 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/mybatis3%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%904%E6%8F%92%E4%BB%B6%E5%88%86%E6%9E%90/</guid><description><![CDATA[<h3 id="源码总结回顾">源码总结回顾</h3>
+<p>{% raw %}</p>
+<table>
+  <tr>
+    <th >对象</th>
+    <th >相关对象</th>
+    <th >作用</th>
+  </tr>
+  <tr>
+    <td>Configuration</td>
+    <td>MapperRegistry 
+    TypeAliasRegistry
+    TypeHandlerRegistry</td>
+        <td>包含了 MyBatis 的所有的配置信息</td>
+  </tr>
+  <tr>
+      <td>SqlSession</td>
+    <td>SqlSessionFactory
+DefaultSqlSession</td>
+        <td>对操作数据库的增删改查的 API 进行了封装，提供给应用层使用</td>
+  </tr>
+    <tr>
+    <td>Executor</td>
+    <td>BaseExecutor
+SimpleExecutor
+BatchExecutor
+ReuseExecutor</td>
+        <td>MyBatis 执行器，是 MyBatis 调度的核心，负责 SQL 语句的生成和查
+询缓存的维护</td>
+  </tr>
+  <tr>
+    <td>StatementHandler</td>
+    <td>BaseStatementHandler
+SimpleStatementHandler
+PreparedStatementHandler
+CallableStatementHandler</td>
+        <td>封装了 JDBC Statement 操作，负责对 JDBC statement 的操作，如设
+置参数、将 Statement 结果集转换成 List 集合</td>
+  </tr>
+   <tr>
+    <td>ParameterHandler</td>
+    <td>DefaultParameterHandler</td>
+        <td>把用户传递的参数转换成 JDBC Statement 所需要的参数</td>
+  </tr>
+   <tr>
+    <td>ResultSetHandler</td>
+    <td>DefaultResultSetHandler</td>
+        <td>把 JDBC 返回的 ResultSet 结果集对象转换成 List 类型的集合</td>
+  </tr>
+   <tr>
+    <td>MapperProxy</td>
+    <td>MapperProxyFactory</td>
+        <td>代理对象，用于代理 Mapper 接口方法</td>
+  </tr>
+   <tr>
+    <td>MappedStatement</td>
+    <td>SqlSource
+BoundSql</td>
+        <td>MappedStatement 维护了一条select|update|delete|insert节点
+的封装，包括了 SQL 信息、入参信息、出参信息</td>
+  </tr>
+</table>
+{% endraw %}
+<h3 id="插件拦截的四大对象">插件拦截的四大对象</h3>
+<p>{% raw %}</p>
+<table>
+  <tr>
+    <th >对象</th>
+    <th >描述</th>
+    <th >可拦截的方法</th>
+     <th >方法作用</th>
+  </tr>
+  <tr>
+    <td  rowspan="8">Executor</td>
+    <td  rowspan="8">上层的对象，SQL 执行全过程，包括组装参数，组装结果集返回和执行 SQL 过程</td>
+    <td>update</td>
+    <td>执行 update、insert、delete 操作</td>
+  </tr>
+<tr>
+    <td>query</td>
+    <td>执行 query 操作</td>
+</tr>
+   <tr>
+    <td>flushStatements</td>
+    <td>在 commit 的时候自动调用，SimpleExecutor
+ReuseExecutor、BatchExecutor 处理不同</td>
+</tr>
+<tr>
+    <td>commit</td>
+    <td>提交事务</td>
+</tr>
+<tr>
+    <td>rollback</td>
+    <td>事务回滚</td>
+</tr>
+<tr>
+    <td>getTransaction</td>
+    <td>获取事务</td>
+</tr>
+<tr>
+    <td>close</td>
+    <td>结束（关闭）事务</td>
+</tr>
+<tr>
+    <td>isClosed</td>
+    <td>判断事务是否关闭</td>
+</tr>
+<tr>
+    <td  rowspan="5">StatementHandler</td>
+    <td  rowspan="5">上层的对象，SQL 执行全过程，包括组装参数，组装结果集返回和执行 SQL 过程</td>
+    <td>prepare</td>
+    <td>（BaseSatementHandler）SQL 预编译</td>
+</tr>
+<tr>
+    <td>parameterize</td>
+    <td>设置参数</td>
+</tr>
+<tr>
+    <td>batch</td>
+    <td>批处理</td>
+</tr>
+<tr>
+    <td>update</td>
+    <td>增删改操作</td>
+</tr>
+<tr>
+    <td>query</td>
+    <td>查询操作</td>
+</tr>
+<tr>
+<td rowspan="2">ParameterHandler</td>
+<td rowspan="2">SQL 参数组装的过程</td>
+<td >getParameterObject</td>
+<td >获取参数</td>
+</tr>
+<tr>
+<td >setParameters</td>
+<td >设置参数</td>
+</tr>
+<tr>
+<td rowspan="2">ResultSetHandler</td>
+<td rowspan="2">结果的组装</td>
+<td >handleResultSets</td>
+<td >处理结果集</td>
+</tr>
+<tr>
+<td >handleOutputParameters</td>
+<td >处理存储过程出参</td>
+</tr>
+</table>
+{% endraw %}]]></description></item><item><title>Mybatis3源码分析(3)流程走向</title><link>https://yakax.github.io/mybatis3%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%903%E6%B5%81%E7%A8%8B%E8%B5%B0%E5%90%91/</link><pubDate>Wed, 15 May 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/mybatis3%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%903%E6%B5%81%E7%A8%8B%E8%B5%B0%E5%90%91/</guid><description><![CDATA[<blockquote>
+<p>分析源码我们还是从编程式demo入手
+<a data-fancybox="gallery" href="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Mybatis3/0.png">
+    
+</a></p>
+</blockquote>]]></description></item><item><title>Mybatis3源码分析(2)体系结构与缓存</title><link>https://yakax.github.io/mybatis3%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%902%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B8%8E%E7%BC%93%E5%AD%98/</link><pubDate>Sat, 04 May 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/mybatis3%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%902%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B8%8E%E7%BC%93%E5%AD%98/</guid><description><![CDATA[<h3 id="工作流程分析">工作流程分析</h3>
+<ul>
+<li>首先在 MyBatis 启动的时候我们要去解析配置文件，包括全局配置文件和映射器配置文件，这里面包含了我们怎么控制 MyBatis 的行为，和我们要对数据库下达的指令，也就是我们的 SQL 信息。我们会把它们解析成一个 Configuration 对象。</li>
+<li>接下来就是我们操作数据库的接口，它在应用程序和数据库中间，代表我们跟数据库之间的一次连接：这个就是 SqlSession 对象。</li>
+<li>我们要获得一个会话，必须有一个会话工厂SqlSessionFactory。SqlSessionFactory 里面又必须包含我们的所有的配置信息，所以我们会通过一个Builder 来创建工厂类。</li>
+<li>我们知道，MyBatis 是对 JDBC 的封装，也就是意味着底层一定会出现 JDBC 的一些核心对象，比如执行 SQL 的 Statement，结果集 ResultSet。在 Mybatis 里面，SqlSession 只是提供给应用的一个接口，还不是 SQL 的真正的执行对象。</li>
+<li>我们上次课提到了，SqlSession 持有了一个 Executor 对象，用来封装对数据库的操作。在执行器 Executor 执行 query 或者 update 操作的时候我们创建一系列的对象，来处理参数、执行 SQL、处理结果集，这里我们把它简化成一个对象：StatementHandler，
+在阅读源码的时候我们再去了解还有什么其他的对象。</li>
+</ul>
+<blockquote>
+<p>流程图</p>
+</blockquote>
+<p><a data-fancybox="gallery" href="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2019-06-04/1.png">
+    
+</a></p>]]></description></item><item><title>Mybatis3源码分析(1)生命周期与核心配置解读以及批量操作</title><link>https://yakax.github.io/mybatis3%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%901%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E4%B8%8E%E6%A0%B8%E5%BF%83%E9%85%8D%E7%BD%AE%E8%A7%A3%E8%AF%BB%E4%BB%A5%E5%8F%8A%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C/</link><pubDate>Thu, 02 May 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/mybatis3%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%901%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E4%B8%8E%E6%A0%B8%E5%BF%83%E9%85%8D%E7%BD%AE%E8%A7%A3%E8%AF%BB%E4%BB%A5%E5%8F%8A%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C/</guid><description><![CDATA[<h3 id="单独用mybatis编程式进行db操作">单独用mybatis编程式进行DB操作</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">--------------------利用mapper
+String resource = &#34;mybatis-config.xml&#34;;
+InputStream inputStream = Resources.getResourceAsStream(resource);
+SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+SqlSession session = sqlSessionFactory.openSession();
+try {
+    BlogMapper mapper = session.getMapper(BlogMapper.class);
+    Blog blog = mapper.selectBlogById(1);
+    System.out.println(blog);
+} finally {
+    session.close();
+}
+--------------------利用mybatis的接口
+String resource = &#34;mybatis-config.xml&#34;;
+InputStream inputStream = Resources.getResourceAsStream(resource);
+SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+SqlSession session = sqlSessionFactory.openSession(); // ExecutorType.BATCH
+try {
+    Blog blog = (Blog) session.selectOne(&#34;com.yakax.mapper.BlogMapper.selectBlogById&#34;, 1);
+    System.out.println(blog);
+} finally {
+    session.close();
+}
+</code></pre></td></tr></table>
+</div>
+</div>]]></description></item></channel></rss>

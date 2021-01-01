@@ -1,0 +1,389 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>并发编程学习(5)Condition - yakax</title><meta name=Description content><meta property="og:title" content="并发编程学习(5)Condition"><meta property="og:description" content="Condition
+在前面学习 synchronized 的时候，有wait/notify 的基本使用，结合 synchronized 可以实现对线程的通信。那么，既然 J.U.C 里面提供了锁的实现机制，那 J.U.C 里面应该也有提供线程通信的机制,Condition 是一个多线程协调通信的工具类，可以让某些线程一起等待某个条件(condition)，只有满足条件时，线程才会被唤醒。"><meta property="og:type" content="article"><meta property="og:url" content="https://yakax.github.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A05condition/"><meta property="og:image" content="https://yakax.github.io/images/1.png"><meta property="article:published_time" content="2019-07-27T00:00:00+00:00"><meta property="article:modified_time" content="2019-07-27T00:00:00+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://yakax.github.io/images/1.png"><meta name=twitter:title content="并发编程学习(5)Condition"><meta name=twitter:description content="Condition
+在前面学习 synchronized 的时候，有wait/notify 的基本使用，结合 synchronized 可以实现对线程的通信。那么，既然 J.U.C 里面提供了锁的实现机制，那 J.U.C 里面应该也有提供线程通信的机制,Condition 是一个多线程协调通信的工具类，可以让某些线程一起等待某个条件(condition)，只有满足条件时，线程才会被唤醒。"><meta name=application-name content="yakax"><meta name=apple-mobile-web-app-title content="yakax"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:'==document.location.protocol?'https:':'http:')+"//widget.daovoice.io/widget/af744044.js","daovoice")
+daovoice('init',{app_id:"af744044"});daovoice('update');</script><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://yakax.github.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A05condition/><link rel=prev href=https://yakax.github.io/docker%E5%88%86%E5%B8%83%E5%BC%8F%E9%83%A8%E7%BD%B2zookeeper%E9%9B%86%E7%BE%A4/><link rel=next href=https://yakax.github.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A06countdownlatchsemaphorecyclicbarrier/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"并发编程学习(5)Condition","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/yakax.github.io\/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A05condition\/"},"image":["https:\/\/yakax.github.io\/images\/avatar.png"],"genre":"posts","keywords":"Condition","wordcount":3753,"url":"https:\/\/yakax.github.io\/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A05condition\/","datePublished":"2019-07-27T00:00:00+00:00","dateModified":"2019-07-27T00:00:00+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"yakax","logo":"https:\/\/yakax.github.io\/images\/avatar.png"},"author":{"@type":"Person","name":"yakax"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':('auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark'))&&document.body.setAttribute('theme','dark');</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class="fas fa-crosshairs fa-sm"></i></span><span id=id-1 class=typeit></span></a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>所有文章 </a><a class=menu-item href=/tags/>标签 </a><a class=menu-item href=/categories/>分类 </a><a class=menu-item href=/about/>关于 </a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i></a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop><input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span></span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class="fas fa-crosshairs fa-sm"></i></span><span id=id-2 class=typeit></span></a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/>所有文章</a><a class=menu-item href=/tags/>标签</a><a class=menu-item href=/categories/>分类</a><a class=menu-item href=/about/>关于</a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">并发编程学习(5)Condition</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>yakax</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/><i class="far fa-folder fa-fw"></i>并发编程学习</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2019-07-27>2019-07-27</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3753 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 8 分钟&nbsp;<span id=/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A05condition/ class=leancloud_visitors data-flag-title=并发编程学习(5)Condition>
+<i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
+</span>&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#condition>Condition</a><ul><li><a href=#测试代码>测试代码</a></li><li><a href=#condition分析>condition分析</a></li><li><a href=#图>图</a></li></ul></li></ul></nav></div></div><div class=content id=content><h2 id=condition>Condition</h2><p>在前面学习 synchronized 的时候，有wait/notify 的基本使用，结合 synchronized 可以实现对线程的通信。那么，既然 J.U.C 里面提供了锁的实现机制，那 J.U.C 里面应该也有提供线程通信的机制,Condition 是一个多线程协调通信的工具类，可以让某些线程一起等待某个条件(condition)，只有满足条件时，线程才会被唤醒。</p><h3 id=测试代码>测试代码</h3><p>Signal</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>public class Signal implements Runnable{
+    private Lock lock;
+    private Condition condition;
+
+    public Signal(Lock lock, Condition condition) {
+        this.lock = lock;
+        this.condition = condition;
+    }
+
+    @Override
+    public void run() {
+        lock.lock();
+        try {
+            System.out.println(&#34;Signal--开始&#34;);
+            condition.signal();
+            System.out.println(&#34;Signal--结束&#34;);
+        }finally {
+            lock.unlock();
+        }
+    }
+}
+
+</code></pre></td></tr></table></div></div><p>Wait</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>public class Wait implements Runnable{
+    private Lock lock;
+    private Condition condition;
+
+    public Wait(Lock lock, Condition condition) {
+        this.lock = lock;
+        this.condition = condition;
+    }
+
+    @Override
+    public void run() {
+        lock.lock();
+        try {
+            try {
+                System.out.println(&#34;wait--开始&#34;);
+                condition.await();
+                System.out.println(&#34;wait--结束&#34;);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }finally {
+            lock.unlock();
+        }
+    }
+}
+</code></pre></td></tr></table></div></div><p>测试</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>public static void main(String[] args) {
+    Lock lock = new ReentrantLock();
+    Condition condition = lock.newCondition();
+    new Thread(new Wait(lock, condition)).start();
+    new Thread(new Conditions(lock, condition)).start();
+}
+------------------------输出
+wait--开始
+Signal--开始
+Signal--结束
+wait--结束
+</code></pre></td></tr></table></div></div><h3 id=condition分析>condition分析</h3><p>调用 Condition，需要获得 Lock 锁，所以意味着会存在一个 AQS 同步队列。先进入await方法分析</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>public final void await() throws InterruptedException {
+        if (Thread.interrupted())     //这也就是表示await的线程允许被中断 这是lock的一大特性
+            throw new InterruptedException(); //如果当前线程被中断，则抛出InterruptedException 
+        Node node = addConditionWaiter();  //创建一个新的节点，节点状态为 condition，采用的数据结构仍然是链表
+        int savedState = fullyRelease(node); //释放当前的锁，得到锁的状态，并唤醒 AQS 队列中的一个线程
+        int interruptMode = 0; //如果当前节点没有在同步队列上，即还没有被 signal，则将当前线程阻塞
+        while (!isOnSyncQueue(node)) { //判断这个节点是否在 AQS 队列上，第一次判断的是 false，因为前面已经释放锁了
+            LockSupport.park(this); //通过 park 挂起当前线程
+            if ((interruptMode = checkInterruptWhileWaiting(node)) != 0)
+                break;
+        }
+        // 当这个线程醒来,会尝试拿锁, 当 acquireQueued返回 false 就是拿到锁了.
+       // interruptMode != THROW_IE -&gt; 表示这个线程没有成功将 node 入队,但 signal 执行了 enq 方法让其入队了.
+        if (acquireQueued(node, savedState) &amp;&amp; interruptMode != THROW_IE)
+            // 将这个变量设置成 REINTERRUPT.
+            interruptMode = REINTERRUPT;
+       // 如果 node 的下一个等待者不是 null, 则进行清理,清理 Condition 队列上的节点 如果是 null ,就没有什么好清理了.
+        if (node.nextWaiter != null) // clean up if cancelled
+            unlinkCancelledWaiters();
+        // 如果线程被中断了,需要抛出异常.或者什么都不做
+        if (interruptMode != 0)
+            reportInterruptAfterWait(interruptMode);
+    }
+</code></pre></td></tr></table></div></div><p><strong>addConditionWaiter</strong>
+这个方法的主要作用是把当前线程封装成 Node，添加到等待队列。这里的队列不再是双向链表，而是单向链表</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>private Node addConditionWaiter() {
+//如 果 lastWaiter 不 等 于 空 并 且waitStatus 不等于 CONDITION 时，把冲好这个节点从链表中移除
+        Node t = lastWaiter;
+        // If lastWaiter is cancelled, clean out.
+        if (t != null &amp;&amp; t.waitStatus != Node.CONDITION) {
+            unlinkCancelledWaiters();
+            t = lastWaiter;
+        }
+   //构建一个 Node，waitStatus=CONDITION。这里的链表是一个单向的，所以相比 AQS 来说会简单很多
+        Node node = new Node(Thread.currentThread(), Node.CONDITION);
+        if (t == null)
+            firstWaiter = node;
+        else
+            t.nextWaiter = node;
+        lastWaiter = node;
+        return node;
+}
+</code></pre></td></tr></table></div></div><p><a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/5/2.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/5/2.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/5/2.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/5/2.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/5/2.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/5/2.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/5/2.png></a></p><p><strong>fullyRelease</strong>
+彻底的释放锁，什么叫彻底呢，就是如果当前锁存在多次重入，那么在这个方法中只需要释放一次就会把所有的重入次数归零。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>final int fullyRelease(Node node) {
+    boolean failed = true;
+        try {
+             // 获得重入的次数
+            int savedState = getState();
+            // 释放锁并且唤醒下一个同步队列中的线程
+            if (release(savedState)) {
+                failed = false;
+                return savedState;
+            } else {
+                throw new IllegalMonitorStateException();
+            }
+        } finally {
+            if (failed)
+                node.waitStatus = Node.CANCELLED;
+        }
+    }
+</code></pre></td></tr></table></div></div><p><a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/5/3.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/5/3.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/5/3.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/5/3.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/5/3.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/5/3.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/5/3.png></a></p><p><strong>isOnSyncQueue</strong>
+判断当前节点是否在同步队列中，返回 false 表示不在，返回 true 表示在
+如果不在 AQS 同步队列，说明当前节点没有唤醒去争抢同步锁，所以需要把当前线程阻塞起来，直到其他的线程调用 signal 唤醒
+如果在 AQS 同步队列，意味着它需要去竞争同步锁去获得执行程序执行权限为什么要做这个判断呢？原因是在 condition 队列中的节
+点会重新加入到 AQS 队列去竞争锁。也就是当调用 signal的时候，会把当前节点从 condition 队列转移到 AQS 队列</p><ol><li>如果 ThreadA 的 waitStatus 的状态为 CONDITION，说明它存在于 condition 队列中，不在 AQS 队列。因为AQS 队列的状态一定不可能有 CONDITION</li><li>如果 node.prev 为空，说明也不存在于 AQS 队列，原因是 prev=null 在 AQS 队列中只有一种可能性，就是它是head 节点，head 节点意味着它是获得锁的节点。</li><li>如果 node.next 不等于空，说明一定存在于 AQS 队列中，因为只有 AQS 队列才会存在 next 和 prev 的关系</li><li>findNodeFromTail，表示从 tail 节点往前扫描 AQS 队列，一旦发现 AQS 队列的节点和当前节点相等，说明节点一定存在于 AQS 队列中</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>   final boolean isOnSyncQueue(Node node) {
+        if (node.waitStatus == Node.CONDITION || node.prev == null)
+            return false;
+        if (node.next != null) // If has successor, it must be on queue
+            return true;
+        /*
+         * node.prev可以是非空的，但尚未在队列中，
+         * 因为将CAS放在队列中的CAS可能会失败。因此，我们必须从尾部进行遍历，
+         * 以确保它实际成功。在调用这种方法时，总是接近尾部，除非CAS失败（这不太可能），
+         * 它将在那里，所以我们几乎不会遍历很多
+         */
+        return findNodeFromTail(node);
+    }
+</code></pre></td></tr></table></div></div><p><strong>Condition.signal</strong>
+await 方法会阻塞 wait，然后 Signal 抢占到了锁获得了执行权限，这个时候在 Signal 中调用了 Condition的 signal()方法，将会唤醒在等待队列中节点</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback> public final void signal() {
+  //先判断当前线程是否获得了锁，这个判断比较简单，直接用获得锁的线程和当前线程相比即可 
+  所以你如果没获得锁来调用这个方法是不对的，会抛这个异常
+        if (!isHeldExclusively())
+            throw new IllegalMonitorStateException();
+  //拿到 Condition队列上第一个节点
+        Node first = firstWaiter;
+        if (first != null)
+            doSignal(first);
+  }
+</code></pre></td></tr></table></div></div><p><strong>doSignal</strong>
+对 condition 队列中从首部开始的第一个 condition 状态的节点，执行 transferForSignal 操作，将 node 从 condition队列中转换到 AQS 队列中，同时修改 AQS 队列中原先尾节点的状态</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>    private void doSignal(Node first) {
+        do {
+        // 从 Condition 队列中删除 first 节点
+            if ( (firstWaiter = first.nextWaiter) == null)
+                lastWaiter = null;
+           // 将 next 节点设置成 null
+            first.nextWaiter = null;
+        } while (!transferForSignal(first) &amp;&amp;
+                 (first = firstWaiter) != null);
+ }
+</code></pre></td></tr></table></div></div><p><strong>AQS.transferForSignal</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>  final boolean transferForSignal(Node node) {
+  //更新节点的状态为 0，如果更新失败，只有一种可能就是节点被 CANCELLED(取消) 了
+        if (!compareAndSetWaitStatus(node, Node.CONDITION, 0))
+            return false;
+  //调用 enq--这是aqs的方法了，把当前节点添加到AQS 队列。并且返回返回按当前节点的上一个节点，也就是原tail 节点
+        Node p = enq(node);
+        int ws = p.waitStatus;
+ // 如果上一个节点的状态被取消了, 或者尝试设置上一个节点的状态为 SIGNAL 失败了(SIGNAL 表示: 他的 next节点需要停止阻塞)
+        if (ws &gt; 0 || !compareAndSetWaitStatus(p, ws, Node.SIGNAL))
+        // 唤醒节点上的线程
+            LockSupport.unpark(node.thread);
+        return true; //如果 node 的 prev 节点已经是signal 状态，那么被阻塞的 wait 的唤醒工作由 AQS 队列来完成 
+  }
+</code></pre></td></tr></table></div></div><p>这里执行完毕就变成了执行finally块里面的 lock.unlock();来释放锁
+这个时候会判断 wait 的 prev 节点也就是 head 节点的 waitStatus，如果大于 0 或者设置 SIGNAL 失败，表示节点被设置成了 CANCELLED 状态。这个时候会唤醒wait 这个线程。否则就基于 AQS 队列的机制来唤醒，也就是等到 Signal 释放锁之后来唤醒 wait线程</p><p><strong>被阻塞的线程唤醒后的逻辑</strong>
+前面在 await 方法时，线程会被阻塞。而通过 signal被唤醒之后又继续回到上次执行箭头指向的checkInterruptWhileWaiting 这个方法，其实从名字就可以看出来判断线程在等待状态下是否收到中断的请求，就是 Wait线程 在 condition 队列被阻塞的过程中，有没有被其他线程触发过中断请求
+<a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/5/4.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/5/4.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/5/4.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/5/4.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/5/4.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/5/4.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/5/4.png></a></p><p>这里需要注意的地方是，如果第一次 CAS 失败了，则不能判断当前线程是先进行了中断还是先进行了 signal 方法的调用，可能是先执行了 signal 然后中断，也可能是先执行了中断，后执行了 signal，当然，这两个操作肯定是发生在 CAS 之前。这时需要做的就是等待当前线程的 node被添加到 AQS 队列后，也就是 enq 方法返回后，返回false 告诉 checkInterruptWhileWaiting 方法返回REINTERRUPT(1)，后续进行重新中断。简单来说，该方法的返回值代表当前线程是否在 park 的时候被中断唤醒，如果为 true 表示中断在 signal 调用之前，signal 还未执行，那么这个时候会根据await的语义，在 await时遇到中断需要抛出interruptedException，返回 true 就是告诉checkInterruptWhileWaiting 返回 THROW_IE(-1)。如果返回 false，否则表示signal 已经执行过了，只需要重新响应中断即可。<font color=red>这里的主要目的就是判断线程在等待的时候如果有中断请求，就一定要把它中断了</font></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>  private int checkInterruptWhileWaiting(Node node) {
+            return Thread.interrupted() ?
+                (transferAfterCancelledWait(node) ? THROW_IE : REINTERRUPT) :
+                0;
+        }
+    final boolean transferAfterCancelledWait(Node node) {
+    //使用 cas 修改节点状态，如果还能修改成功，说明线程被中断时，signal 还没有被调用。
+    // 这里有一个知识点，就是线程被唤醒，并不一定是在 java 层面执行了locksupport.unpark，
+    也可能是调用了线程的 interrupt()方法，这个方法会更新一个中断标识，并且会唤醒处于阻塞状态下的线程。
+        if (compareAndSetWaitStatus(node, Node.CONDITION, 0)) {
+            enq(node); //如果 cas 成功，则把node 添加到 AQS 队列
+            return true;
+        }
+    // 如果 cas 失败，则判断当前 node 是否已经在 AQS 队列上，如果不在，
+    则让给其他线程执行当 node 被触发了 signal 方法时，node 就会被加到 aqs 队列上
+        while (!isOnSyncQueue(node))
+        //循环检测 node 是否已经成功添加到 AQS 队列中。如果没有，则通过 yield，
+            Thread.yield();
+        return false;
+    }
+</code></pre></td></tr></table></div></div><p><strong>acquireQueued</strong>
+通过AQS队列修改等待队列的线程状态
+当前被唤醒的节点wait线程 去抢占同步锁。并且要恢复到原本的重入次数状态。调用完这个方法之后，AQS 队列的状态如下
+将 head 节点的 waitStatus 设置为-1，Signal 状态。</p><p><strong>reportInterruptAfterWait</strong>
+根据 checkInterruptWhileWaiting 方法返回的中断标识来进行中断上报。如果是 THROW_IE，则抛出中断异常如果是 REINTERRUPT，则重新响应中断</p><h3 id=图>图</h3><p><a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/5/1.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/5/1.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/5/1.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/5/1.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/5/1.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/5/1.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/5/1.png></a></p></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2019-07-27</span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/condition/>Condition</a></section><section><span><a href=javascript:void(0); onclick=window.history.back();>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/docker%E5%88%86%E5%B8%83%E5%BC%8F%E9%83%A8%E7%BD%B2zookeeper%E9%9B%86%E7%BE%A4/ class=prev rel=prev title=Docker分布式部署zookeeper集群><i class="fas fa-angle-left fa-fw"></i>Docker分布式部署zookeeper集群</a>
+<a href=/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A06countdownlatchsemaphorecyclicbarrier/ class=next rel=next title=并发编程学习(6)CountDownLatch、Semaphore、CyclicBarrier>并发编程学习(6)CountDownLatch、Semaphore、CyclicBarrier<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments><div id=valine class=comment></div><noscript>Please enable JavaScript to view the comments powered by <a href=https://valine.js.org/>Valine</a>.</noscript></div></article></div></main><script src=https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css><script src=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js></script><footer class=footer><div class=footer-container><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2018 - 2021</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>yakax</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i></a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=/lib/valine/valine.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/typeit@7.0.4/dist/typeit.min.js></script><script type=text/javascript>window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{"valine":{"appId":"oIoCMPOVr3i61isIop1jPYdP-gzGzoHsz","appKey":"IluQB7WNkIfKRAtgW35kEB7H","avatar":"mp","el":"#valine","emojiCDN":"https://cdn.jsdelivr.net/npm/emoji-datasource-google@5.0.1/img/google/64/","emojiMaps":{"100":"1f4af.png","alien":"1f47d.png","anger":"1f4a2.png","angry":"1f620.png","anguished":"1f627.png","astonished":"1f632.png","black_heart":"1f5a4.png","blue_heart":"1f499.png","blush":"1f60a.png","bomb":"1f4a3.png","boom":"1f4a5.png","broken_heart":"1f494.png","brown_heart":"1f90e.png","clown_face":"1f921.png","cold_face":"1f976.png","cold_sweat":"1f630.png","confounded":"1f616.png","confused":"1f615.png","cry":"1f622.png","crying_cat_face":"1f63f.png","cupid":"1f498.png","dash":"1f4a8.png","disappointed":"1f61e.png","disappointed_relieved":"1f625.png","dizzy":"1f4ab.png","dizzy_face":"1f635.png","drooling_face":"1f924.png","exploding_head":"1f92f.png","expressionless":"1f611.png","face_vomiting":"1f92e.png","face_with_cowboy_hat":"1f920.png","face_with_hand_over_mouth":"1f92d.png","face_with_head_bandage":"1f915.png","face_with_monocle":"1f9d0.png","face_with_raised_eyebrow":"1f928.png","face_with_rolling_eyes":"1f644.png","face_with_symbols_on_mouth":"1f92c.png","face_with_thermometer":"1f912.png","fearful":"1f628.png","flushed":"1f633.png","frowning":"1f626.png","ghost":"1f47b.png","gift_heart":"1f49d.png","green_heart":"1f49a.png","grimacing":"1f62c.png","grin":"1f601.png","grinning":"1f600.png","hankey":"1f4a9.png","hear_no_evil":"1f649.png","heart":"2764-fe0f.png","heart_decoration":"1f49f.png","heart_eyes":"1f60d.png","heart_eyes_cat":"1f63b.png","heartbeat":"1f493.png","heartpulse":"1f497.png","heavy_heart_exclamation_mark_ornament":"2763-fe0f.png","hole":"1f573-fe0f.png","hot_face":"1f975.png","hugging_face":"1f917.png","hushed":"1f62f.png","imp":"1f47f.png","innocent":"1f607.png","japanese_goblin":"1f47a.png","japanese_ogre":"1f479.png","joy":"1f602.png","joy_cat":"1f639.png","kiss":"1f48b.png","kissing":"1f617.png","kissing_cat":"1f63d.png","kissing_closed_eyes":"1f61a.png","kissing_heart":"1f618.png","kissing_smiling_eyes":"1f619.png","laughing":"1f606.png","left_speech_bubble":"1f5e8-fe0f.png","love_letter":"1f48c.png","lying_face":"1f925.png","mask":"1f637.png","money_mouth_face":"1f911.png","nauseated_face":"1f922.png","nerd_face":"1f913.png","neutral_face":"1f610.png","no_mouth":"1f636.png","open_mouth":"1f62e.png","orange_heart":"1f9e1.png","partying_face":"1f973.png","pensive":"1f614.png","persevere":"1f623.png","pleading_face":"1f97a.png","pouting_cat":"1f63e.png","purple_heart":"1f49c.png","rage":"1f621.png","relaxed":"263a-fe0f.png","relieved":"1f60c.png","revolving_hearts":"1f49e.png","right_anger_bubble":"1f5ef-fe0f.png","robot_face":"1f916.png","rolling_on_the_floor_laughing":"1f923.png","scream":"1f631.png","scream_cat":"1f640.png","see_no_evil":"1f648.png","shushing_face":"1f92b.png","skull":"1f480.png","skull_and_crossbones":"2620-fe0f.png","sleeping":"1f634.png","sleepy":"1f62a.png","slightly_frowning_face":"1f641.png","slightly_smiling_face":"1f642.png","smile":"1f604.png","smile_cat":"1f638.png","smiley":"1f603.png","smiley_cat":"1f63a.png","smiling_face_with_3_hearts":"1f970.png","smiling_imp":"1f608.png","smirk":"1f60f.png","smirk_cat":"1f63c.png","sneezing_face":"1f927.png","sob":"1f62d.png","space_invader":"1f47e.png","sparkling_heart":"1f496.png","speak_no_evil":"1f64a.png","speech_balloon":"1f4ac.png","star-struck":"1f929.png","stuck_out_tongue":"1f61b.png","stuck_out_tongue_closed_eyes":"1f61d.png","stuck_out_tongue_winking_eye":"1f61c.png","sunglasses":"1f60e.png","sweat":"1f613.png","sweat_drops":"1f4a6.png","sweat_smile":"1f605.png","thinking_face":"1f914.png","thought_balloon":"1f4ad.png","tired_face":"1f62b.png","triumph":"1f624.png","two_hearts":"1f495.png","unamused":"1f612.png","upside_down_face":"1f643.png","weary":"1f629.png","white_frowning_face":"2639-fe0f.png","white_heart":"1f90d.png","wink":"1f609.png","woozy_face":"1f974.png","worried":"1f61f.png","yawning_face":"1f971.png","yellow_heart":"1f49b.png","yum":"1f60b.png","zany_face":"1f92a.png","zipper_mouth_face":"1f910.png","zzz":"1f4a4.png"},"enableQQ":false,"highlight":true,"lang":"zh-cn","pageSize":10,"placeholder":"来都来了，说两句把。 支持MD","recordIP":true,"visitor":true}},"data":{"id-1":"yakax.blog","id-2":"yakax.blog"},"lightGallery":{"actualSize":false,"exThumbImage":"data-thumbnail","hideBarsDelay":2000,"selector":".lightgallery","speed":400,"thumbContHeight":80,"thumbWidth":80,"thumbnail":true},"search":{"algoliaAppID":"XQCZLRU4IH","algoliaIndex":"blog","algoliaSearchKey":"2850ce47940fd2479113f229a321fa9d","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":150,"type":"algolia"},"typeit":{"cursorChar":"_","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":200}};</script><script type=text/javascript src=/js/theme.min.js></script></body></html>

@@ -1,0 +1,677 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>并发编程学习(4)Lock - yakax</title><meta name=Description content><meta property="og:title" content="并发编程学习(4)Lock"><meta property="og:description" content="初步认识JUC
+Java.util.concurrent 是在并发编程中比较常用的工具类，里面包含很多用来在并发场景中使用的组件。比如线程池、阻塞队列、计时器、同步器、并发集合等等。并发包的作者是大名鼎鼎的 Doug Lea。
+lock
+在 Lock 接口出现之前，Java 中的应用程序对于多线程的并发安全处理只能基于synchronized 关键字来解决。但是 synchronized 在有些场景中会存在一些短板，也就是它并不适合于所有的并发场景。但是在 Java5 以后，Lock 的出现可以解决synchronized 在某些场景中的短板，它比 synchronized 更加灵活。
+Lock 本质上是一个接口，它定义了释放锁和获得锁的抽象方法，定义成接口就意味着它定义了锁的一个标准规范，也同时意味着锁的不同实现。实现 Lock 接口的类有很多，以下为几个常见的锁实现
+Lock接口
+
+
+1
+2
+3
+4
+5
+
+
+void lock() // 如果锁可用就获得锁，如果锁不可用就阻塞直到锁释放
+void lockInterruptibly() // 和lock()方法相似, 但阻塞的线程可中断，抛 出java.lang.InterruptedException 异常
+boolean tryLock() // 非阻塞获取锁;尝试获取锁，如果成功返回 true
+boolean tryLock(longtimeout, TimeUnit timeUnit)//带有超时时间的获取锁方法
+void unlock() // 释放锁
+
+
+类图"><meta property="og:type" content="article"><meta property="og:url" content="https://yakax.github.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A04lock/"><meta property="og:image" content="https://yakax.github.io/images/1.png"><meta property="article:published_time" content="2019-06-27T00:00:00+00:00"><meta property="article:modified_time" content="2019-06-27T00:00:00+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://yakax.github.io/images/1.png"><meta name=twitter:title content="并发编程学习(4)Lock"><meta name=twitter:description content="初步认识JUC
+Java.util.concurrent 是在并发编程中比较常用的工具类，里面包含很多用来在并发场景中使用的组件。比如线程池、阻塞队列、计时器、同步器、并发集合等等。并发包的作者是大名鼎鼎的 Doug Lea。
+lock
+在 Lock 接口出现之前，Java 中的应用程序对于多线程的并发安全处理只能基于synchronized 关键字来解决。但是 synchronized 在有些场景中会存在一些短板，也就是它并不适合于所有的并发场景。但是在 Java5 以后，Lock 的出现可以解决synchronized 在某些场景中的短板，它比 synchronized 更加灵活。
+Lock 本质上是一个接口，它定义了释放锁和获得锁的抽象方法，定义成接口就意味着它定义了锁的一个标准规范，也同时意味着锁的不同实现。实现 Lock 接口的类有很多，以下为几个常见的锁实现
+Lock接口
+
+
+1
+2
+3
+4
+5
+
+
+void lock() // 如果锁可用就获得锁，如果锁不可用就阻塞直到锁释放
+void lockInterruptibly() // 和lock()方法相似, 但阻塞的线程可中断，抛 出java.lang.InterruptedException 异常
+boolean tryLock() // 非阻塞获取锁;尝试获取锁，如果成功返回 true
+boolean tryLock(longtimeout, TimeUnit timeUnit)//带有超时时间的获取锁方法
+void unlock() // 释放锁
+
+
+类图"><meta name=application-name content="yakax"><meta name=apple-mobile-web-app-title content="yakax"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:'==document.location.protocol?'https:':'http:')+"//widget.daovoice.io/widget/af744044.js","daovoice")
+daovoice('init',{app_id:"af744044"});daovoice('update');</script><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://yakax.github.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A04lock/><link rel=prev href=https://yakax.github.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A03%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%80%A7%E5%88%86%E6%9E%90/><link rel=next href=https://yakax.github.io/java%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C-%E8%BD%AC%E8%87%AA%E9%98%BF%E9%87%8C%E4%BA%91%E6%A0%96%E7%A4%BE%E5%8C%BA/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"并发编程学习(4)Lock","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/yakax.github.io\/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A04lock\/"},"image":["https:\/\/yakax.github.io\/images\/avatar.png"],"genre":"posts","keywords":"lock","wordcount":7275,"url":"https:\/\/yakax.github.io\/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A04lock\/","datePublished":"2019-06-27T00:00:00+00:00","dateModified":"2019-06-27T00:00:00+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"yakax","logo":"https:\/\/yakax.github.io\/images\/avatar.png"},"author":{"@type":"Person","name":"yakax"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':('auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark'))&&document.body.setAttribute('theme','dark');</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class="fas fa-crosshairs fa-sm"></i></span><span id=id-1 class=typeit></span></a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>所有文章 </a><a class=menu-item href=/tags/>标签 </a><a class=menu-item href=/categories/>分类 </a><a class=menu-item href=/about/>关于 </a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i></a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop><input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span></span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class="fas fa-crosshairs fa-sm"></i></span><span id=id-2 class=typeit></span></a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/>所有文章</a><a class=menu-item href=/tags/>标签</a><a class=menu-item href=/categories/>分类</a><a class=menu-item href=/about/>关于</a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">并发编程学习(4)Lock</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>yakax</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/><i class="far fa-folder fa-fw"></i>并发编程学习</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2019-06-27>2019-06-27</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 7275 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 15 分钟&nbsp;<span id=/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A04lock/ class=leancloud_visitors data-flag-title=并发编程学习(4)Lock>
+<i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
+</span>&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><ul><li><a href=#初步认识juc>初步认识JUC</a></li><li><a href=#lock>lock</a><ul><li><a href=#lock接口>Lock接口</a></li><li><a href=#reentrantlock>ReentrantLock</a><ul><li><a href=#重入锁的设计目的>重入锁的设计目的</a></li></ul></li><li><a href=#reentrantreadwritelock读写锁>ReentrantReadWriteLock(读写锁)</a><ul><li><a href=#读写锁的设计目的>读写锁的设计目的</a></li></ul></li><li><a href=#stampedlock>StampedLock</a></li></ul></li><li><a href=#reentrantlock-的实现原理>ReentrantLock 的实现原理</a><ul><li><a href=#aqs>AQS</a></li><li><a href=#node-的组成>Node 的组成</a></li><li><a href=#释放锁以及添加线程对于队列的变化>释放锁以及添加线程对于队列的变化</a></li><li><a href=#reentrantlock-的源码分析>ReentrantLock 的源码分析</a></li><li><a href=#锁的释放流程>锁的释放流程</a></li><li><a href=#公平锁和非公平锁的区别>公平锁和非公平锁的区别</a></li></ul></li></ul></li></ul></nav></div></div><div class=content id=content><h3 id=初步认识juc>初步认识JUC</h3><p>Java.util.concurrent 是在并发编程中比较常用的工具类，里面包含很多用来在并发场景中使用的组件。比如线程池、阻塞队列、计时器、同步器、并发集合等等。并发包的作者是大名鼎鼎的 Doug Lea。</p><h3 id=lock>lock</h3><p>在 Lock 接口出现之前，Java 中的应用程序对于多线程的并发安全处理只能基于synchronized 关键字来解决。但是 synchronized 在有些场景中会存在一些短板，也就是它并不适合于所有的并发场景。但是在 Java5 以后，Lock 的出现可以解决synchronized 在某些场景中的短板，它比 synchronized 更加灵活。
+Lock 本质上是一个接口，它定义了释放锁和获得锁的抽象方法，定义成接口就意味着它定义了锁的一个标准规范，也同时意味着锁的不同实现。实现 Lock 接口的类有很多，以下为几个常见的锁实现</p><h4 id=lock接口>Lock接口</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>void lock() // 如果锁可用就获得锁，如果锁不可用就阻塞直到锁释放
+void lockInterruptibly() // 和lock()方法相似, 但阻塞的线程可中断，抛 出java.lang.InterruptedException 异常
+boolean tryLock() // 非阻塞获取锁;尝试获取锁，如果成功返回 true
+boolean tryLock(longtimeout, TimeUnit timeUnit)//带有超时时间的获取锁方法
+void unlock() // 释放锁
+</code></pre></td></tr></table></div></div><p>类图
+<a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/6.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/6.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/6.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/6.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/6.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/6.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/6.png></a></p><h4 id=reentrantlock>ReentrantLock</h4><p>表示重入锁，它是唯一一个实现了 Lock 接口的类。重入锁指的是线程在获得锁之后，再次获取该锁不需要阻塞，而是直接关联一次计数器增加重入次数，也就是如果当前线程 t1 通过调用 lock 方法获取了锁之后，再次调用 lock，是不会再阻塞去获取锁的，直接增加重试次数就行了。synchronized 和 ReentrantLock 都是可重入锁。</p><h5 id=重入锁的设计目的>重入锁的设计目的</h5><p>比如调用 demo 方法获得了当前的对象锁，然后在这个方法中再去调用demo2，demo2 中的存在同一个实例锁，这个时候当前线程会因为无法获得demo2 的对象锁而阻塞，就会产生死锁。重入锁的设计目的是避免线程的死锁。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>public class ReentrantDemo{
+  public synchronized void demo(){// main获得对象锁
+      System.out.println(&#34;begin:demo&#34;);
+      demo2();
+ }
+ public void demo2(){
+         System.out.println(&#34;begin:demo1&#34;);
+         // 在次获得对象锁
+         synchronized (this){
+         }
+ }
+ public static void main(String[] args) {
+       ReentrantDemo rd=new ReentrantDemo();
+       new Thread(rd::demo).start();
+       }
+}
+</code></pre></td></tr></table></div></div><h4 id=reentrantreadwritelock读写锁>ReentrantReadWriteLock(读写锁)</h4><p>重入读写锁，它实现了 ReadWriteLock 接口，在这个类中维护了两个锁，一个是 ReadLock，一个是 WriteLock，他们都分别实现了 Lock接口。读写锁是一种适合读多写少的场景下解决线程安全问题的工具，基本原则是： 读和读不互斥、读和写互斥、写和写互斥。也就是说涉及到影响数据变化的操作都会存在互斥。</p><h5 id=读写锁的设计目的>读写锁的设计目的</h5><p>我们以前理解的锁，基本都是排他锁，也就是这些锁在同一时刻只允许一个线程进行访问，而读写锁在同一时刻可以允许多个线程访问，但是在写线程访问时，所有的读线程和其他写线程都会被阻塞。读写锁维护了一对锁，一个读锁、一个写锁;一般情况下，读写锁的性能都会比排它锁好，因为大多数场景读是多于写的。在读多于写的情况下，读写锁能够提供比排它锁更好的并发性和吞吐量.</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>public class RWLock {
+    static ReentrantReadWriteLock wrl=new ReentrantReadWriteLock();
+    static Map&lt;String,Object&gt; cacheMap=new HashMap&lt;&gt;();
+    static Lock read=wrl.readLock();
+    static Lock write=wrl.writeLock();
+
+    //线程B/C/D
+    public static final Object get(String key){
+        System.out.println(&#34;begin read data:&#34;+key);
+        read.lock(); //获得读锁-&gt; 阻塞
+        try {
+            return cacheMap.get(key);
+        }finally {
+            read.unlock();
+        }
+    }
+    //线程A
+    public static final Object put(String key,Object val){
+        write.lock();//获得了写锁
+        try{
+            return cacheMap.put(key,val);
+        }finally {
+            write.unlock();
+        }
+    }
+
+    public static void main(String[] args) {
+        wrl.readLock();//B线程 -&gt;阻塞
+        wrl.writeLock(); //A线程
+        //读-&gt;读是可以共享
+        //读-&gt;写 互斥
+        //写-&gt;写 互斥
+        //读多写少的场景
+    }
+}
+</code></pre></td></tr></table></div></div><p>在这个案例中，通过 hashmap 来模拟了一个内存缓存，然后使用读写所来保证这个内存缓存的线程安全性。当执行读操作的时候，需要获取读锁，在并发访问的时候，读锁不会被阻塞，因为读操作不会影响执行结果。在执行写操作是，线程必须要获取写锁，当已经有线程持有写锁的情况下，当前线程会被阻塞，只有当写锁释放以后，其他读写操作才能继续执行。使用读写锁提升读操作的并发性，也保证每次写操作对所有的读写操作的可见性</p><ul><li>读锁与读锁可以共享</li><li>读锁与写锁不可以共享（排他）</li><li>写锁与写锁不可以共享（排他）</li></ul><h4 id=stampedlock>StampedLock</h4><p>stampedLock 是 JDK8 引入的新的锁机制，可以简单认为是读写锁的一个改进版本，读写锁虽然通过分离读和写的功能使得读和读之间可以完全并发，但是读和写是有冲突的，如果大量的读线程存在，可能会引起写线程的饥饿。stampedLock 是一种乐观的读策略，使得乐观锁完全不会阻塞写线程</p><h3 id=reentrantlock-的实现原理>ReentrantLock 的实现原理</h3><h4 id=aqs>AQS</h4><p>在 Lock 中，用到了一个同步队列 AQS，全称 AbstractQueuedSynchronizer，它是一个同步工具也是 Lock 用来实现线程同步的核心组件独占锁，每次只能有一个线程持有锁，比如前面给大家演示的 ReentrantLock 就是以独占方式实现的互斥锁共 享 锁 ， 允 许 多 个线程同时获取锁，并发访问共享资源，比如ReentrantReadWriteLock
+AQS 队列内部维护的是一个 FIFO 的双向链表，这种结构的特点是每个数据结构都有两个指针，分别指向直接的后继节点和直接前驱节点。所以双向链表可以从任意一个节点开始很方便的访问前驱和后继。每个 Node 其实是由线程封装，当线程争抢锁失败后会封装成 Node 加入到 ASQ 队列中去；当获取锁的线程释放锁以后，会从队列中唤醒一个阻塞的节点(线程)
+<a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/4.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/4.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/4.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/4.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/4.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/4.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/4.png></a></p><h4 id=node-的组成>Node 的组成</h4><p><a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/5.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/5.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/5.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/5.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/5.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/5.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/5.png></a></p><h4 id=释放锁以及添加线程对于队列的变化>释放锁以及添加线程对于队列的变化</h4><p><a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/1.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/1.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/1.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/1.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/1.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/1.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/1.png></a>
+<strong>里会涉及到两个变化</strong></p><ul><li>新的线程封装成 Node 节点追加到同步队列中，设置 prev 节点以及修改当前节点的前置节点的 next 节点指向自己</li><li>通过 CAS 讲 tail 重新指向新的尾部节点</li></ul><p>head 节点表示获取锁成功的节点，当头结点在释放同步状态时，会唤醒后继节点，如果后继节点获得锁成功，会把自己设置为头结点，节点的变化过程如下
+<a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/7.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/7.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/7.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/7.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/7.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/7.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/7.png></a>
+<strong>涉及到两个变化</strong></p><ul><li>修改head节点指向下一个获得锁的节点</li><li>新的获得锁的节点，将prev的指针指向null</li></ul><p><font color=red>设置 head 节点不需要用 CAS，原因是设置 head 节点是由获得锁的线程来完成的，而同步锁只能由一个线程获得，所以不需要 CAS 保证，只需要把 head 节点设置为原首节点的后继节点，并且断开原 head 节点的 next 引用即可</font></p><h4 id=reentrantlock-的源码分析>ReentrantLock 的源码分析</h4><p><font color=red><strong>ReentrantLock 默认是非公平锁，因为无论在什么场景非公平锁的效率都是会大于公平锁的。</strong></font>
+时序图
+<a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/10.jpg><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/10.jpg data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/10.jpg, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/10.jpg 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/10.jpg 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/10.jpg title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/10.jpg></a></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>public void lock(){
+    sync.lock();
+}
+</code></pre></td></tr></table></div></div><p>sync是一个静态内部类，它继承了AQS这个抽象类，前面说过AQS是一个同步工具，主要用来实现同步控制。我们在利用这个工具的时候，会继承它来实现同步控制功能。 通过进一步分析，发现Sync这个类有两个具体的实现，分别是 NofairSync(非公平锁), FailSync(公平锁).
+<strong>公平锁</strong> 表示所有线程严格按照FIFO来获取锁
+<strong>非公平锁</strong> 表示可以存在抢占锁的功能，也就是说不管当前队列上是否存在其他线程等待，新线程都有机会抢占锁
+<strong>NonfairSync.lock</strong></p><ol><li>非公平锁和公平锁最大的区别在于，在非公平锁中我抢占锁的逻辑是，不管有没有线程排队，我先上来 cas 去抢占一下</li><li>CAS 成功，就表示成功获得了锁</li><li>CAS 失败，调用 acquire(1)走锁竞争逻辑</li></ol><p><font color=red>非公平的AQS队列头结点的下一个节点不一定会获得锁，就是因为在非公平锁的释放后，如果节点在cas的时候。另外一个线程正好进来cas锁，如果这个节点没他快，那么锁就会被这个插队的获得</font></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>final void lock() {
+ if (compareAndSetState(0, 1))  //通过cas操作来修改state状态，表示争抢锁的操作
+ setExclusiveOwnerThread(Thread.currentThread());//设置当前获得锁状态的线程
+ else
+ acquire(1);//尝试去获取锁
+}
+</code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>    protected final boolean compareAndSetState(int expect, int update) {
+        // See below for intrinsics setup to support this
+        return unsafe.compareAndSwapInt(this, stateOffset, expect, update);
+    }
+</code></pre></td></tr></table></div></div><p>通过 cas 乐观锁的方式来做比较并替换，这段代码的意思是，如果当前内存中的state 的值和预期值 expect 相等，则替换为 update。更新成功返回 true，否则返回 false.
+这个操作是原子的，不会出现线程安全问题，这里面涉及到Unsafe这个类的操作，以及涉及到 state 这个属性的意义。state 是 AQS 中的一个属性，它在不同的实现中所表达的含义不一样，对于重入锁的实现来说，表示一个同步状态。它有两个含义的表示</p><ol><li>当 state=0 时，表示无锁状态</li><li>当 state>0 时，表示已经有线程获得了锁，也就是 state=1，但是因为ReentrantLock 允许重入，所以同一个线程多次获得同步锁的时候，state 会递增，比如重入 5 次，那么 state=5。而在释放锁的时候，同样需要释放 5 次直到 state=0其他线程才有资格获得锁</li></ol><p><strong>Unsafe 类</strong>
+Unsafe 类是在 sun.misc 包下，不属于 Java 标准。但是很多 Java 的基础类库，包括一些被广泛使用的高性能开发库都是基于 Unsafe 类开发的，比如 Netty、Hadoop、Kafka 等；Unsafe 可认为是 Java 中留下的后门，提供了一些低层次操作，如直接内存访问、线程的挂起和恢复、CAS、线程同步、内存屏障而 CAS 就是 Unsafe 类中提供的一个原子操作，第一个参数为需要改变的对象，第二个为偏移量(即之前求出来的 headOffset 的值)，第三个参数为期待的值，第四个为更新后的值整个方法的作用是如果当前时刻的值等于预期值 var4 相等，则更新为新的期望值 var5，如果更新成功，则返回 true，否则返回 false；</p><p><strong>acquire(1)方法</strong></p><ol><li>通过 tryAcquire 尝试获取独占锁，如果成功返回 true，失败返回 false</li><li>如果 tryAcquire 失败，则会通过 addWaiter 方法将当前线程封装成 Node 添加到 AQS 队列尾部</li><li>acquireQueued，将 Node 作为参数，通过自旋去尝试获取锁。</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>    public final void acquire(int arg) {
+        if (!tryAcquire(arg) &amp;&amp;
+            acquireQueued(addWaiter(Node.EXCLUSIVE), arg))
+            selfInterrupt();
+    }
+</code></pre></td></tr></table></div></div><p><strong>NonfairSync.tryAcquire</strong>
+这个方法的作用是尝试获取锁，如果成功返回 true，不成功返回 false它是重写 AQS 类中的 tryAcquire 方法，并且大家仔细看一下 AQS 中 tryAcquire方法的定义，并没有实现，而是抛出异常。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>        protected final boolean tryAcquire(int acquires) {
+            return nonfairTryAcquire(acquires);
+        }
+</code></pre></td></tr></table></div></div><p><strong>nonfairTryAcquire</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>        final boolean nonfairTryAcquire(int acquires) {
+            final Thread current = Thread.currentThread(); //获取当前执行的线程
+            int c = getState(); //获得 state 的值
+            if (c == 0) { //表示无锁状态
+                if (compareAndSetState(0, acquires)) { //cas 替换 state 的值，cas 成功表示获取锁成功
+                    setExclusiveOwnerThread(current); //保存当前获得锁的线程,下次再来的时候不要再尝试竞争锁
+                    return true;
+                }
+            }
+            else if (current == getExclusiveOwnerThread()) { //如果同一个线程来获得锁，直接增加重入次数
+                int nextc = c + acquires;
+                if (nextc &lt; 0) // overflow
+                    throw new Error(&#34;Maximum lock count exceeded&#34;);
+                setState(nextc);
+                return true;
+            }
+            return false;
+        }
+</code></pre></td></tr></table></div></div><p><strong>addWaiter</strong>
+当 tryAcquire 方法获取锁失败以后，则会先调用 addWaiter 将当前线程封装成Node.
+入参 mode 表示当前节点的状态，传递的参数是 Node.EXCLUSIVE，表示独占状态。意味着重入锁用到了 AQS 的独占锁功能</p><ol><li>将当前线程封装成 Node</li><li>当前链表中的 tail 节点是否为空，如果不为空，则通过 cas 操作把当前线程的node 添加到 AQS 队列</li><li>如果为空或者 cas 失败，调用 enq 将节点添加到 AQS 队列</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>    private Node addWaiter(Node mode) {
+        Node node = new Node(Thread.currentThread(), mode);
+        // Try the fast path of enq; backup to full enq on failure
+        Node pred = tail; //tail 是 AQS 中表示同比队列队尾的属性，默认是 null
+        if (pred != null) { //tail 不为空的情况下，说明队列中存在节点
+            node.prev = pred; //把当前线程的 Node 的 prev 指向 tail
+            if (compareAndSetTail(pred, node)) { //通过 cas 把 node加入到 AQS 队列，也就是设置为 tail
+                pred.next = node; ;//设置成功以后，把原 tail 节点的 next指向当前 node
+                return node;
+            }
+        }
+        enq(node); ;//tail=null,把 node 添加到同步队列
+        return node;
+    }
+</code></pre></td></tr></table></div></div><p><strong>enq</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>    private Node enq(final Node node) {
+        for (;;) {
+            Node t = tail;
+            if (t == null) { // Must initialize
+                if (compareAndSetHead(new Node()))
+                    tail = head;
+            } else {
+                node.prev = t;
+                if (compareAndSetTail(t, node)) {
+                    t.next = node;
+                    return t;
+                }
+            }
+        }
+    }
+</code></pre></td></tr></table></div></div><p><strong>图解分析</strong>
+假设 3 个线程来争抢锁，那么截止到 enq 方法运行结束之后，或者调用 addwaiter方法结束后，AQS 中的链表结构图
+<a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/11.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/11.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/11.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/11.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/11.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/11.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/11.png></a></p><p><strong>acquireQueued</strong>
+通过 addWaiter 方法把线程添加到链表后，会接着把 Node 作为参数传递给acquireQueued 方法，去竞争锁</p><ol><li>获取当前节点的 prev 节点</li><li>如果 prev 节点为 head 节点，那么它就有资格去争抢锁，调用 tryAcquire 抢占锁</li><li>抢占锁成功以后，把获得锁的节点设置为 head，并且移除原来的初始化 head节点</li><li>如果获得锁失败，则根据 waitStatus 决定是否需要挂起线程</li><li>最后，通过 cancelAcquire 取消获得锁的操作</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>    final boolean acquireQueued(final Node node, int arg) {
+        boolean failed = true;
+        try {
+            boolean interrupted = false;
+            for (;;) {
+                final Node p = node.predecessor(); ;//获取当前节点的 prev 节点
+                if (p == head &amp;&amp; tryAcquire(arg)) { //如果是 head 节点，说明有资格去争抢锁
+                    setHead(node); //获取锁成功，也就是ThreadA 已经释放了锁，然后设置 head 为 ThreadB 获得执行权限
+                    p.next = null; // help GC //把原 head 节点从链表中移除
+                    failed = false;
+                    return interrupted;
+                }
+                //ThreadA 可能还没释放锁，使得 ThreadB 在执行 tryAcquire 时会返回 false
+                if (shouldParkAfterFailedAcquire(p, node) &amp;&amp;
+                    parkAndCheckInterrupt())
+                    interrupted = true;//并且返回当前线程在等待过程中有没有中断过。
+            }
+        } finally {
+            if (failed)
+                cancelAcquire(node);
+        }
+    }
+</code></pre></td></tr></table></div></div><p><strong>shouldParkAfterFailedAcquire 争抢锁失败调用的方法</strong>
+如果 ThreadA 的锁还没有释放的情况下，ThreadB 和 ThreadC 来争抢锁肯定是会失败，那么失败以后会调用shouldParkAfterFailedAcquire 方法
+Node 有 5 中状态，分别是：CANCELLED（1），SIGNAL（-1）、CONDITION（-2）、PROPAGATE(-3)、默认状态(0)
+<strong>CANCELLED</strong>: 在同步队列中等待的线程等待超时或被中断，需要从同步队列中取消该 Node 的结点, 其结点的 waitStatus 为 CANCELLED，即结束状态，进入该状态后的结点将不会再变化
+<strong>SIGNAL</strong>: 只要前置节点释放锁，就会通知标识为 SIGNAL 状态的后续节点的线程
+<strong>CONDITION</strong>： 和 Condition 有关系，后续会讲解
+<strong>PROPAGATE</strong>：共享模式下，PROPAGATE 状态的线程处于可运行状态
+0:初始状态</p><ol><li>如果 ThreadA 的 pred 节点状态为 SIGNAL，那就表示可以放心挂起当前线程</li><li>通过循环扫描链表把 CANCELLED 状态的节点移除</li><li>修改 pred 节点的状态为 SIGNAL,返回 false.
+<font color=red>返回 false 时，也就是不需要挂起，返回 true，则需要调用 parkAndCheckInterrupt挂起当前线程</font></li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
+        int ws = pred.waitStatus; //前置节点的waitStatus
+        if (ws == Node.SIGNAL)//如果前置节点为 SIGNAL，意味着只需要等待其他前置节点的线程被释放
+            /*
+             * This node has already set status asking a release
+             * to signal it, so it can safely park.
+             */
+            return true; //返回 true，意味着可以直接放心的挂起了
+        if (ws &gt; 0) { //ws 大于 0，意味着 prev 节点取消了排队，直接移除这个节点就行
+            /*
+             * Predecessor was cancelled. Skip over predecessors and
+             * indicate retry.
+             */
+            do {
+                node.prev = pred = pred.prev; //相当于: pred=pred.prev;node.prev=pred;
+            } while (pred.waitStatus &gt; 0); //这里采用循环，从双向列表中移除 CANCELLED 的节点
+            pred.next = node;
+        } else { //利用 cas 设置 prev 节点的状态为 SIGNAL(-1)
+
+            /*
+             * waitStatus must be 0 or PROPAGATE.  Indicate that we
+             * need a signal, but don&#39;t park yet.  Caller will need to
+             * retry to make sure it cannot acquire before parking.
+             */
+            compareAndSetWaitStatus(pred, ws, Node.SIGNAL);
+        }
+        return false;
+    }
+</code></pre></td></tr></table></div></div><p><strong>parkAndCheckInterrupt 中断</strong>
+如果shouldParkAfterFailedAcquire返回了true，则会执行： parkAndCheckInterrupt()方法，它是通过LockSupport.park(this)将当前线程挂起到WATING状态，它需要等待一个中断、unpark方法来唤醒它，通过这样一种FIFO的机制的等待，来实现了Lock的操作。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>    private final boolean parkAndCheckInterrupt() {
+        LockSupport.park(this);
+        return Thread.interrupted();
+    }
+</code></pre></td></tr></table></div></div><p>LockSupport是Java6引入的一个类，提供了基本的线程同步原语。LockSupport实际上是调用了 Unsafe 类里的函数，归结到 Unsafe 里，只有两个函数&ndash;底层的就不分析了</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>    public native void unpark(Object var1);
+    public native void park(boolean var1, long var2);
+</code></pre></td></tr></table></div></div><h4 id=锁的释放流程>锁的释放流程</h4><p><strong>unlock</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>public final boolean release(int arg) {
+   if (tryRelease(arg)) { //释放锁成功
+      Node h = head; //得到 aqs 中 head 节点
+      if (h != null &amp;&amp; h.waitStatus != 0) //如果 head 节点不为空并且状态！=0.调用 unparkSuccessor(h)唤醒后续节点
+         unparkSuccessor(h);
+        return true;
+   }
+  return false;
+}
+</code></pre></td></tr></table></div></div><p><strong>tryRelease</strong>
+这个方法可以认为是一个设置锁状态的操作，通过将 state 状态减掉传入的参数值（参数是 1），如果结果状态为 0，就将排它锁的 Owner 设置为 null，以使得其它的线程有机会进行执行。
+在排它锁中，加锁的时候状态会增加 1（当然可以自己修改这个值），在解锁的时候减掉 1，同一个锁，在可以重入后，可能会被叠加为 2、3、4 这些值，只有 unlock()的次数与 lock()的次数对应才会将 Owner 线程设置为空，而且也只有这种情况下才会返回 true</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>        protected final boolean tryRelease(int releases) {
+            int c = getState() - releases;
+            if (Thread.currentThread() != getExclusiveOwnerThread())
+                throw new IllegalMonitorStateException();
+            boolean free = false;
+            if (c == 0) {
+                free = true;
+                setExclusiveOwnerThread(null);
+            }
+            setState(c);
+            return free;
+        }
+</code></pre></td></tr></table></div></div><p><strong>unparkSuccessor</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>    private void unparkSuccessor(Node node) {
+        /*
+         * If status is negative (i.e., possibly needing signal) try
+         * to clear in anticipation of signalling.  It is OK if this
+         * fails or if status is changed by waiting thread.
+         */
+        int ws = node.waitStatus; //获得 head 节点的状态
+        if (ws &lt; 0)
+            compareAndSetWaitStatus(node, ws, 0); ;// 设置 head 节点状态为 0
+
+        /*
+         * Thread to unpark is held in successor, which is normally
+         * just the next node.  But if cancelled or apparently null,
+         * traverse backwards from tail to find the actual
+         * non-cancelled successor.
+         */
+        Node s = node.next; //得到 head 节点的下一个节点
+        if (s == null || s.waitStatus &gt; 0) {
+        //如果下一个节点为 null 或者 status&gt;0 表示 cancelled 状态.
+            //通过从尾部节点开始扫描，找到距离 head 最近的一个waitStatus&lt;=0 的节点
+            s = null;
+            for (Node t = tail; t != null &amp;&amp; t != node; t = t.prev)
+                if (t.waitStatus &lt;= 0)
+                    s = t;
+        }
+        if (s != null) //next 节点不为空，直接唤醒这个线程即可
+            LockSupport.unpark(s.thread);
+    }
+</code></pre></td></tr></table></div></div><p><strong>为什么在释放锁的时候是从 最后节点 tail 进行扫描</strong></p><ol><li>将新的节点的 prev 指向 tail</li><li>通过 cas 将 tail 设置为新的节点，因为 cas 是原子操作所以能够保证线程安全性</li><li>t.next=node；设置原 tail 的 next 节点指向新的节点</li></ol><p><font color=red>注意看else写的逻辑</font></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>    private Node enq(final Node node) {
+        for (;;) {
+            Node t = tail;
+            if (t == null) { // Must initialize
+                if (compareAndSetHead(new Node()))
+                    tail = head;
+            } else {
+                node.prev = t;
+                if (compareAndSetTail(t, node)) {
+                    t.next = node;
+                    return t;
+                }
+            }
+        }
+    }
+</code></pre></td></tr></table></div></div><p><a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/12.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/12.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/12.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/12.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/12.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/12.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/12.png></a>
+<font color=red>在 cas 操作之后，t.next=node 操作之前。存在其他线程调用 unlock 方法从 head开始往后遍历，由于 t.next=node 还没执行意味着链表的关系还没有建立完整。就会导致遍历到 t 节点的时候被中断。所以从后往前遍历，一定不会存在这个问题。</font></p><p><strong>图解分析</strong>
+通过锁的释放，原本的结构就发生了一些变化。head 节点的 waitStatus 变成了 0，ThreadB 被唤醒
+<a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/13.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/13.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/13.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/13.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/13.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/13.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/13.png></a>
+然后通过unlock后 原来被挂起的线程是在 acquireQueued 方法中自选，所以被唤醒以后继续从这个方法开始执行在acquireQueued方法中</p><ul><li>设置新 head 节点的 prev=null</li><li>设置原 head 节点的 next 节点为 null</li></ul><p><a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/8.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/8.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/8.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/8.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/8.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/8.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/8.png></a></p><h4 id=公平锁和非公平锁的区别>公平锁和非公平锁的区别</h4><p>锁的公平性是相对于获取锁的顺序而言的，如果是一个公平锁，那么锁的获取顺序就应该符合请求的绝对时间顺序，也就是 FIFO。 在上面分析的例子来说，只要CAS 设置同步状态成功，则表示当前线程获取了锁，而公平锁则不一样，差异点有两个</p><p><strong>lock</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>final void lock() {
+ acquire(1);
+}
+非公平锁在获取锁的时候，会先通过 CAS 进行抢占，而公平锁则不会
+final void lock() {
+    if (compareAndSetState(0, 1))
+        setExclusiveOwnerThread(Thread.currentThread());
+    else
+        acquire(1);
+}
+</code></pre></td></tr></table></div></div><p><strong>tryAcquire</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>公平锁
+ protected final boolean tryAcquire(int acquires) {
+    final Thread current = Thread.currentThread();
+    int c = getState();
+    if (c == 0) {
+        if (!hasQueuedPredecessors() &amp;&amp;
+            compareAndSetState(0, acquires)) {
+            setExclusiveOwnerThread(current);
+            return true;
+        }
+    }
+    else if (current == getExclusiveOwnerThread()) {
+        int nextc = c + acquires;
+        if (nextc &lt; 0)
+            throw new Error(&#34;Maximum lock count exceeded&#34;);
+        setState(nextc);
+        return true;
+    }
+    return false;
+}
+
+非公平锁
+final boolean nonfairTryAcquire(int acquires) {
+    final Thread current = Thread.currentThread();
+    int c = getState();
+    if (c == 0) {
+        if (compareAndSetState(0, acquires)) {
+            setExclusiveOwnerThread(current);
+            return true;
+        }
+    }
+    else if (current == getExclusiveOwnerThread()) {
+        int nextc = c + acquires;
+        if (nextc &lt; 0) // overflow
+            throw new Error(&#34;Maximum lock count exceeded&#34;);
+        setState(nextc);
+        return true;
+    }
+    return false;
+}
+</code></pre></td></tr></table></div></div><p>不同的地方在于判断条件多了hasQueuedPredecessors()方法，也就是加入了<strong>同步队列中当前节点是否有前驱节点</strong>的判断，如果该方法返回 true，则表示有线程比当前线程更早地请求获取锁，因此需要等待前驱线程获取并释放锁之后才能继续获取锁。</p></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2019-06-27</span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/lock/>lock</a></section><section><span><a href=javascript:void(0); onclick=window.history.back();>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A03%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%80%A7%E5%88%86%E6%9E%90/ class=prev rel=prev title=并发编程学习(3)线程安全性分析><i class="fas fa-angle-left fa-fw"></i>并发编程学习(3)线程安全性分析</a>
+<a href=/java%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C-%E8%BD%AC%E8%87%AA%E9%98%BF%E9%87%8C%E4%BA%91%E6%A0%96%E7%A4%BE%E5%8C%BA/ class=next rel=next title=Java开发手册-(转自阿里云栖社区)>Java开发手册-(转自阿里云栖社区)<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments><div id=valine class=comment></div><noscript>Please enable JavaScript to view the comments powered by <a href=https://valine.js.org/>Valine</a>.</noscript></div></article></div></main><script src=https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css><script src=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js></script><footer class=footer><div class=footer-container><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2018 - 2021</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>yakax</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i></a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=/lib/valine/valine.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/typeit@7.0.4/dist/typeit.min.js></script><script type=text/javascript>window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{"valine":{"appId":"oIoCMPOVr3i61isIop1jPYdP-gzGzoHsz","appKey":"IluQB7WNkIfKRAtgW35kEB7H","avatar":"mp","el":"#valine","emojiCDN":"https://cdn.jsdelivr.net/npm/emoji-datasource-google@5.0.1/img/google/64/","emojiMaps":{"100":"1f4af.png","alien":"1f47d.png","anger":"1f4a2.png","angry":"1f620.png","anguished":"1f627.png","astonished":"1f632.png","black_heart":"1f5a4.png","blue_heart":"1f499.png","blush":"1f60a.png","bomb":"1f4a3.png","boom":"1f4a5.png","broken_heart":"1f494.png","brown_heart":"1f90e.png","clown_face":"1f921.png","cold_face":"1f976.png","cold_sweat":"1f630.png","confounded":"1f616.png","confused":"1f615.png","cry":"1f622.png","crying_cat_face":"1f63f.png","cupid":"1f498.png","dash":"1f4a8.png","disappointed":"1f61e.png","disappointed_relieved":"1f625.png","dizzy":"1f4ab.png","dizzy_face":"1f635.png","drooling_face":"1f924.png","exploding_head":"1f92f.png","expressionless":"1f611.png","face_vomiting":"1f92e.png","face_with_cowboy_hat":"1f920.png","face_with_hand_over_mouth":"1f92d.png","face_with_head_bandage":"1f915.png","face_with_monocle":"1f9d0.png","face_with_raised_eyebrow":"1f928.png","face_with_rolling_eyes":"1f644.png","face_with_symbols_on_mouth":"1f92c.png","face_with_thermometer":"1f912.png","fearful":"1f628.png","flushed":"1f633.png","frowning":"1f626.png","ghost":"1f47b.png","gift_heart":"1f49d.png","green_heart":"1f49a.png","grimacing":"1f62c.png","grin":"1f601.png","grinning":"1f600.png","hankey":"1f4a9.png","hear_no_evil":"1f649.png","heart":"2764-fe0f.png","heart_decoration":"1f49f.png","heart_eyes":"1f60d.png","heart_eyes_cat":"1f63b.png","heartbeat":"1f493.png","heartpulse":"1f497.png","heavy_heart_exclamation_mark_ornament":"2763-fe0f.png","hole":"1f573-fe0f.png","hot_face":"1f975.png","hugging_face":"1f917.png","hushed":"1f62f.png","imp":"1f47f.png","innocent":"1f607.png","japanese_goblin":"1f47a.png","japanese_ogre":"1f479.png","joy":"1f602.png","joy_cat":"1f639.png","kiss":"1f48b.png","kissing":"1f617.png","kissing_cat":"1f63d.png","kissing_closed_eyes":"1f61a.png","kissing_heart":"1f618.png","kissing_smiling_eyes":"1f619.png","laughing":"1f606.png","left_speech_bubble":"1f5e8-fe0f.png","love_letter":"1f48c.png","lying_face":"1f925.png","mask":"1f637.png","money_mouth_face":"1f911.png","nauseated_face":"1f922.png","nerd_face":"1f913.png","neutral_face":"1f610.png","no_mouth":"1f636.png","open_mouth":"1f62e.png","orange_heart":"1f9e1.png","partying_face":"1f973.png","pensive":"1f614.png","persevere":"1f623.png","pleading_face":"1f97a.png","pouting_cat":"1f63e.png","purple_heart":"1f49c.png","rage":"1f621.png","relaxed":"263a-fe0f.png","relieved":"1f60c.png","revolving_hearts":"1f49e.png","right_anger_bubble":"1f5ef-fe0f.png","robot_face":"1f916.png","rolling_on_the_floor_laughing":"1f923.png","scream":"1f631.png","scream_cat":"1f640.png","see_no_evil":"1f648.png","shushing_face":"1f92b.png","skull":"1f480.png","skull_and_crossbones":"2620-fe0f.png","sleeping":"1f634.png","sleepy":"1f62a.png","slightly_frowning_face":"1f641.png","slightly_smiling_face":"1f642.png","smile":"1f604.png","smile_cat":"1f638.png","smiley":"1f603.png","smiley_cat":"1f63a.png","smiling_face_with_3_hearts":"1f970.png","smiling_imp":"1f608.png","smirk":"1f60f.png","smirk_cat":"1f63c.png","sneezing_face":"1f927.png","sob":"1f62d.png","space_invader":"1f47e.png","sparkling_heart":"1f496.png","speak_no_evil":"1f64a.png","speech_balloon":"1f4ac.png","star-struck":"1f929.png","stuck_out_tongue":"1f61b.png","stuck_out_tongue_closed_eyes":"1f61d.png","stuck_out_tongue_winking_eye":"1f61c.png","sunglasses":"1f60e.png","sweat":"1f613.png","sweat_drops":"1f4a6.png","sweat_smile":"1f605.png","thinking_face":"1f914.png","thought_balloon":"1f4ad.png","tired_face":"1f62b.png","triumph":"1f624.png","two_hearts":"1f495.png","unamused":"1f612.png","upside_down_face":"1f643.png","weary":"1f629.png","white_frowning_face":"2639-fe0f.png","white_heart":"1f90d.png","wink":"1f609.png","woozy_face":"1f974.png","worried":"1f61f.png","yawning_face":"1f971.png","yellow_heart":"1f49b.png","yum":"1f60b.png","zany_face":"1f92a.png","zipper_mouth_face":"1f910.png","zzz":"1f4a4.png"},"enableQQ":false,"highlight":true,"lang":"zh-cn","pageSize":10,"placeholder":"来都来了，说两句把。 支持MD","recordIP":true,"visitor":true}},"data":{"id-1":"yakax.blog","id-2":"yakax.blog"},"lightGallery":{"actualSize":false,"exThumbImage":"data-thumbnail","hideBarsDelay":2000,"selector":".lightgallery","speed":400,"thumbContHeight":80,"thumbWidth":80,"thumbnail":true},"search":{"algoliaAppID":"XQCZLRU4IH","algoliaIndex":"blog","algoliaSearchKey":"2850ce47940fd2479113f229a321fa9d","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":150,"type":"algolia"},"typeit":{"cursorChar":"_","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":200}};</script><script type=text/javascript src=/js/theme.min.js></script></body></html>

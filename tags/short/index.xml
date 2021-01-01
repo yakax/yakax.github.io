@@ -1,0 +1,16 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Short - 标签 - yakax</title><link>https://yakax.github.io/tags/short/</link><description>Short - 标签 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sun, 07 Oct 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.github.io/tags/short/" rel="self" type="application/rss+xml"/><item><title>关于类型转换与运算问题</title><link>https://yakax.github.io/%E7%B1%BB%E5%9E%8B%E7%9A%84%E8%BD%AC%E6%8D%A2%E5%9F%BA%E6%9C%AC%E9%97%AE%E9%A2%98/</link><pubDate>Sun, 07 Oct 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E7%B1%BB%E5%9E%8B%E7%9A%84%E8%BD%AC%E6%8D%A2%E5%9F%BA%E6%9C%AC%E9%97%AE%E9%A2%98/</guid><description><![CDATA[<p><strong>一个经典的类型转换问题</strong></p>
+<blockquote>
+<p>高位转低位需要强制转换，低位转高位是自动转换，表达式两侧的转换规则是向左边的类型看齐</p>
+</blockquote>
+<ol>
+<li>short s1=1;s1=s1+1;</li>
+</ol>
+<blockquote>
+<p>s1+1值是自动转换int类型，而是s1是short类型 所以会提示你转为short类型，s1= (short) (s1+1)就正确了。</p>
+</blockquote>
+<ol start="2">
+<li>short s1=1;s1=+=1; 这个为什么不报错</li>
+</ol>
+<blockquote>
+<p>因为java语言规范中关于复合赋值的解释是这样的：e1+=e2实际上是e1=(T1)(e1+e2),这里的T1的数据类型。所以不会报错。</p>
+</blockquote>]]></description></item></channel></rss>

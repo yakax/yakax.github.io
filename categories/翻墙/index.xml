@@ -1,0 +1,148 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>翻墙 - 分类 - yakax</title><link>https://yakax.github.io/categories/%E7%BF%BB%E5%A2%99/</link><description>翻墙 - 分类 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Mon, 05 Nov 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.github.io/categories/%E7%BF%BB%E5%A2%99/" rel="self" type="application/rss+xml"/><item><title>搭建代理访问外网</title><link>https://yakax.github.io/%E6%90%AD%E5%BB%BA%E4%BB%A3%E7%90%86%E8%AE%BF%E9%97%AE%E5%A4%96%E7%BD%91/</link><pubDate>Mon, 05 Nov 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E6%90%AD%E5%BB%BA%E4%BB%A3%E7%90%86%E8%AE%BF%E9%97%AE%E5%A4%96%E7%BD%91/</guid><description><![CDATA[<h2 id="shadowsocks">shadowsocks</h2>
+<p><strong>文档总结自秋水逸冰大神 更详细可以看</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">https://teddysun.com/(需要外网访问)
+</code></pre></td></tr></table>
+</div>
+</div><ol>
+<li>首先，<strong>买服务器我就不说</strong>了，一般只翻墙的话就买搬瓦工或者vultr都行；里面最便宜的都行（除了vultr2.5刀的）；找一个ip如果ping 的延时在200以内算是挺可以的了；</li>
+<li>这里我采用Vultr3.5刀的；选哪个地方主要看你的网络对他们哪个服务器友好,下面附上测速脚本。</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">@echo off
+echo ===========================================
+echo 东京
+ping hnd-jp-ping.vultr.com
+ 
+echo ============================================
+echo 新加坡
+ping sgp-ping.vultr.com
+ 
+echo ===========================================
+echo (AU) Sydney, Australia[悉尼]
+ping syd-au-ping.vultr.com
+ 
+echo ===========================================
+echo 德国 法兰克福
+ping fra-de-ping.vultr.com
+ 
+echo ===========================================
+echo 荷兰 阿姆斯特丹
+ping ams-nl-ping.vultr.com
+ 
+echo ===========================================
+echo 英国 伦敦
+ping lon-gb-ping.vultr.com
+ 
+echo ===========================================
+echo 法国 巴黎
+ping par-fr-ping.vultr.com
+ 
+echo ===========================================
+echo 美东 华盛顿州 西雅图
+ping wa-us-ping.vultr.com
+ 
+echo ===========================================
+echo 美西 加州 硅谷
+ping sjo-ca-us-ping.vultr.com
+ 
+echo ===========================================
+echo 美西 加州 洛杉矶
+ping lax-ca-us-ping.vultr.com
+ 
+echo ===========================================
+echo 美东 芝加哥
+Chicago, Illinois[美东 芝加哥]
+ping il-us-ping.vultr.com
+ 
+echo ===========================================
+echo 美中 德克萨斯州 达拉斯
+ping tx-us-ping.vultr.com
+ 
+echo ===========================================
+echo 美东 新泽西
+ping nj-us-ping.vultr.com
+ 
+echo ===========================================
+echo 美东 乔治亚州 亚特兰大
+ping ga-us-ping.vultr.com
+ 
+echo ===========================================
+echo 美东 佛罗里达州 迈阿密
+ping fl-us-ping.vultr.com   
+pause
+</code></pre></td></tr></table>
+</div>
+</div><ol start="3">
+<li>服务器信息：用于Xshell连接服务器
+</li>
+</ol>]]></description></item></channel></rss>

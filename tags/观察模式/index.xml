@@ -1,0 +1,7 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>观察模式 - 标签 - yakax</title><link>https://yakax.github.io/tags/%E8%A7%82%E5%AF%9F%E6%A8%A1%E5%BC%8F/</link><description>观察模式 - 标签 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 23 Mar 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.github.io/tags/%E8%A7%82%E5%AF%9F%E6%A8%A1%E5%BC%8F/" rel="self" type="application/rss+xml"/><item><title>观察设计模式</title><link>https://yakax.github.io/%E8%A7%82%E5%AF%9F%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</link><pubDate>Sat, 23 Mar 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E8%A7%82%E5%AF%9F%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</guid><description><![CDATA[<h4 id="应用场景">应用场景</h4>
+<ol>
+<li>观察者模式有时也叫做发布订阅模式。</li>
+<li>主要用于在关联行为之间建立一套触发机制的场景(例如一些提醒业务、MQ等等)</li>
+<li>java.awt.Event 就是观察者模式的一种，只不过 Java 很少被用来写桌面程序。上面的比如点击事件等等都是通过发布订阅绑定来触发事件。</li>
+<li>在spring 中ContextLoaderListener是实现了ServletContextListener接口,这个接口也是继承的EventListener。这也是观察者模式的代表。</li>
+</ol>]]></description></item></channel></rss>

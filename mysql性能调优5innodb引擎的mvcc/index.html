@@ -1,0 +1,172 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>MySQL性能调优(5)Innodb引擎的MVCC - yakax</title><meta name=Description content><meta property="og:title" content="MySQL性能调优(5)Innodb引擎的MVCC"><meta property="og:description" content="MVCC
+Multiversion concurrency control (多版本并发控制)
+并发访问(读或写)数据库时，对正在事务内处理的数据做多版本的管理。以达到用来避免写操作的堵塞，从而引发读操作的并发问题。
+这里看一个案例
+
+
+1
+2
+3
+4
+5
+
+
+begin
+// 这里默认是加上X锁的，在未做commit/rollback操作之前
+update users set lastUpdate=now() where id =1; 
+// 在其他的事务我们能不能进行对应数据的查询 但是我这时查询是能查到的当前时间这条记录
+select * from users where id = 1;
+
+
+先来看看MVCC的处理机制"><meta property="og:type" content="article"><meta property="og:url" content="https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%985innodb%E5%BC%95%E6%93%8E%E7%9A%84mvcc/"><meta property="og:image" content="https://yakax.github.io/images/1.png"><meta property="article:published_time" content="2018-12-11T00:00:00+00:00"><meta property="article:modified_time" content="2018-12-11T00:00:00+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://yakax.github.io/images/1.png"><meta name=twitter:title content="MySQL性能调优(5)Innodb引擎的MVCC"><meta name=twitter:description content="MVCC
+Multiversion concurrency control (多版本并发控制)
+并发访问(读或写)数据库时，对正在事务内处理的数据做多版本的管理。以达到用来避免写操作的堵塞，从而引发读操作的并发问题。
+这里看一个案例
+
+
+1
+2
+3
+4
+5
+
+
+begin
+// 这里默认是加上X锁的，在未做commit/rollback操作之前
+update users set lastUpdate=now() where id =1; 
+// 在其他的事务我们能不能进行对应数据的查询 但是我这时查询是能查到的当前时间这条记录
+select * from users where id = 1;
+
+
+先来看看MVCC的处理机制"><meta name=application-name content="yakax"><meta name=apple-mobile-web-app-title content="yakax"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:'==document.location.protocol?'https:':'http:')+"//widget.daovoice.io/widget/af744044.js","daovoice")
+daovoice('init',{app_id:"af744044"});daovoice('update');</script><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%985innodb%E5%BC%95%E6%93%8E%E7%9A%84mvcc/><link rel=prev href=https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%984innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E7%9A%84%E4%BA%8B%E5%8A%A1/><link rel=next href=https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%986%E8%A7%A3%E8%AF%BB58%E5%90%8C%E5%9F%8E%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1%E5%86%9B%E8%A7%8430%E6%9D%A1/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"MySQL性能调优(5)Innodb引擎的MVCC","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/yakax.github.io\/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%985innodb%E5%BC%95%E6%93%8E%E7%9A%84mvcc\/"},"image":["https:\/\/yakax.github.io\/images\/avatar.png"],"genre":"posts","keywords":"MySQL","wordcount":2228,"url":"https:\/\/yakax.github.io\/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%985innodb%E5%BC%95%E6%93%8E%E7%9A%84mvcc\/","datePublished":"2018-12-11T00:00:00+00:00","dateModified":"2018-12-11T00:00:00+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"yakax","logo":"https:\/\/yakax.github.io\/images\/avatar.png"},"author":{"@type":"Person","name":"yakax"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':('auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark'))&&document.body.setAttribute('theme','dark');</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class="fas fa-crosshairs fa-sm"></i></span><span id=id-1 class=typeit></span></a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>所有文章 </a><a class=menu-item href=/tags/>标签 </a><a class=menu-item href=/categories/>分类 </a><a class=menu-item href=/about/>关于 </a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i></a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop><input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span></span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class="fas fa-crosshairs fa-sm"></i></span><span id=id-2 class=typeit></span></a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/>所有文章</a><a class=menu-item href=/tags/>标签</a><a class=menu-item href=/categories/>分类</a><a class=menu-item href=/about/>关于</a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">MySQL性能调优(5)Innodb引擎的MVCC</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>yakax</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/><i class="far fa-folder fa-fw"></i>MySQL性能调优</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2018-12-11>2018-12-11</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 2228 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 5 分钟&nbsp;<span id=/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%985innodb%E5%BC%95%E6%93%8E%E7%9A%84mvcc/ class=leancloud_visitors data-flag-title=MySQL性能调优(5)Innodb引擎的MVCC>
+<i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
+</span>&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><ul><li><ul><li><a href=#mvcc>MVCC</a><ul><li><a href=#插入数据>插入数据</a></li><li><a href=#删除数据>删除数据</a></li></ul></li><li><a href=#undo-log>Undo Log</a><ul><li><a href=#执行流程>执行流程</a></li><li><a href=#当前读与快照读的区别>当前读与快照读的区别</a></li></ul></li><li><a href=#redo-log>Redo Log</a><ul><li><a href=#执行流程-1>执行流程</a></li><li><a href=#redo-log补充说明>Redo Log补充说明</a></li></ul></li><li><a href=#配置优化>配置优化</a><ul><li><a href=#改配置说明>改配置说明</a></li><li><a href=#寻找配置文件位置和加载顺序>寻找配置文件位置和加载顺序</a></li><li><a href=#mysql服务器参数类型>MySQL服务器参数类型</a></li><li><a href=#全局配置文件配置>全局配置文件配置</a></li><li><a href=#常用配置说明>常用配置说明</a></li><li><a href=#其他参数配置>其他参数配置</a></li></ul></li></ul></li></ul></li></ul></nav></div></div><div class=content id=content><h4 id=mvcc>MVCC</h4><p><font color=red>Multiversion concurrency control (多版本并发控制)
+并发访问(读或写)数据库时，对正在事务内处理的数据做多版本的管理。以达到用来避免写操作的堵塞，从而引发读操作的并发问题。</font>
+这里看一个案例</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>begin
+// 这里默认是加上X锁的，在未做commit/rollback操作之前
+update users set lastUpdate=now() where id =1; 
+// 在其他的事务我们能不能进行对应数据的查询 但是我这时查询是能查到的当前时间这条记录
+select * from users where id = 1;
+</code></pre></td></tr></table></div></div><p>先来看看MVCC的处理机制</p><h5 id=插入数据>插入数据</h5><p><font color=red>同一个事务，事务行版本号相同</font>
+<img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/1.png></p><h5 id=删除数据>删除数据</h5><img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/2.png>
+##### 修改数据
+<img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/3.png>
+##### 查询数据
+<img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/4.png>
+<font color=red>这也就是之前案例为什么能查询数据的原因所在</font>
+```
+记住图上的规则
+1. 查找数据行版本号早于当前事务版本数据行
+// 行的系统版本号小于或等于事务的系统版本号,这里就已经筛选出id等于1的两条数据
+2. 查找删除版本号要么为null要么大于当前事务版本号记录
+//为null说明没删除,大于当前事务版本号说明是事务开启过后 别的事务开启做的数据,这个是为了再次判断当前事务更改数据
+```
+<img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/5.png><p>那这些数据时怎么来的呢</p><h4 id=undo-log>Undo Log</h4><ul><li>undo意为取消，以撤销操作为目的，返回指定某个状态的操作</li><li><font color=red>UndoLog是为了实现事务的原子性而出现的产物</font></li><li>Undo Log实现事务原子性：事务处理过程中如果出现了错误或者用户执行了 ROLLBACK语句,MySQL可以利用Undo Log中的备份将数据恢复到事务开始之前的状态。</li><li><font color=red>UndoLog在MySQL innodb存储引擎中用来实现多版本并发控制</font></li><li>Undo log实现多版本并发控制：事务未提交之前，Undo保存了未提交之前的版本数据，Undo 中的数据可作为数据旧版本快照供其他并发事务进行快照读</li></ul><h5 id=执行流程>执行流程</h5><p><font color=red>这就是为什么加了X锁的数据我们还能查询的原因，他实际上是读取undo log里面的数据进行快照读</font>
+<img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/6.png></p><h5 id=当前读与快照读的区别>当前读与快照读的区别</h5><p><font color=red>Innodb引擎的普通select都是快照读。只有增删改和加了锁的才是当前读</font>
+<img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/7.png></p><h4 id=redo-log>Redo Log</h4><ul><li>Redo，顾名思义就是重做。以恢复操作为目的，重现操作；</li><li>Redo log指事务中操作的任何数据,将最新的数据备份到一个地方 (Redo Log)</li><li>Redo log的持久：不是随着事务的提交才写入的，而是在事务的执行过程中，便开始写入redo 中。具体的落盘策略可以进行配置</li><li><font color=red>RedoLog是为了实现事务的持久性而出现的产物</font></li><li>Redo Log实现事务持久性：防止在发生故障的时间点，尚有脏页未写入磁盘，在重启MySQL服务的时候，根据redo log进行重做，从而达到事务的未入磁盘数据进行持久化这一特性。</li></ul><h5 id=执行流程-1>执行流程</h5><p><img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/8.png></p><h5 id=redo-log补充说明>Redo Log补充说明</h5><p><img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/9.png>
+这里可以看到redo log 默认大小是48M默认位置是在数据库根路径下面</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>指定Redo log 记录在{datadir}/ib_logfile1&amp;ib_logfile2 可通过innodb_log_group_home_dir 配置指定目录存储
+一旦事务成功提交且数据持久化落盘之后，此时Redo log中的对应事务数据记录就失去了意义，所以Redo log的写入是日志文件循环写入的
+指定Redo log日志文件组中的数量 innodb_log_files_in_group 默认为2
+指定Redo log每一个日志文件最大存储量innodb_log_file_size 默认48M
+指定Redo log在cache/buffer中的buffer池大小innodb_log_buffer_size 默认16M
+Redo buffer 持久化Redo log的策略， innodb_flush_log_at_trx_commit：
+取值 0 每秒提交 Redo buffer --&gt; Redo log OS cache --&gt;flush cache to disk[可能丢失一秒内的事务数据]
+取值 1 默认值，每次事务提交执行Redo buffer --&gt; Redo log OS cache --&gt;flush cache to disk[最安全，性能最差的方式]
+取值 2 每次事务提交执行Redo buffer --&gt; Redo log OS cache 再每一秒执行 -&gt;flush cache to disk操作
+</code></pre></td></tr></table></div></div><h4 id=配置优化>配置优化</h4><h5 id=改配置说明>改配置说明</h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>如果是docker可以通过启动选择配置文件启动
+如果不想重启的话可以利用 set global
+set global 参数=? 
+</code></pre></td></tr></table></div></div><h5 id=寻找配置文件位置和加载顺序>寻找配置文件位置和加载顺序</h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>mysql --help | grep -A 1 &#39;Default options are read from the following files in the given order&#39;
+</code></pre></td></tr></table></div></div><p>这是我docker中MySQL的配置文件位置和加载顺序
+<img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/mysql/10.png></p><h5 id=mysql服务器参数类型>MySQL服务器参数类型</h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>全局参数
+       set global autocommit = ON/OFF;
+会话参数(&lt;font color=red &gt;会话参数不单独设置则会采用全局参数&lt;/font&gt;)
+       set session autocommit = ON/OFF;
+注意：
+全局参数的设定对于已经存在的会话无法生效
+会话参数的设定随着会话的销毁而失效
+全局类的统一配置建议配置在默认配置文件中，否则重启服务会导致配置失效
+</code></pre></td></tr></table></div></div><h5 id=全局配置文件配置>全局配置文件配置</h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>最大连接数配置（如果连接数过大会有约束，就需要考虑改句柄数了）
+max_connections 
+系统句柄数配置
+/etc/security/limits.conf
+ulimit -a
+MySQL句柄数配置
+/usr/lib/systemd/system/mysqld.service
+</code></pre></td></tr></table></div></div><h5 id=常用配置说明>常用配置说明</h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>port = 3306 #端口号
+socket = /tmp/mysql.sock  #为MySQL客户程序与服务器之间的本地通信指定一个套接字文件
+basedir = /usr/local/mysql #安装 MySQL 的安装路径
+datadir = /data/mysql #数据库文件路径
+pid-file = /data/mysql/mysql.pid #记录当前MySQL进程的pid
+user = mysql  #表示MySQL的管理用户
+bind-address = 0.0.0.0 #MySQL服务器的IP地址。如果MySQL服务器所在的计算机有多个IP地址，这个选项将非常重要
+max_connections=2000 #MySQL服务器同时处理的数据库连接的最大数量
+lower_case_table_names = 0 #表名区分大小写
+server-id = 1 #数据库id号一般主从复制的时候会用到
+tmp_table_size=16M #临时表大小
+transaction_isolation = REPEATABLE-READ #隔离级别
+ready_only=1 #0是读写1是只读
+</code></pre></td></tr></table></div></div><h5 id=其他参数配置>其他参数配置</h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>wait_timeout #服务器关闭非交互连接之前等待活动的秒数
+innodb_open_files #限制Innodb能打开的表的个数
+innodb_write_io_threads #innodb使用后台线程处理innodb缓冲区数据页上的写 I/O(输入输出)请求数 
+innodb_read_io_threads #innodb使用后台线程处理innodb缓冲区数据页上的读 I/O(输入输出)请求数 
+innodb_lock_wait_timeout #InnoDB事务在被回滚之前可以等待一个锁定的超时秒数
+</code></pre></td></tr></table></div></div></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2018-12-11</span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/mysql/>MySQL</a></section><section><span><a href=javascript:void(0); onclick=window.history.back();>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%984innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E7%9A%84%E4%BA%8B%E5%8A%A1/ class=prev rel=prev title=MySQL性能调优(4)Innodb存储引擎的事务><i class="fas fa-angle-left fa-fw"></i>MySQL性能调优(4)Innodb存储引擎的事务</a>
+<a href=/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%986%E8%A7%A3%E8%AF%BB58%E5%90%8C%E5%9F%8E%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1%E5%86%9B%E8%A7%8430%E6%9D%A1/ class=next rel=next title=MySQL性能调优(6)解读58同城数据库设计军规30条>MySQL性能调优(6)解读58同城数据库设计军规30条<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments><div id=valine class=comment></div><noscript>Please enable JavaScript to view the comments powered by <a href=https://valine.js.org/>Valine</a>.</noscript></div></article></div></main><script src=https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css><script src=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js></script><footer class=footer><div class=footer-container><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2018 - 2021</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>yakax</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i></a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=/lib/valine/valine.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/typeit@7.0.4/dist/typeit.min.js></script><script type=text/javascript>window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{"valine":{"appId":"oIoCMPOVr3i61isIop1jPYdP-gzGzoHsz","appKey":"IluQB7WNkIfKRAtgW35kEB7H","avatar":"mp","el":"#valine","emojiCDN":"https://cdn.jsdelivr.net/npm/emoji-datasource-google@5.0.1/img/google/64/","emojiMaps":{"100":"1f4af.png","alien":"1f47d.png","anger":"1f4a2.png","angry":"1f620.png","anguished":"1f627.png","astonished":"1f632.png","black_heart":"1f5a4.png","blue_heart":"1f499.png","blush":"1f60a.png","bomb":"1f4a3.png","boom":"1f4a5.png","broken_heart":"1f494.png","brown_heart":"1f90e.png","clown_face":"1f921.png","cold_face":"1f976.png","cold_sweat":"1f630.png","confounded":"1f616.png","confused":"1f615.png","cry":"1f622.png","crying_cat_face":"1f63f.png","cupid":"1f498.png","dash":"1f4a8.png","disappointed":"1f61e.png","disappointed_relieved":"1f625.png","dizzy":"1f4ab.png","dizzy_face":"1f635.png","drooling_face":"1f924.png","exploding_head":"1f92f.png","expressionless":"1f611.png","face_vomiting":"1f92e.png","face_with_cowboy_hat":"1f920.png","face_with_hand_over_mouth":"1f92d.png","face_with_head_bandage":"1f915.png","face_with_monocle":"1f9d0.png","face_with_raised_eyebrow":"1f928.png","face_with_rolling_eyes":"1f644.png","face_with_symbols_on_mouth":"1f92c.png","face_with_thermometer":"1f912.png","fearful":"1f628.png","flushed":"1f633.png","frowning":"1f626.png","ghost":"1f47b.png","gift_heart":"1f49d.png","green_heart":"1f49a.png","grimacing":"1f62c.png","grin":"1f601.png","grinning":"1f600.png","hankey":"1f4a9.png","hear_no_evil":"1f649.png","heart":"2764-fe0f.png","heart_decoration":"1f49f.png","heart_eyes":"1f60d.png","heart_eyes_cat":"1f63b.png","heartbeat":"1f493.png","heartpulse":"1f497.png","heavy_heart_exclamation_mark_ornament":"2763-fe0f.png","hole":"1f573-fe0f.png","hot_face":"1f975.png","hugging_face":"1f917.png","hushed":"1f62f.png","imp":"1f47f.png","innocent":"1f607.png","japanese_goblin":"1f47a.png","japanese_ogre":"1f479.png","joy":"1f602.png","joy_cat":"1f639.png","kiss":"1f48b.png","kissing":"1f617.png","kissing_cat":"1f63d.png","kissing_closed_eyes":"1f61a.png","kissing_heart":"1f618.png","kissing_smiling_eyes":"1f619.png","laughing":"1f606.png","left_speech_bubble":"1f5e8-fe0f.png","love_letter":"1f48c.png","lying_face":"1f925.png","mask":"1f637.png","money_mouth_face":"1f911.png","nauseated_face":"1f922.png","nerd_face":"1f913.png","neutral_face":"1f610.png","no_mouth":"1f636.png","open_mouth":"1f62e.png","orange_heart":"1f9e1.png","partying_face":"1f973.png","pensive":"1f614.png","persevere":"1f623.png","pleading_face":"1f97a.png","pouting_cat":"1f63e.png","purple_heart":"1f49c.png","rage":"1f621.png","relaxed":"263a-fe0f.png","relieved":"1f60c.png","revolving_hearts":"1f49e.png","right_anger_bubble":"1f5ef-fe0f.png","robot_face":"1f916.png","rolling_on_the_floor_laughing":"1f923.png","scream":"1f631.png","scream_cat":"1f640.png","see_no_evil":"1f648.png","shushing_face":"1f92b.png","skull":"1f480.png","skull_and_crossbones":"2620-fe0f.png","sleeping":"1f634.png","sleepy":"1f62a.png","slightly_frowning_face":"1f641.png","slightly_smiling_face":"1f642.png","smile":"1f604.png","smile_cat":"1f638.png","smiley":"1f603.png","smiley_cat":"1f63a.png","smiling_face_with_3_hearts":"1f970.png","smiling_imp":"1f608.png","smirk":"1f60f.png","smirk_cat":"1f63c.png","sneezing_face":"1f927.png","sob":"1f62d.png","space_invader":"1f47e.png","sparkling_heart":"1f496.png","speak_no_evil":"1f64a.png","speech_balloon":"1f4ac.png","star-struck":"1f929.png","stuck_out_tongue":"1f61b.png","stuck_out_tongue_closed_eyes":"1f61d.png","stuck_out_tongue_winking_eye":"1f61c.png","sunglasses":"1f60e.png","sweat":"1f613.png","sweat_drops":"1f4a6.png","sweat_smile":"1f605.png","thinking_face":"1f914.png","thought_balloon":"1f4ad.png","tired_face":"1f62b.png","triumph":"1f624.png","two_hearts":"1f495.png","unamused":"1f612.png","upside_down_face":"1f643.png","weary":"1f629.png","white_frowning_face":"2639-fe0f.png","white_heart":"1f90d.png","wink":"1f609.png","woozy_face":"1f974.png","worried":"1f61f.png","yawning_face":"1f971.png","yellow_heart":"1f49b.png","yum":"1f60b.png","zany_face":"1f92a.png","zipper_mouth_face":"1f910.png","zzz":"1f4a4.png"},"enableQQ":false,"highlight":true,"lang":"zh-cn","pageSize":10,"placeholder":"来都来了，说两句把。 支持MD","recordIP":true,"visitor":true}},"data":{"id-1":"yakax.blog","id-2":"yakax.blog"},"lightGallery":{"actualSize":false,"exThumbImage":"data-thumbnail","hideBarsDelay":2000,"selector":".lightgallery","speed":400,"thumbContHeight":80,"thumbWidth":80,"thumbnail":true},"search":{"algoliaAppID":"XQCZLRU4IH","algoliaIndex":"blog","algoliaSearchKey":"2850ce47940fd2479113f229a321fa9d","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":150,"type":"algolia"},"typeit":{"cursorChar":"_","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":200}};</script><script type=text/javascript src=/js/theme.min.js></script></body></html>

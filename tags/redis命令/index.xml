@@ -1,0 +1,21 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Redis命令 - 标签 - yakax</title><link>https://yakax.github.io/tags/redis%E5%91%BD%E4%BB%A4/</link><description>Redis命令 - 标签 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 26 Sep 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.github.io/tags/redis%E5%91%BD%E4%BB%A4/" rel="self" type="application/rss+xml"/><item><title>Redis学习(1)-基本命令与持久化机制</title><link>https://yakax.github.io/redis%E5%AD%A6%E4%B9%A01-%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4%E4%B8%8E%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6/</link><pubDate>Thu, 26 Sep 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/redis%E5%AD%A6%E4%B9%A01-%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4%E4%B8%8E%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6/</guid><description><![CDATA[<h3 id="docker简单安装设置密码并开启持久化">docker简单安装设置密码并开启持久化</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">docker run -d --name myredis -p 6379:6379 redis --requirepass &#34;156967&#34; --appendonly yes
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="文档">文档</h3>
+<p><a href="http://redisdoc.com/" target="_blank" rel="noopener noreffer">文档学习</a></p>
+<h3 id="特性">特性</h3>
+<ol>
+<li>速度快
+<strong>数据放内存中是速度快的主要原因、C语言实现，与操作系统距离近、使用了单线程架构，预防多线程可能产生的竞争问题</strong></li>
+<li>丰富的功能：value可以为string、hash、list、set、zset等多种数据结构，可以满足很多应用场景。还提供了键过期，发布订阅，事务，流水线。(流水线: Redis 的流水线功能允许客户端一次将多个命令请求发送给服务器， 并将被执行的多个命令请求的结果在一个命令回复中全部返回给客户端， 使用这个功能可以有效地减少客户端在执行多个命令时需要与服务器进行通信的次数)</li>
+<li>高可用和分布式：哨兵机制实现高可用，保证redis节点故障发现和自动转移</li>
+<li>键值对的数据结构服务器</li>
+<li>持久化：发生断电或机器故障，数据可能会丢失，可以持久化到硬盘通过(aof、rdb)</li>
+<li>主从复制：实现多个相同数据的redis副本</li>
+</ol>]]></description></item></channel></rss>

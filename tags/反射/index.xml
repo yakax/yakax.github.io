@@ -1,0 +1,9 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>反射 - 标签 - yakax</title><link>https://yakax.github.io/tags/%E5%8F%8D%E5%B0%84/</link><description>反射 - 标签 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sun, 07 Oct 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.github.io/tags/%E5%8F%8D%E5%B0%84/" rel="self" type="application/rss+xml"/><item><title>理解java反射</title><link>https://yakax.github.io/%E7%90%86%E8%A7%A3java%E5%8F%8D%E5%B0%84/</link><pubDate>Sun, 07 Oct 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E7%90%86%E8%A7%A3java%E5%8F%8D%E5%B0%84/</guid><description><![CDATA[<p><strong>Java 反射是可以让我们在运行时获取类的方法、属性、父类、接口等类的内部信息的机制</strong></p>
+<h4 id="为什么用反射">为什么用反射</h4>
+<p>假如你写了一段代码：Object o=new Object();
+运行了起来！扔给jvm去跑，跑完就over了，jvm关闭，你的程序也停止了;
+想想上面的程序对象是自己new的，程序相当于写死了给jvm去跑。假如一个服务器上突然遇到某个请求哦要用到某个类，哎呀但没加载进jvm，是不是要停下来自己写段代码，new一下，哦启动一下服务器，（脑残）！
+反射是什么呢？当我们的程序在运行时，需要动态的加载一些类这些类可能之前用不到所以不用加载到jvm，而是在运行时根据需要才加载，这样的好处对于服务器来说不言而喻。</p>
+<blockquote>
+<p>反射是框架的灵魂</p>
+</blockquote>]]></description></item></channel></rss>

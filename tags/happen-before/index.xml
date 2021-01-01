@@ -1,0 +1,39 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>happen-before - 标签 - yakax</title><link>https://yakax.github.io/tags/happen-before/</link><description>happen-before - 标签 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 26 Jun 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.github.io/tags/happen-before/" rel="self" type="application/rss+xml"/><item><title>并发编程学习(3)线程安全性分析</title><link>https://yakax.github.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A03%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%80%A7%E5%88%86%E6%9E%90/</link><pubDate>Wed, 26 Jun 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A03%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%80%A7%E5%88%86%E6%9E%90/</guid><description><![CDATA[<h3 id="初步认识-volatile">初步认识 Volatile</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">    public /*volatile*/ static boolean stop=false;
+    public static void main( String[] args ) throws InterruptedException {
+        Thread t1=new Thread(()-&gt;{
+            int i=0;
+            while(!stop){ 
+                i++;
+            }
+        });
+        t1.start();
+        Thread.sleep(1000);
+        stop=true; //true
+    }
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>定义一个共享变量 stop</li>
+<li>在main线程中创建一个子线程 thread，子线程读取到 stop的值做循环结束的条件</li>
+<li>main线程中修改stop的值为 true</li>
+<li>当 stop没有增加volatile修饰时，子线程对于主线程的 stop=true的修改是不可见的，这样将导致子线程出现死循环</li>
+<li>当 stop增加了volatile修饰时，子线程可以获取到主线程对于 stop=true的值，子线程while循环条件不满足退出循环</li>
+</ul>
+<p><strong>增加volatile关键字以后，main线程对于共享变量 stop值的更新，对于子线程 thread可见，这就是volatile的作用</strong></p>]]></description></item></channel></rss>
