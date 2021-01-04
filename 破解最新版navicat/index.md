@@ -2,6 +2,8 @@
 
 1. 参考注册机
 > https://www.lanzous.com/i9o3eej
+>
+> 原文：https://www.jianshu.com/p/aa3c00b87bec
 2. 下载Navicat注册机然后自行下载最新版navicat
 3. 确保已关闭Navicat Premium。无需断网，无需将注册机放到Navicat Premium安装目录下。以管理员身份运行此注册机；
 4. 打开注册机后， Patch勾选Backup、Host和Navicat v12，然后点击Patch按钮：
