@@ -1,7 +1,7 @@
-# MySQL-Buffer Pool 学习
+# MySQL-锁的学习
 
 
-## 
+
 
 ### SQL标准规定不同隔离级别
 
@@ -10,6 +10,8 @@ READ COMMITTED:隔离级别下，不可重复读、幻读可能发生，脏读�
 REPEATABLE READ:隔离级别下，幻读可能发生，脏读和不可重复读不可以发生。
 SERIALIZABLE:隔离级别下，上述问题都不可以发生。
 MySQL在REPEATABLE READ隔离级别实际上就已经解决了幻读问题。
+
+<!--more-->
 
 - **幻读**
 

@@ -4,7 +4,7 @@
 <p>在老版本的MySQL中sql通过连接进来时会有查询缓存这一块的逻辑。</p>
 <p>查询解析器解析sql 是否正确后，然后基本优化sql，生成执行计划，选择引擎执行。</p>
 <p>而InnoDB 在执行时 为了保证对数据的执行更快，省去磁盘IO开销 引入了Buffer Pool</p>
-</blockquote>]]></description></item><item><title>MySQL-Buffer Pool 学习</title><link>https://yakax.gitee.io/mysql-%E9%94%81%E7%9A%84%E5%AD%A6%E4%B9%A0/</link><pubDate>Sun, 03 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E9%94%81%E7%9A%84%E5%AD%A6%E4%B9%A0/</guid><description>SQL标准规定不同隔离级别 READ UNCOMMITTED :脏读、不可重复读、幻读都可能发生。 READ COMMITTED:隔离级别下，不可重复读、幻读可能发生，脏读不可以发生</description></item><item><title>MySQL-Explain学习</title><link>https://yakax.gitee.io/mysql-explain%E5%AD%A6%E4%B9%A0/</link><pubDate>Sun, 03 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-explain%E5%AD%A6%E4%B9%A0/</guid><description>&lt;h2 id="执行计划各列详解">执行计划各列详解&lt;/h2>
+</blockquote>]]></description></item><item><title>MySQL-Explain学习</title><link>https://yakax.gitee.io/mysql-explain%E5%AD%A6%E4%B9%A0/</link><pubDate>Sun, 03 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-explain%E5%AD%A6%E4%B9%A0/</guid><description>&lt;h2 id="执行计划各列详解">执行计划各列详解&lt;/h2>
 &lt;p>&lt;/p></description></item><item><title>MySQL-一些问题</title><link>https://yakax.gitee.io/mysql-%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98/</link><pubDate>Sun, 03 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98/</guid><description><![CDATA[<h4 id="优化器未使用你想用的索引">优化器未使用你想用的索引</h4>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -138,4 +138,17 @@
 <li>一个页16kb=16384字节 可以存很多记录了基本3层就已经很多条记录了</li>
 <li>每个节点的左儿子小于父节点，父节点又小于右儿子</li>
 <li><strong>索引每个节点的数据是已经排序好了的，当然如果你是联合索引，那也是排序好了的。</strong></li>
-</ul>]]></description></item></channel></rss>
+</ul>]]></description></item><item><title>MySQL-连接查询学习</title><link>https://yakax.gitee.io/mysql-%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E5%AD%A6%E4%B9%A0/</link><pubDate>Sun, 03 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h2 id="连接查询的基本语法">连接查询的基本语法</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="k">INNER</span> <span class="k">JOIN</span>  <span class="c1">## 内连接和外连接的根本区别就是在驱动表中的记录不符合ON子句中的连接条件时不会把该记录加入到最后的结果集
+</span><span class="c1"></span><span class="k">LEFT</span> <span class="k">JOIN</span>  <span class="c1">## 右边未匹配的null展示
+</span><span class="c1"></span><span class="k">RIGHT</span> <span class="k">JOIN</span>   <span class="c1">## 左边未匹配的null展示
+</span></code></pre></td></tr></table>
+</div>
+</div>]]></description></item></channel></rss>
