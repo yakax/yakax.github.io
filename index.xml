@@ -1,63 +1,40 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>yakax</title><link>https://yakax.gitee.io/</link><description>yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 29 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.gitee.io/index.xml" rel="self" type="application/rss+xml"/><item><title>LongAdder学习</title><link>https://yakax.gitee.io/longadder%E5%AD%A6%E4%B9%A0/</link><pubDate>Tue, 29 Sep 2020 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/longadder%E5%AD%A6%E4%B9%A0/</guid><description>&lt;p>&lt;/p></description></item><item><title>HashMap 常见问题Java8</title><link>https://yakax.gitee.io/hashmap-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98java8/</link><pubDate>Sat, 05 Sep 2020 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/hashmap-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98java8/</guid><description><![CDATA[<h3 id="hashmap并发修改异常或者循环时删除异常">HashMap并发修改异常,或者循环时删除异常</h3>
-<p><code>ConcurrentModificationException</code>基本都是modCount修改后与原modCount不相等而暴露的异常。很多集合都会有这个问题</p>
-<p>编写者抛这个异常的是想 快速失败，暴露异常。让开发者自己解决</p>]]></description></item><item><title>JVM调优学习之旅-(1)类加载与垃圾回收</title><link>https://yakax.gitee.io/jvm%E8%B0%83%E4%BC%98%E5%AD%A6%E4%B9%A0%E4%B9%8B%E6%97%85-1%E7%B1%BB%E5%8A%A0%E8%BD%BD%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/</link><pubDate>Wed, 19 Aug 2020 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/jvm%E8%B0%83%E4%BC%98%E5%AD%A6%E4%B9%A0%E4%B9%8B%E6%97%85-1%E7%B1%BB%E5%8A%A0%E8%BD%BD%E4%B8%8E%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/</guid><description><![CDATA[<h3 id="类加载过程">类加载过程</h3>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Test</span> <span class="o">{</span>
-
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">A</span> <span class="n">a</span> <span class="o">=</span> <span class="k">new</span> <span class="n">A</span><span class="o">();</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
-</div>
-</div>]]></description></item><item><title>JVM调优学习之旅-(2)ParNew+CMS</title><link>https://yakax.gitee.io/jvm%E8%B0%83%E4%BC%98%E5%AD%A6%E4%B9%A0%E4%B9%8B%E6%97%85-2parnew-cms/</link><pubDate>Wed, 19 Aug 2020 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/jvm%E8%B0%83%E4%BC%98%E5%AD%A6%E4%B9%A0%E4%B9%8B%E6%97%85-2parnew-cms/</guid><description><![CDATA[<h2 id="parnew">ParNew</h2>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">Serial 与 Serial  old  单线程的就先不分析学习了
-</code></pre></td></tr></table>
-</div>
-</div><h4 id="到底什么时候会尝试触发minor-gc">到底什么时候会尝试触发Minor GC</h4>
-<p>一般年轻代内部内存比例是8:1:1</p>
-<p>当Eden区满了会触发minor gc把活下来的对象放入剩余的s区中。</p>]]></description></item><item><title>JVM调优学习之旅-(3)ParNew+CMS 案例模拟实战</title><link>https://yakax.gitee.io/jvm%E8%B0%83%E4%BC%98%E5%AD%A6%E4%B9%A0%E4%B9%8B%E6%97%85-3parnew-cms-%E6%A1%88%E4%BE%8B%E6%A8%A1%E6%8B%9F%E5%AE%9E%E6%88%98/</link><pubDate>Wed, 19 Aug 2020 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/jvm%E8%B0%83%E4%BC%98%E5%AD%A6%E4%B9%A0%E4%B9%8B%E6%97%85-3parnew-cms-%E6%A1%88%E4%BE%8B%E6%A8%A1%E6%8B%9F%E5%AE%9E%E6%88%98/</guid><description><![CDATA[<h4 id="场景">场景</h4>
-<p>500万日活用户，每个用户平均访问20来次的一个系统，按10%的付费转化率来计算，每天应该产生50万订单，50万订单一般集中在4小时，平均下来每秒几十个订单。</p>
-<p>当在高峰期的时候每秒有1000个下单请求：按3台机器算，每台机器抗300个请求左右。机器4核8G。</p>]]></description></item><item><title>JVM调优学习之旅-(4)G1</title><link>https://yakax.gitee.io/jvm%E8%B0%83%E4%BC%98%E5%AD%A6%E4%B9%A0%E4%B9%8B%E6%97%85-4g1/</link><pubDate>Wed, 19 Aug 2020 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/jvm%E8%B0%83%E4%BC%98%E5%AD%A6%E4%B9%A0%E4%B9%8B%E6%97%85-4g1/</guid><description><![CDATA[<h3 id="g1垃圾回收器介绍">G1垃圾回收器介绍</h3>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>yakax</title><link>https://yakax.gitee.io/</link><description>yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sun, 03 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.gitee.io/index.xml" rel="self" type="application/rss+xml"/><item><title>MySQL-Buffer Pool 学习</title><link>https://yakax.gitee.io/mysql-buffer-pool-%E5%AD%A6%E4%B9%A0-copy/</link><pubDate>Sun, 03 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-buffer-pool-%E5%AD%A6%E4%B9%A0-copy/</guid><description><![CDATA[<h4 id="一条sql执行基本流程">一条sql执行基本流程</h4>
+<p></p>
 <blockquote>
-<p>G1垃圾回收器在我们设置堆内存大小后，JVM启动在默认情况下把堆内存拆分为大小均等的region具体大小是&mdash;堆内存/2048。region大小是2的倍数。</p>
-</blockquote>
-<p>可以通过 <strong>“-XX:G1HeapRegionSize”</strong> 设置region大小。</p>
-<p>region 数量是动态的。初始的时候新生代region只有5%,会随着新生代增加region跟着增加。 垃圾回收后也会减少。默认新生代的占比不会超过60%，可以通过**“- XX:G1MaxNewSizePercent”**设置</p>
-<p></p>]]></description></item><item><title>JVM调优学习之旅-(5)初识gc日志 ParNew+CMS</title><link>https://yakax.gitee.io/jvm%E8%B0%83%E4%BC%98%E5%AD%A6%E4%B9%A0%E4%B9%8B%E6%97%85-5%E5%88%9D%E8%AF%86gc%E6%97%A5%E5%BF%97-parnew-cms/</link><pubDate>Wed, 19 Aug 2020 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/jvm%E8%B0%83%E4%BC%98%E5%AD%A6%E4%B9%A0%E4%B9%8B%E6%97%85-5%E5%88%9D%E8%AF%86gc%E6%97%A5%E5%BF%97-parnew-cms/</guid><description><![CDATA[<h2 id="模拟gc">模拟GC</h2>
-<h3 id="jvm参数">JVM参数</h3>
+<p>在老版本的MySQL中sql通过连接进来时会有查询缓存这一块的逻辑。</p>
+<p>查询解析器解析sql 是否正确后，然后基本优化sql，生成执行计划，选择引擎执行。</p>
+<p>而InnoDB 在执行时 为了保证对数据的执行更快，省去磁盘IO开销 引入了Buffer Pool</p>
+</blockquote>]]></description></item><item><title>MySQL-Buffer Pool 学习</title><link>https://yakax.gitee.io/mysql-%E9%94%81%E7%9A%84%E5%AD%A6%E4%B9%A0/</link><pubDate>Sun, 03 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E9%94%81%E7%9A%84%E5%AD%A6%E4%B9%A0/</guid><description>SQL标准规定不同隔离级别 READ UNCOMMITTED :脏读、不可重复读、幻读都可能发生。 READ COMMITTED:隔离级别下，不可重复读、幻读可能发生，脏读不可以发生</description></item><item><title>MySQL-Explain学习</title><link>https://yakax.gitee.io/mysql-explain%E5%AD%A6%E4%B9%A0/</link><pubDate>Sun, 03 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-explain%E5%AD%A6%E4%B9%A0/</guid><description>&lt;h2 id="执行计划各列详解">执行计划各列详解&lt;/h2>
+&lt;p>&lt;/p></description></item><item><title>MySQL-一些问题</title><link>https://yakax.gitee.io/mysql-%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98/</link><pubDate>Sun, 03 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98/</guid><description><![CDATA[<h4 id="优化器未使用你想用的索引">优化器未使用你想用的索引</h4>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-java" data-lang="java"><span class="o">-</span><span class="n">XX</span><span class="o">:</span><span class="n">NewSize</span><span class="o">=</span><span class="n">5242880</span> <span class="o">-</span><span class="n">XX</span><span class="o">:</span><span class="n">MaxNewSize</span><span class="o">=</span><span class="n">5242880</span> <span class="o">-</span><span class="n">XX</span><span class="o">:</span><span class="n">SurvivorRatio</span><span class="o">=</span><span class="n">8</span> 
-<span class="o">-</span><span class="n">XX</span><span class="o">:</span><span class="n">InitialHeapSize</span><span class="o">=</span><span class="n">10485760</span> <span class="o">-</span><span class="n">XX</span><span class="o">:</span><span class="n">MaxHeapSize</span><span class="o">=</span><span class="n">10485760</span> 
-<span class="o">-</span><span class="n">XX</span><span class="o">:</span><span class="n">PretenureSizeThreshold</span><span class="o">=</span><span class="n">10485760</span> 
-<span class="o">-</span><span class="n">XX</span><span class="o">:+</span><span class="n">UseParNewGC</span> <span class="o">-</span><span class="n">XX</span><span class="o">:+</span><span class="n">UseConcMarkSweepGC</span> 
-<span class="o">-</span><span class="n">XX</span><span class="o">:+</span><span class="n">PrintGCDetails</span> <span class="o">-</span><span class="n">XX</span><span class="o">:+</span><span class="n">PrintGCTimeStamps</span> <span class="o">-</span><span class="n">Xloggc</span><span class="o">:</span><span class="n">gc</span><span class="o">.</span><span class="na">log</span>
+<pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">t</span> <span class="k">force</span> <span class="k">index</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">where</span> <span class="n">a</span> <span class="k">between</span> <span class="mi">10000</span> <span class="k">and</span> <span class="mi">20000</span><span class="p">;</span>
+<span class="o">//</span> <span class="err">利用参数</span><span class="n">force</span> <span class="k">index</span>
 </code></pre></td></tr></table>
 </div>
-</div>]]></description></item><item><title>JVM调优学习之旅-(6)分析工具使用</title><link>https://yakax.gitee.io/jvm%E8%B0%83%E4%BC%98%E5%AD%A6%E4%B9%A0%E4%B9%8B%E6%97%85-6%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/</link><pubDate>Wed, 19 Aug 2020 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/jvm%E8%B0%83%E4%BC%98%E5%AD%A6%E4%B9%A0%E4%B9%8B%E6%97%85-6%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/</guid><description><![CDATA[<h2 id="工具介绍">工具介绍</h2>
-<h3 id="jstat">jstat</h3>
+</div>]]></description></item><item><title>MySQL-事务学习</title><link>https://yakax.gitee.io/mysql-%E4%BA%8B%E5%8A%A1%E5%AD%A6%E4%B9%A0/</link><pubDate>Sun, 03 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E4%BA%8B%E5%8A%A1%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h2 id="多事务并发处理数据产生的问题">多事务并发处理数据产生的问题</h2>
+<p><strong>脏读脏写 都是因为读取了事务未提交时的事务回滚情况</strong></p>
+<h4 id="脏写">脏写</h4>
+<p>事务A与事务B同时更新一条数据，由于其中一个事务回滚 导致另外事务执行成功的数据不存在了。</p>
+<h4 id="脏读">脏读</h4>
+<p>事务A还没提交事务时事务B拿到值做了大量的操作，事务A回滚后出现的数据异常问题。</p>
+<h4 id="不可重复读-与可重复读">不可重复读 与可重复读</h4>
+<p>事务A修改了值并且提交了事务    B读取到   然后B在执行事务期间 C又修改了值并且提交了。这时B读取到的值又变了。 这就时不可重复读问题。 可重复读就相反 并且读取到的值是相同的。</p>
+<h4 id="幻读">幻读</h4>
+<p>其实就是在事务执行期间第二次查询相比第一次查询出现了之前没出现过的数据。</p>]]></description></item><item><title>MySQL-成本与统计数据学习</title><link>https://yakax.gitee.io/mysql-%E6%88%90%E6%9C%AC%E4%B8%8E%E7%BB%9F%E8%AE%A1%E6%95%B0%E6%8D%AE%E5%AD%A6%E4%B9%A0/</link><pubDate>Sun, 03 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E6%88%90%E6%9C%AC%E4%B8%8E%E7%BB%9F%E8%AE%A1%E6%95%B0%E6%8D%AE%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<blockquote>
+<p>MySQL执行一个查询可以有不同的执行方案，它会选择其中成本最低，或者说代价最低的那种方案去真正的执行查询</p>
+</blockquote>
+<h2 id="基于成本的优化步骤">基于成本的优化步骤</h2>
+<ol>
+<li>根据搜索条件，找出所有可能使用的索引</li>
+<li>计算全表扫描的代价</li>
+<li>计算使用不同索引执行查询的代价</li>
+<li>对比各种执行方案的代价，找出成本最低的那一个</li>
+</ol>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -77,63 +54,88 @@
 </span><span class="lnt">15
 </span><span class="lnt">16
 </span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell">jstat -gc PID
-参数说明：
-S0C：这是From Survivor区的大小
-S1C：这是To Survivor区的大小
-S0U：这是From Survivor区当前使用的内存大小
-S1U：这是To Survivor区当前使用的内存大小
-EC：这是Eden区的大小
-EU：这是Eden区当前使用的内存大小
-OC：这是老年代的大小
-OU：这是老年代当前使用的内存大小
-MC：这是方法区（永久代、元数据区）的大小
-MU：这是方法区（永久代、元数据区）的当前使用的内存大小
-YGC：这是系统运行迄今为止的Young GC次数
-YGCT：这是Young GC的耗时
-FGC：这是系统运行迄今为止的Full GC次数
-FGCT：这是Full GC的耗时
-GCT：这是所有GC的总耗时
-</code></pre></td></tr></table>
+<pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="nf">single_table</span> <span class="p">(</span>
+    <span class="n">id</span> <span class="kt">INT</span> <span class="k">NOT</span> <span class="no">NULL</span> <span class="kp">AUTO_INCREMENT</span><span class="p">,</span>
+    <span class="n">key1</span> <span class="kt">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
+    <span class="n">key2</span> <span class="kt">INT</span><span class="p">,</span>
+    <span class="n">key3</span> <span class="kt">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
+    <span class="n">key_part1</span> <span class="kt">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
+    <span class="n">key_part2</span> <span class="kt">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
+    <span class="n">key_part3</span> <span class="kt">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
+    <span class="n">common_field</span> <span class="kt">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
+    <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">id</span><span class="p">),</span>
+    <span class="k">KEY</span> <span class="nf">idx_key1</span> <span class="p">(</span><span class="n">key1</span><span class="p">),</span>
+    <span class="k">UNIQUE</span> <span class="k">KEY</span> <span class="nf">idx_key2</span> <span class="p">(</span><span class="n">key2</span><span class="p">),</span>
+    <span class="k">KEY</span> <span class="nf">idx_key3</span> <span class="p">(</span><span class="n">key3</span><span class="p">),</span>
+    <span class="k">KEY</span> <span class="nf">idx_key_part</span><span class="p">(</span><span class="n">key_part1</span><span class="p">,</span> <span class="n">key_part2</span><span class="p">,</span> <span class="n">key_part3</span><span class="p">)</span>
+<span class="p">)</span> <span class="kp">Engine</span><span class="o">=</span><span class="n">InnoDB</span> <span class="kp">CHARSET</span><span class="o">=</span><span class="n">utf8</span><span class="p">;</span>
+<span class="c1">## 执行sql语句
+</span><span class="c1"></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">single_table</span> <span class="k">WHERE</span> 
+    <span class="n">key1</span> <span class="k">IN</span> <span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">)</span> <span class="k">AND</span> 
+    <span class="n">key2</span> <span class="o">&gt;</span> <span class="mi">10</span> <span class="k">AND</span> <span class="n">key2</span> <span class="o">&lt;</span> <span class="mi">1000</span> <span class="k">AND</span> 
+    <span class="n">key3</span> <span class="o">&gt;</span> <span class="n">key2</span> <span class="k">AND</span> 
+    <span class="n">key_part1</span> <span class="k">LIKE</span> <span class="s1">&#39;%hello%&#39;</span> <span class="k">AND</span>
+    <span class="n">common_field</span> <span class="o">=</span> <span class="s1">&#39;123&#39;</span><span class="p">;</span>
+<span class="c1">## possible keys只有idx_key1和idx_key2。
+</span></code></pre></td></tr></table>
 </div>
-</div>]]></description></item><item><title>JVM调优学习之旅-(7)P+CMS模拟案例优化分析思想-每秒十万的QPS社交</title><link>https://yakax.gitee.io/jvm%E8%B0%83%E4%BC%98%E5%AD%A6%E4%B9%A0%E4%B9%8B%E6%97%85-7p-cms%E6%A8%A1%E6%8B%9F%E6%A1%88%E4%BE%8B%E4%BC%98%E5%8C%96%E5%88%86%E6%9E%90%E6%80%9D%E6%83%B3-%E6%AF%8F%E7%A7%92%E5%8D%81%E4%B8%87%E7%9A%84qps%E7%A4%BE%E4%BA%A4/</link><pubDate>Wed, 19 Aug 2020 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/jvm%E8%B0%83%E4%BC%98%E5%AD%A6%E4%B9%A0%E4%B9%8B%E6%97%85-7p-cms%E6%A8%A1%E6%8B%9F%E6%A1%88%E4%BE%8B%E4%BC%98%E5%8C%96%E5%88%86%E6%9E%90%E6%80%9D%E6%83%B3-%E6%AF%8F%E7%A7%92%E5%8D%81%E4%B8%87%E7%9A%84qps%E7%A4%BE%E4%BA%A4/</guid><description><![CDATA[<h3 id="模拟案例背景">模拟案例背景</h3>
+</div>]]></description></item><item><title>MySQL-日志学习</title><link>https://yakax.gitee.io/mysql-%E6%97%A5%E5%BF%97%E5%AD%A6%E4%B9%A0/</link><pubDate>Sun, 03 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E6%97%A5%E5%BF%97%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h2 id="更新语句的基本流程">更新语句的基本流程</h2>
+<p></p>
+<ol>
+<li>更新数据前 会把数据写入uodo 日志文件</li>
+<li>更新数据后 会把数据写入redo缓冲池，这意味着这个缓冲池落地磁盘，跟事务有关系，可以通过<code>innodb_flush_log_at_trx_commit </code>配置。</li>
+<li>当参数是1时，就是必须把redo log写入磁盘才能提交事务。0 的时候就是不会有redo日志、2 的时候是先写oscache  这两种都有丢失数据的风险</li>
+<li>buffer pool就是我们一直在操作的数据的缓冲区。</li>
+<li>redo log 文件里面也是一块一块追加在一起的</li>
+</ol>]]></description></item><item><title>MySQL-查询-SQL简化与子查询的物化</title><link>https://yakax.gitee.io/mysql-%E6%9F%A5%E8%AF%A2-sql%E7%AE%80%E5%8C%96%E4%B8%8E%E5%AD%90%E6%9F%A5%E8%AF%A2%E7%9A%84%E7%89%A9%E5%8C%96/</link><pubDate>Sun, 03 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E6%9F%A5%E8%AF%A2-sql%E7%AE%80%E5%8C%96%E4%B8%8E%E5%AD%90%E6%9F%A5%E8%AF%A2%E7%9A%84%E7%89%A9%E5%8C%96/</guid><description><![CDATA[<h2 id="条件化简">条件化简</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">很多社交APP,日活百万用户，在晚高峰时，QPS很高。
-而流量最大的模块，无非就是陌生人的个人主页，类似朋友圈之类的功能。
-我们都知道一般这种肯定设置的是缓存，但是问题是这些数据都是比较大的，比如一个人发布了一些感悟，等等之类的。
-这些数据都是比较大的。个人信息页展示的信息也是比较完全的。这些数据我们先预估5M.
+<pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="c1">## 移除不必要的括号
+</span><span class="c1"></span><span class="p">((</span><span class="n">a</span> <span class="o">=</span> <span class="mi">5</span> <span class="k">AND</span> <span class="n">b</span> <span class="o">=</span> <span class="n">c</span><span class="p">)</span> <span class="k">OR</span> <span class="p">((</span><span class="n">a</span> <span class="o">&gt;</span> <span class="n">c</span><span class="p">)</span> <span class="k">AND</span> <span class="p">(</span><span class="n">c</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">)))</span> <span class="err">改</span> <span class="p">(</span><span class="n">a</span> <span class="o">=</span> <span class="mi">5</span> <span class="k">and</span> <span class="n">b</span> <span class="o">=</span> <span class="n">c</span><span class="p">)</span> <span class="k">OR</span> <span class="p">(</span><span class="n">a</span> <span class="o">&gt;</span> <span class="n">c</span> <span class="k">AND</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">)</span>
+<span class="c1">## 常量传递（constant_propagation）
+</span><span class="c1"></span><span class="n">a</span> <span class="o">=</span> <span class="mi">5</span> <span class="k">AND</span> <span class="n">b</span> <span class="o">&gt;</span> <span class="n">a</span>  <span class="err">改</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">5</span> <span class="k">AND</span> <span class="n">b</span> <span class="o">&gt;</span> <span class="mi">5</span>
+<span class="c1">## 移除没用的条件（trivial_condition_removal）
+</span><span class="c1"></span><span class="p">(</span><span class="n">a</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="k">and</span> <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">)</span> <span class="k">OR</span> <span class="p">(</span><span class="n">a</span> <span class="o">=</span> <span class="mi">6</span> <span class="k">OR</span> <span class="mi">5</span> <span class="o">!=</span> <span class="mi">5</span><span class="p">)</span>
+<span class="err">很明显，</span><span class="n">b</span> <span class="o">=</span> <span class="n">b这个表达式永远为TRUE</span><span class="err">，</span><span class="mi">5</span> <span class="o">!=</span> <span class="mi">5</span><span class="err">这个表达式永远为</span><span class="no">FALSE</span><span class="err">，所以简化后的表达式就是这样的：</span>
+<span class="n">a</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="k">OR</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="c1">## 表达式计算 
+</span><span class="c1"></span><span class="n">a</span> <span class="o">=</span> <span class="mi">5</span> <span class="o">+</span> <span class="mi">1</span> <span class="err">改成</span> <span class="n">a</span><span class="o">=</span><span class="mi">6</span> <span class="err">表达式不会对带有符号或者函数的进行化简</span><span class="p">,</span><span class="err">只有搜索条件中索引列和常数使用某些运算符连接起来才可能使用到索引</span>
+<span class="c1">##HAVING子句和WHERE子句的合并
+</span><span class="c1"></span><span class="err">如果查询语句中没有出现诸如</span><span class="n">SUM</span><span class="err">、</span><span class="n">MAX等等的聚集函数以及GROUP</span> <span class="n">BY子句</span><span class="err">，优化器就把</span><span class="n">HAVING子句和WHERE子句合并起来</span><span class="err">。</span>
 </code></pre></td></tr></table>
 </div>
-</div>]]></description></item><item><title>JVM调优学习之旅-(8)P+CMS案例优化分析记录与优化总结</title><link>https://yakax.gitee.io/jvm%E8%B0%83%E4%BC%98%E5%AD%A6%E4%B9%A0%E4%B9%8B%E6%97%85-8p-cms%E6%A1%88%E4%BE%8B%E4%BC%98%E5%8C%96%E5%88%86%E6%9E%90%E8%AE%B0%E5%BD%95%E4%B8%8E%E4%BC%98%E5%8C%96%E6%80%BB%E7%BB%93/</link><pubDate>Wed, 19 Aug 2020 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/jvm%E8%B0%83%E4%BC%98%E5%AD%A6%E4%B9%A0%E4%B9%8B%E6%97%85-8p-cms%E6%A1%88%E4%BE%8B%E4%BC%98%E5%8C%96%E5%88%86%E6%9E%90%E8%AE%B0%E5%BD%95%E4%B8%8E%E4%BC%98%E5%8C%96%E6%80%BB%E7%BB%93/</guid><description><![CDATA[<h2 id="参数案例">参数案例</h2>
-<h3 id="案例1-线上频繁metadata-gc">案例1-线上频繁Metadata GC</h3>
-<p>错误参数 -XX:SoftRefLRUPolicyMSPerMB=0</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">由于参数设置错误，导致线上gc日志  
-【Full GC（Metadata GC Threshold）xxxxx, xxxxx】
-频繁清空元数据区，而这个区是存放一些加载类的信息的。
-通过jstat，或者其他可视化工具
-看起来Metaspace区域的内存呈现一个波动的状态，他总是会先不断增加，达到一个顶点之后，
-就会把Metaspace区域给占满，然后自然就会触发一次Full GC，Full GC会带着Metaspace区域的垃圾回收，
-所以接下来Metaspace区域的内存占用又变得很小了。
-</code></pre></td></tr></table>
-</div>
-</div>]]></description></item></channel></rss>
+</div>]]></description></item><item><title>MySQL-索引-索引合并学习</title><link>https://yakax.gitee.io/mysql-%E7%B4%A2%E5%BC%95-%E7%B4%A2%E5%BC%95%E5%90%88%E5%B9%B6%E5%AD%A6%E4%B9%A0/</link><pubDate>Sun, 03 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E7%B4%A2%E5%BC%95-%E7%B4%A2%E5%BC%95%E5%90%88%E5%B9%B6%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<blockquote>
+<p>MySQL在一般情况下执行一个查询时最多只会用到单个二级索引，但是，在这些特殊情况下也可能在一个查询中使用到多个二级索引，设计MySQL的把这种使用到多个索引来完成一次查询的执行方法称之为：index merge</p>
+</blockquote>
+<p><font color=red >**所有的索引合并往往还是需要看数据回表的数量与 mysql 的优化器！**优化器只有在单独根据搜索条件从某个二级索引中
+获取的记录数比较少，通过Union索引合并后进行访问的代价比全表扫描更小时才会使用Union索引合并</font></p>]]></description></item><item><title>MySQL-索引基本学习</title><link>https://yakax.gitee.io/mysql-%E7%B4%A2%E5%BC%95%E5%9F%BA%E6%9C%AC%E5%AD%A6%E4%B9%A0/</link><pubDate>Sun, 03 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E7%B4%A2%E5%BC%95%E5%9F%BA%E6%9C%AC%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h2 id="innodb索引结构">InnoDB索引结构</h2>
+<p></p>
+<ul>
+<li>每个页里面有最大和最小记录标识record_type=2,3</li>
+<li>record_type=1是目录项 0是最终存储记录项</li>
+<li>一个页16kb=16384字节 可以存很多记录了基本3层就已经很多条记录了</li>
+<li>每个节点的左儿子小于父节点，父节点又小于右儿子</li>
+<li><strong>索引每个节点的数据是已经排序好了的，当然如果你是联合索引，那也是排序好了的。</strong></li>
+</ul>]]></description></item></channel></rss>

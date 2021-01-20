@@ -1,0 +1,9 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>undo log - 标签 - yakax</title><link>https://yakax.gitee.io/tags/undo-log/</link><description>undo log - 标签 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sun, 03 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.gitee.io/tags/undo-log/" rel="self" type="application/rss+xml"/><item><title>MySQL-日志学习</title><link>https://yakax.gitee.io/mysql-%E6%97%A5%E5%BF%97%E5%AD%A6%E4%B9%A0/</link><pubDate>Sun, 03 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E6%97%A5%E5%BF%97%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h2 id="更新语句的基本流程">更新语句的基本流程</h2>
+<p></p>
+<ol>
+<li>更新数据前 会把数据写入uodo 日志文件</li>
+<li>更新数据后 会把数据写入redo缓冲池，这意味着这个缓冲池落地磁盘，跟事务有关系，可以通过<code>innodb_flush_log_at_trx_commit </code>配置。</li>
+<li>当参数是1时，就是必须把redo log写入磁盘才能提交事务。0 的时候就是不会有redo日志、2 的时候是先写oscache  这两种都有丢失数据的风险</li>
+<li>buffer pool就是我们一直在操作的数据的缓冲区。</li>
+<li>redo log 文件里面也是一块一块追加在一起的</li>
+</ol>]]></description></item></channel></rss>

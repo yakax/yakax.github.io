@@ -1,0 +1,7 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Buffer Pool - 标签 - yakax</title><link>https://yakax.gitee.io/tags/buffer-pool/</link><description>Buffer Pool - 标签 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sun, 03 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.gitee.io/tags/buffer-pool/" rel="self" type="application/rss+xml"/><item><title>MySQL-Buffer Pool 学习</title><link>https://yakax.gitee.io/mysql-buffer-pool-%E5%AD%A6%E4%B9%A0-copy/</link><pubDate>Sun, 03 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-buffer-pool-%E5%AD%A6%E4%B9%A0-copy/</guid><description><![CDATA[<h4 id="一条sql执行基本流程">一条sql执行基本流程</h4>
+<p></p>
+<blockquote>
+<p>在老版本的MySQL中sql通过连接进来时会有查询缓存这一块的逻辑。</p>
+<p>查询解析器解析sql 是否正确后，然后基本优化sql，生成执行计划，选择引擎执行。</p>
+<p>而InnoDB 在执行时 为了保证对数据的执行更快，省去磁盘IO开销 引入了Buffer Pool</p>
+</blockquote>]]></description></item></channel></rss>
