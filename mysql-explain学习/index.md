@@ -18,95 +18,97 @@
 
 > MySQL为每一个SELECT关键字代表的小查询都定义了一个称之为select_type的属性，意思是我们只要知道了某个小查询的select_type属性，就知道了这个小查询在整个大查询中扮演了一个什么角色。
 
-#### SIMPLE
-
-查询语句中不包含UNION或者子查询的查询都算作是SIMPLE类型、当然，连接查询也算是SIMPLE类型
-
-#### PRIMARY
-
-对于包含UNION、UNION ALL或者子查询的大查询来说，它是由几个小查询组成的，其中最左边的那个查询的select_type值就是PRIMARY
-
-```mysql
-EXPLAIN SELECT * FROM info_flow UNION SELECT * FROM info_flow
-```
-
-<img src="https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/mysql/explain/union.png!print " />
-
-#### UNION
-
-对于包含UNION或者UNION ALL的大查询来说，它是由几个小查询组成的，其中除了最左边的那个小查询以外，其余的小查询的select_type值就是UNION
-
-#### UNION RESULT
-
-MySQL选择使用临时表来完成UNION查询的去重工作，针对该临时表的查询的select_type就是UNION RESULT
-
-
-
-#### SUBQUERY
-
-> 物化：在SQL执行过程中，第一次需要子查询结果时执行子查询并将子查询的结果保存为临时表，后续对子查询结果集的访问将直接通过临时表获得
+> #### SIMPLE
 >
-> semi-join：只需要满足匹配一张表。办连接
+> 查询语句中不包含UNION或者子查询的查询都算作是SIMPLE类型、当然，连接查询也算是SIMPLE类型
+>
+> #### PRIMARY
+>
+> 对于包含UNION、UNION ALL或者子查询的大查询来说，它是由几个小查询组成的，其中最左边的那个查询的select_type值就是PRIMARY
+>
+> ```mysql
+> EXPLAIN SELECT * FROM info_flow UNION SELECT * FROM info_flow
+> ```
+>
+> <img src="https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/mysql/explain/union.png!print " />
+>
+> #### UNION
+>
+> 对于包含UNION或者UNION ALL的大查询来说，它是由几个小查询组成的，其中除了最左边的那个小查询以外，其余的小查询的select_type值就是UNION
+>
+> #### UNION RESULT
+>
+> MySQL选择使用临时表来完成UNION查询的去重工作，针对该临时表的查询的select_type就是UNION RESULT
+>
+> 
+>
+> #### SUBQUERY
+>
+> > 物化：在SQL执行过程中，第一次需要子查询结果时执行子查询并将子查询的结果保存为临时表，后续对子查询结果集的访问将直接通过临时表获得
+> >
+> > semi-join：只需要满足匹配一张表。办连接
+>
+> 如果包含子查询的查询语句不能够转为对应的semi-join的形式,一般在in语句带子查询时**。并且该子查询是不相关子查询,**并且查询优化器决定采用将该子查询物化的方案来执行该子查询时。子查询由于会被物化，所以只需要执行一遍
+>
+> ```mysql
+> EXPLAIN SELECT * FROM s1 WHERE key1 IN (SELECT key1 FROM s2) OR key3 = 'a';
+> ```
+>
+> 
+>
+> #### DEPENDENT SUBQUERY
+>
+> 如果包含子查询的查询语句不能够转为对应的semi-join的形式，**并且该子查询是相关子查询**，则该子查询的第一个SELECT关键字代表的那个查询的select_type就是DEPENDENT SUBQUERY。需要注意这个查询类型没有被物化，查询可能会被执行多次
+>
+> ```mysql
+> EXPLAIN SELECT * FROM s1 WHERE key1 IN (SELECT key1 FROM s2 WHERE s1.key2 = s2.key2) OR key3 = 'a';
+> ```
+>
+> 
+>
+> #### DEPENDENT UNION
+>
+> 在包含UNION或者UNION ALL的大查询中，如果各个小查询都依赖于外层查询的话，那除了最左边的那个小查询之外，其余的小查询的select_type的值就是DEPENDENT UNION。
+>
+> ```mysql
+> EXPLAIN SELECT * FROM s1 WHERE key1 IN (SELECT key1 FROM s2 WHERE key1 = 'a' UNION SELECT key1 FROM s1 WHERE key1 = 'b')
+> ```
+>
+> **这个查询比较复杂啊，大查询里包含了一个子查询，子查询里又是由UNION连起来的两个小查询。**
+>
+> **SELECT key1 FROM s2 WHERE key1 = 'a'这个小查询由于是子查询中第一个查询，所以它的select_type是DEPENDENT SUBQUERY，**
+>
+> **而SELECT key1 FROM s1 WHERE key1 = 'b'这个查询的select_type就是DEPENDENT UNION**
+>
+> 
+>
+> #### DERIVED
+>
+> 对于采用物化的方式执行的包含派生表的查询，该派生表对应的子查询的select_type就是DERIVED
+>
+> ```mysql
+> EXPLAIN SELECT * FROM (SELECT id, count(*) as count FROM info_flow GROUP BY id) AS derived_s1 where id > 1
+> ```
+>
+> <img src="https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/mysql/explain/derived.png!print " />
+>
+> 从执行计划中可以看出，id为2的记录就代表子查询的执行方式，它的select_type是DERIVED，说明该子查询是以物化的方式执行的。id为1的记录代表外层查询，大家注意看它的table列显示的是<derived2>，表示该查询是针对将派生表物化之后的表进行查询的。
+>
+> 
+>
+> #### MATERIALIZED
+>
+> 当查询优化器在执行包含子查询的语句时，选择将子查询物化之后与外层查询进行连接查询时，该子查询对应的select_type属性就是MATERIALIZED
+>
+> ```mysql
+> EXPLAIN SELECT * FROM info_flow where area_id in(SELECT biz_id FROM biz_dispatch_record)
+> ```
+>
+> <img src="https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/mysql/explain/materilized.png!print " />
+>
+> 执行计划的第三条记录的id值为2，说明该条记录对应的是一个单表查询，从它的select_type值为MATERIALIZED可以看出，查询优化器是要把子查询先转换成物化表。然后看执行计划的前两条记录的id值都为1，说明这两条记录对应的表进行连接查询，需要注意的是第二条记录的table列的值是<subquery2>，**说明该表其实就是id为2对应的子查询执行之后产生的物化表，然后将s1和该物化表进行连接查询。**
 
-如果包含子查询的查询语句不能够转为对应的semi-join的形式,一般在in语句带子查询时**。并且该子查询是不相关子查询,**并且查询优化器决定采用将该子查询物化的方案来执行该子查询时。子查询由于会被物化，所以只需要执行一遍
 
-```mysql
-EXPLAIN SELECT * FROM s1 WHERE key1 IN (SELECT key1 FROM s2) OR key3 = 'a';
-```
-
-
-
-#### DEPENDENT SUBQUERY
-
-如果包含子查询的查询语句不能够转为对应的semi-join的形式，**并且该子查询是相关子查询**，则该子查询的第一个SELECT关键字代表的那个查询的select_type就是DEPENDENT SUBQUERY。需要注意这个查询类型没有被物化，查询可能会被执行多次
-
-```mysql
-EXPLAIN SELECT * FROM s1 WHERE key1 IN (SELECT key1 FROM s2 WHERE s1.key2 = s2.key2) OR key3 = 'a';
-```
-
-
-
-#### DEPENDENT UNION
-
-在包含UNION或者UNION ALL的大查询中，如果各个小查询都依赖于外层查询的话，那除了最左边的那个小查询之外，其余的小查询的select_type的值就是DEPENDENT UNION。
-
-```mysql
-EXPLAIN SELECT * FROM s1 WHERE key1 IN (SELECT key1 FROM s2 WHERE key1 = 'a' UNION SELECT key1 FROM s1 WHERE key1 = 'b')
-```
-
-**这个查询比较复杂啊，大查询里包含了一个子查询，子查询里又是由UNION连起来的两个小查询。**
-
-**SELECT key1 FROM s2 WHERE key1 = 'a'这个小查询由于是子查询中第一个查询，所以它的select_type是DEPENDENT SUBQUERY，**
-
-**而SELECT key1 FROM s1 WHERE key1 = 'b'这个查询的select_type就是DEPENDENT UNION**
-
-
-
-#### DERIVED
-
-对于采用物化的方式执行的包含派生表的查询，该派生表对应的子查询的select_type就是DERIVED
-
-```mysql
-EXPLAIN SELECT * FROM (SELECT id, count(*) as count FROM info_flow GROUP BY id) AS derived_s1 where id > 1
-```
-
-<img src="https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/mysql/explain/derived.png!print " />
-
-从执行计划中可以看出，id为2的记录就代表子查询的执行方式，它的select_type是DERIVED，说明该子查询是以物化的方式执行的。id为1的记录代表外层查询，大家注意看它的table列显示的是<derived2>，表示该查询是针对将派生表物化之后的表进行查询的。
-
-
-
-#### MATERIALIZED
-
-当查询优化器在执行包含子查询的语句时，选择将子查询物化之后与外层查询进行连接查询时，该子查询对应的select_type属性就是MATERIALIZED
-
-```mysql
-EXPLAIN SELECT * FROM info_flow where area_id in(SELECT biz_id FROM biz_dispatch_record)
-```
-
-<img src="https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/mysql/explain/materilized.png!print " />
-
-执行计划的第三条记录的id值为2，说明该条记录对应的是一个单表查询，从它的select_type值为MATERIALIZED可以看出，查询优化器是要把子查询先转换成物化表。然后看执行计划的前两条记录的id值都为1，说明这两条记录对应的表进行连接查询，需要注意的是第二条记录的table列的值是<subquery2>，**说明该表其实就是id为2对应的子查询执行之后产生的物化表，然后将s1和该物化表进行连接查询。**
 
 
 
@@ -386,5 +388,6 @@ information_schema数据库下的OPTIMIZER_TRACE表字段有4个
 > 我们所说的基于成本的优化主要集中在optimize阶段。
 > 对于单表查询来说，我们主要关注optimize阶段的"rows_estimation"这个过程
 > 对于多表连接查询来说，我们更多需要关注"considered_execution_plans"这个过程
+
 
 
