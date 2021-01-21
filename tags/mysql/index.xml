@@ -1,11 +1,11 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>MySQL - 标签 - yakax</title><link>https://yakax.gitee.io/tags/mysql/</link><description>MySQL - 标签 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sun, 03 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.gitee.io/tags/mysql/" rel="self" type="application/rss+xml"/><item><title>MySQL-Buffer Pool 学习</title><link>https://yakax.gitee.io/mysql-buffer-pool-%E5%AD%A6%E4%B9%A0-copy/</link><pubDate>Sun, 03 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-buffer-pool-%E5%AD%A6%E4%B9%A0-copy/</guid><description><![CDATA[<h4 id="一条sql执行基本流程">一条sql执行基本流程</h4>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>MySQL - 标签 - yakax</title><link>https://yakax.gitee.io/tags/mysql/</link><description>MySQL - 标签 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 20 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.gitee.io/tags/mysql/" rel="self" type="application/rss+xml"/><item><title>MySQL-Buffer Pool 学习</title><link>https://yakax.gitee.io/mysql-buffer-pool-%E5%AD%A6%E4%B9%A0-copy/</link><pubDate>Wed, 20 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-buffer-pool-%E5%AD%A6%E4%B9%A0-copy/</guid><description><![CDATA[<h4 id="一条sql执行基本流程">一条sql执行基本流程</h4>
 <p></p>
 <blockquote>
 <p>在老版本的MySQL中sql通过连接进来时会有查询缓存这一块的逻辑。</p>
 <p>查询解析器解析sql 是否正确后，然后基本优化sql，生成执行计划，选择引擎执行。</p>
 <p>而InnoDB 在执行时 为了保证对数据的执行更快，省去磁盘IO开销 引入了Buffer Pool</p>
-</blockquote>]]></description></item><item><title>MySQL-Explain学习</title><link>https://yakax.gitee.io/mysql-explain%E5%AD%A6%E4%B9%A0/</link><pubDate>Sun, 03 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-explain%E5%AD%A6%E4%B9%A0/</guid><description>&lt;h2 id="执行计划各列详解">执行计划各列详解&lt;/h2>
-&lt;p>&lt;/p></description></item><item><title>MySQL-一些问题</title><link>https://yakax.gitee.io/mysql-%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98/</link><pubDate>Sun, 03 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98/</guid><description><![CDATA[<h4 id="优化器未使用你想用的索引">优化器未使用你想用的索引</h4>
+</blockquote>]]></description></item><item><title>MySQL-Explain学习</title><link>https://yakax.gitee.io/mysql-explain%E5%AD%A6%E4%B9%A0/</link><pubDate>Wed, 20 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-explain%E5%AD%A6%E4%B9%A0/</guid><description>&lt;h2 id="执行计划各列详解">执行计划各列详解&lt;/h2>
+&lt;p>&lt;/p></description></item><item><title>MySQL-一些问题</title><link>https://yakax.gitee.io/mysql-%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98/</link><pubDate>Wed, 20 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98/</guid><description><![CDATA[<h4 id="优化器未使用你想用的索引">优化器未使用你想用的索引</h4>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -16,7 +16,7 @@
 <span class="o">//</span> <span class="err">利用参数</span><span class="n">force</span> <span class="k">index</span>
 </code></pre></td></tr></table>
 </div>
-</div>]]></description></item><item><title>MySQL-事务学习</title><link>https://yakax.gitee.io/mysql-%E4%BA%8B%E5%8A%A1%E5%AD%A6%E4%B9%A0/</link><pubDate>Sun, 03 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E4%BA%8B%E5%8A%A1%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h2 id="多事务并发处理数据产生的问题">多事务并发处理数据产生的问题</h2>
+</div>]]></description></item><item><title>MySQL-事务学习</title><link>https://yakax.gitee.io/mysql-%E4%BA%8B%E5%8A%A1%E5%AD%A6%E4%B9%A0/</link><pubDate>Wed, 20 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E4%BA%8B%E5%8A%A1%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h2 id="多事务并发处理数据产生的问题">多事务并发处理数据产生的问题</h2>
 <p><strong>脏读脏写 都是因为读取了事务未提交时的事务回滚情况</strong></p>
 <h4 id="脏写">脏写</h4>
 <p>事务A与事务B同时更新一条数据，由于其中一个事务回滚 导致另外事务执行成功的数据不存在了。</p>
@@ -25,7 +25,7 @@
 <h4 id="不可重复读-与可重复读">不可重复读 与可重复读</h4>
 <p>事务A修改了值并且提交了事务    B读取到   然后B在执行事务期间 C又修改了值并且提交了。这时B读取到的值又变了。 这就时不可重复读问题。 可重复读就相反 并且读取到的值是相同的。</p>
 <h4 id="幻读">幻读</h4>
-<p>其实就是在事务执行期间第二次查询相比第一次查询出现了之前没出现过的数据。</p>]]></description></item><item><title>MySQL-成本与统计数据学习</title><link>https://yakax.gitee.io/mysql-%E6%88%90%E6%9C%AC%E4%B8%8E%E7%BB%9F%E8%AE%A1%E6%95%B0%E6%8D%AE%E5%AD%A6%E4%B9%A0/</link><pubDate>Sun, 03 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E6%88%90%E6%9C%AC%E4%B8%8E%E7%BB%9F%E8%AE%A1%E6%95%B0%E6%8D%AE%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<blockquote>
+<p>其实就是在事务执行期间第二次查询相比第一次查询出现了之前没出现过的数据。</p>]]></description></item><item><title>MySQL-成本与统计数据学习</title><link>https://yakax.gitee.io/mysql-%E6%88%90%E6%9C%AC%E4%B8%8E%E7%BB%9F%E8%AE%A1%E6%95%B0%E6%8D%AE%E5%AD%A6%E4%B9%A0/</link><pubDate>Wed, 20 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E6%88%90%E6%9C%AC%E4%B8%8E%E7%BB%9F%E8%AE%A1%E6%95%B0%E6%8D%AE%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<blockquote>
 <p>MySQL执行一个查询可以有不同的执行方案，它会选择其中成本最低，或者说代价最低的那种方案去真正的执行查询</p>
 </blockquote>
 <h2 id="基于成本的优化步骤">基于成本的优化步骤</h2>
@@ -87,7 +87,7 @@
 <span class="c1">## possible keys只有idx_key1和idx_key2。
 </span></code></pre></td></tr></table>
 </div>
-</div>]]></description></item><item><title>MySQL-日志学习</title><link>https://yakax.gitee.io/mysql-%E6%97%A5%E5%BF%97%E5%AD%A6%E4%B9%A0/</link><pubDate>Sun, 03 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E6%97%A5%E5%BF%97%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h2 id="更新语句的基本流程">更新语句的基本流程</h2>
+</div>]]></description></item><item><title>MySQL-日志学习</title><link>https://yakax.gitee.io/mysql-%E6%97%A5%E5%BF%97%E5%AD%A6%E4%B9%A0/</link><pubDate>Wed, 20 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E6%97%A5%E5%BF%97%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h2 id="更新语句的基本流程">更新语句的基本流程</h2>
 <p></p>
 <ol>
 <li>更新数据前 会把数据写入uodo 日志文件</li>
@@ -95,7 +95,7 @@
 <li>当参数是1时，就是必须把redo log写入磁盘才能提交事务。0 的时候就是不会有redo日志、2 的时候是先写oscache  这两种都有丢失数据的风险</li>
 <li>buffer pool就是我们一直在操作的数据的缓冲区。</li>
 <li>redo log 文件里面也是一块一块追加在一起的</li>
-</ol>]]></description></item><item><title>MySQL-查询-SQL简化与子查询的物化</title><link>https://yakax.gitee.io/mysql-%E6%9F%A5%E8%AF%A2-sql%E7%AE%80%E5%8C%96%E4%B8%8E%E5%AD%90%E6%9F%A5%E8%AF%A2%E7%9A%84%E7%89%A9%E5%8C%96/</link><pubDate>Sun, 03 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E6%9F%A5%E8%AF%A2-sql%E7%AE%80%E5%8C%96%E4%B8%8E%E5%AD%90%E6%9F%A5%E8%AF%A2%E7%9A%84%E7%89%A9%E5%8C%96/</guid><description><![CDATA[<h2 id="条件化简">条件化简</h2>
+</ol>]]></description></item><item><title>MySQL-查询-SQL简化与子查询的物化</title><link>https://yakax.gitee.io/mysql-%E6%9F%A5%E8%AF%A2-sql%E7%AE%80%E5%8C%96%E4%B8%8E%E5%AD%90%E6%9F%A5%E8%AF%A2%E7%9A%84%E7%89%A9%E5%8C%96/</link><pubDate>Wed, 20 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E6%9F%A5%E8%AF%A2-sql%E7%AE%80%E5%8C%96%E4%B8%8E%E5%AD%90%E6%9F%A5%E8%AF%A2%E7%9A%84%E7%89%A9%E5%8C%96/</guid><description><![CDATA[<h2 id="条件化简">条件化简</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -126,11 +126,11 @@
 </span><span class="c1"></span><span class="err">如果查询语句中没有出现诸如</span><span class="n">SUM</span><span class="err">、</span><span class="n">MAX等等的聚集函数以及GROUP</span> <span class="n">BY子句</span><span class="err">，优化器就把</span><span class="n">HAVING子句和WHERE子句合并起来</span><span class="err">。</span>
 </code></pre></td></tr></table>
 </div>
-</div>]]></description></item><item><title>MySQL-索引-索引合并学习</title><link>https://yakax.gitee.io/mysql-%E7%B4%A2%E5%BC%95-%E7%B4%A2%E5%BC%95%E5%90%88%E5%B9%B6%E5%AD%A6%E4%B9%A0/</link><pubDate>Sun, 03 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E7%B4%A2%E5%BC%95-%E7%B4%A2%E5%BC%95%E5%90%88%E5%B9%B6%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<blockquote>
+</div>]]></description></item><item><title>MySQL-索引-索引合并学习</title><link>https://yakax.gitee.io/mysql-%E7%B4%A2%E5%BC%95-%E7%B4%A2%E5%BC%95%E5%90%88%E5%B9%B6%E5%AD%A6%E4%B9%A0/</link><pubDate>Wed, 20 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E7%B4%A2%E5%BC%95-%E7%B4%A2%E5%BC%95%E5%90%88%E5%B9%B6%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<blockquote>
 <p>MySQL在一般情况下执行一个查询时最多只会用到单个二级索引，但是，在这些特殊情况下也可能在一个查询中使用到多个二级索引，设计MySQL的把这种使用到多个索引来完成一次查询的执行方法称之为：index merge</p>
 </blockquote>
 <p><strong><font color=red >所有的索引合并往往还是需要看数据回表的数量与 mysql 的优化器！优化器只有在单独根据搜索条件从某个二级索引中
-获取的记录数比较少，通过Union索引合并后进行访问的代价比全表扫描更小时才会使用Union索引合并</font></strong></p>]]></description></item><item><title>MySQL-索引基本学习</title><link>https://yakax.gitee.io/mysql-%E7%B4%A2%E5%BC%95%E5%9F%BA%E6%9C%AC%E5%AD%A6%E4%B9%A0/</link><pubDate>Sun, 03 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E7%B4%A2%E5%BC%95%E5%9F%BA%E6%9C%AC%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h2 id="innodb索引结构">InnoDB索引结构</h2>
+获取的记录数比较少，通过Union索引合并后进行访问的代价比全表扫描更小时才会使用Union索引合并</font></strong></p>]]></description></item><item><title>MySQL-索引基本学习</title><link>https://yakax.gitee.io/mysql-%E7%B4%A2%E5%BC%95%E5%9F%BA%E6%9C%AC%E5%AD%A6%E4%B9%A0/</link><pubDate>Wed, 20 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E7%B4%A2%E5%BC%95%E5%9F%BA%E6%9C%AC%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h2 id="innodb索引结构">InnoDB索引结构</h2>
 <p></p>
 <ul>
 <li>每个页里面有最大和最小记录标识record_type=2,3</li>
@@ -138,7 +138,7 @@
 <li>一个页16kb=16384字节 可以存很多记录了基本3层就已经很多条记录了</li>
 <li>每个节点的左儿子小于父节点，父节点又小于右儿子</li>
 <li><strong>索引每个节点的数据是已经排序好了的，当然如果你是联合索引，那也是排序好了的。</strong></li>
-</ul>]]></description></item><item><title>MySQL-连接查询学习</title><link>https://yakax.gitee.io/mysql-%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E5%AD%A6%E4%B9%A0/</link><pubDate>Sun, 03 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h2 id="连接查询的基本语法">连接查询的基本语法</h2>
+</ul>]]></description></item><item><title>MySQL-连接查询学习</title><link>https://yakax.gitee.io/mysql-%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E5%AD%A6%E4%B9%A0/</link><pubDate>Wed, 20 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h2 id="连接查询的基本语法">连接查询的基本语法</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
