@@ -150,9 +150,9 @@ binlog的写入逻辑比较简单：事务执行过程中，先把日志写到bi
 
 <img src="https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/mysql/binlogfsync.png!print " />
 
-**write:**指的就是指把日志写入到文件系统的page cache，并没有把数据持久化到磁盘，所以速度比较快
+**write**:指的就是指把日志写入到文件系统的page cache，并没有把数据持久化到磁盘，所以速度比较快
 
-**fsync:**才是将数据持久化到磁盘的操作。一般情况下，我们认为fsync才占磁盘的IOPS。
+**fsync**:才是将数据持久化到磁盘的操作。一般情况下，我们认为fsync才占磁盘的IOPS。
 write 和fsync的时机，是由参数sync_binlog控制的：
 
 1. sync_binlog=0的时候，表示每次提交事务都只write，不fsync；
