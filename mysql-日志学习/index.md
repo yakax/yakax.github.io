@@ -151,6 +151,7 @@ binlog的写入逻辑比较简单：事务执行过程中，先把日志写到bi
 <img src="https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/mysql/binlogfsync.png!print " />
 
 **write:**指的就是指把日志写入到文件系统的page cache，并没有把数据持久化到磁盘，所以速度比较快
+
 **fsync:**才是将数据持久化到磁盘的操作。一般情况下，我们认为fsync才占磁盘的IOPS。
 write 和fsync的时机，是由参数sync_binlog控制的：
 
@@ -172,9 +173,9 @@ write 和fsync的时机，是由参数sync_binlog控制的：
 
 #### binlog的三种格式
 
-**statement:**记录的是具体的事务语句。当主从设置这个格式是很危险的，因为相当于针对语句，没有针对具体数据。
+**statement**:记录的是具体的事务语句。当主从设置这个格式是很危险的，因为相当于针对语句，没有针对具体数据。
 
-**row：**row格式的binlog里没有了SQL语句的原文，binlog里面记录了真实操作的主键id。
+**row**：row格式的binlog里没有了SQL语句的原文，binlog里面记录了真实操作的主键id。
 
 **mixed:**
 
@@ -182,6 +183,7 @@ write 和fsync的时机，是由参数sync_binlog控制的：
 > 所以，MySQL就取了个折中方案，也就是有了mixed格式的binlog。
 >
 > mixed格式的意思是，MySQL自己会判断这条SQL语句是否可能引起主备不一致，如有可能，就用row格式，否则就用statement格式。
+
 
 
 
