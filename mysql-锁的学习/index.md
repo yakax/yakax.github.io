@@ -89,7 +89,7 @@ SELECT ... FOR UPDATE;
 
 [可以看看之前文章间隙锁](https://yakax.gitee.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%984innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E7%9A%84%E4%BA%8B%E5%8A%A1/#next-key-locks%E4%B8%B4%E9%94%AE%E9%94%81innodb)
 
-[间隙锁案例、规则、死锁]()
+[间隙锁案例、规则、死锁](https://yakax.gitee.io/mysql-锁-间隙锁案例篇/)
 
 
 

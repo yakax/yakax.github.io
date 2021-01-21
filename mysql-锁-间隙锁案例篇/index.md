@@ -12,6 +12,7 @@
 5. 一个bug：唯一索引上的范围查询会访问到不满足条件的第一个值为止。
 <!--more-->
 
+
 >**注意！有行**才会加行锁。如果查询条件没有命中行，那就加next-key lock。当然，等值判断的时候，需要加上优化2
 >
 >（即：索引上的等值查询，向右遍历时且最后一个值不满足等值条件的时候，next-key lock退化为间隙锁。）
@@ -22,7 +23,7 @@
 
 
 
-### 案例SQL
+## 案例SQL
 
 所有案例都是在可重复读隔离级别(repeatable-read)下验证的
 
@@ -41,7 +42,7 @@ insert into t values(0,0,0),(5,5,5),
 
 
 
-### 案例1-等值查询间隙锁
+## 案例1-等值查询间隙锁
 
 <img src="https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/mysql/trx/nextlock1.png!print" style="zoom: 33%;" />
 
@@ -52,7 +53,7 @@ insert into t values(0,0,0),(5,5,5),
 >
 >所以，session B要往这个间隙里面插入id=8的记录会被锁住，但是session C修改id=10这行是可以的。
 
-### 案例2-非唯一索引等值锁
+## 案例2-非唯一索引等值锁
 
 <img src="https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/mysql/trx/nextlock2.png!print" style="zoom: 33%;" />
 
@@ -73,7 +74,7 @@ insert into t values(0,0,0),(5,5,5),
 
 
 
-### 案例3：主键索引范围锁
+## 案例3：主键索引范围锁
 
 ```mysql
 mysql> select * from t where id=10 for update;
@@ -92,7 +93,7 @@ mysql> select * from t where id>=10 and id<11 for update;
 
 
 
-### 案例4：非唯一索引范围锁
+## 案例4：非唯一索引范围锁
 
 <img src="https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/mysql/trx/nextlock4.png!print" style="zoom: 33%;" />
 
@@ -104,7 +105,7 @@ mysql> select * from t where id>=10 and id<11 for update;
 
 
 
-### 案例5：唯一索引范围锁bug
+## 案例5：唯一索引范围锁bug
 
 <img src="https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/mysql/trx/nextlock5.png!print" style="zoom: 33%;" />
 
@@ -116,7 +117,7 @@ mysql> select * from t where id>=10 and id<11 for update;
 
 
 
-### 案例6：非唯一索引上存在"等值"的例子
+## 案例6：非唯一索引上存在"等值"的例子
 
 ```mysql
 insert into t values(30,10,30);
@@ -132,7 +133,7 @@ insert into t values(30,10,30);
 
 
 
-### 案例7：limit 语句加锁
+## 案例7：limit 语句加锁
 
 <img src="https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/mysql/trx/nextlock7.png!print" style="zoom: 33%;" />
 
@@ -142,7 +143,7 @@ session A的delete语句加了 limit 2。你知道表t里c=10的记录其实只�
 
 
 
-### 案例8：一个死锁的例子
+## 案例8：一个死锁的例子
 
 <img src="https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/mysql/trx/nextlock8.png!print" style="zoom: 33%;" />
 
@@ -156,7 +157,7 @@ session A的delete语句加了 limit 2。你知道表t里c=10的记录其实只�
 
 
 
-### 案例9：order by改变加锁方向
+## 案例9：order by改变加锁方向
 
 <img src="https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/mysql/trx/nextlock9.png!print" style="zoom: 33%;" />
 
@@ -170,7 +171,7 @@ session A的delete语句加了 limit 2。你知道表t里c=10的记录其实只�
 
 
 
-### 案例10：再次分析范围查询
+## 案例10：再次分析范围查询
 
 ```mysql
 begin;
@@ -204,7 +205,7 @@ select id from t where c in(5,20,10) lock in share mode;
 
 
 
-### 怎么查看死锁
+## 怎么查看死锁
 
 > 下面试间隙锁案例10出现死锁情况
 
@@ -245,7 +246,7 @@ select id from t where c in(5,20,10) lock in share mode;
 1. 由于锁是一个个加的，要避免死锁，对同一组资源，要按照尽量相同的顺序访问；
 2. 在发生死锁的时刻，for update 这条语句占有的资源更多，回滚成本更大，所以InnoDB选择了回滚成本更小的lock in share mode语句，来回滚。
 
-### 怎么看锁等待
+## 怎么看锁等待
 
 <img src="https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/mysql/trx/lockwait.png!print" style="zoom: 33%;" />
 
@@ -276,7 +277,9 @@ select id from t where c in(5,20,10) lock in share mode;
 
 
 
-### update间隙锁变大的例子
+## update间隙锁变大的例子
+
+
 
 <img src="https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/mysql/trx/nextupdata.png!print" style="zoom: 33%;" />
 
@@ -300,7 +303,7 @@ session A的加锁范围是索引c上的 (5,10]、(10,15]、(15,20]、(20,25]和
 
 
 
-### kill锁住的线程
+## kill锁住的线程
 
 ```mysql
  select * from t where id=1; # 长时间没返回
@@ -308,7 +311,7 @@ session A的加锁范围是索引c上的 (5,10]、(10,15]、(15,20]、(20,25]和
 
 **分析语句之前 都应该执行`show processlist;查看` 后续操作找到了blocking_id kill掉**
 
-#### 长时间没返回
+### 长时间没返回
 
 ``` mysql
 如果:performance_schema=on 打开着可以通过select blocking_pid from sys.schema_table_lock_waits; 
@@ -318,7 +321,7 @@ session A的加锁范围是索引c上的 (5,10]、(10,15]、(15,20]、(20,25]和
 
 
 
-#### 行锁
+### 行锁
 
 ```mysql
  select * from t sys.innodb_lock_waits where locked_table=`'test'.'t'
@@ -335,7 +338,7 @@ select * from t where c=5 for update
 
 
 
-#### 小总结
+### 小总结
 
 1. 表锁是主动在SQL 上面加的
 
