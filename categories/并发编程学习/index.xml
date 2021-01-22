@@ -1,4 +1,5 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>并发编程学习 - 分类 - yakax</title><link>https://yakax.gitee.io/categories/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/</link><description>并发编程学习 - 分类 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Fri, 22 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.gitee.io/categories/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/" rel="self" type="application/rss+xml"/><item><title>ConcurrentHashMap源码学习</title><link>https://yakax.gitee.io/concurrenthashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/concurrenthashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description>&lt;h3 id="整体结构图">整体结构图&lt;/h3>
+&lt;p>&lt;/p></description></item><item><title>Condition源码学习</title><link>https://yakax.gitee.io/condition%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/condition%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description>&lt;p>总体Condition产生的图&lt;/p>
 &lt;p>&lt;/p></description></item><item><title>FutureTask源码学习</title><link>https://yakax.gitee.io/futuretask%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/futuretask%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h4 id="基本属性"><strong>基本属性</strong></h4>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -272,81 +273,4 @@ void unlock() // 释放锁
 <li>当 stop没有增加volatile修饰时，子线程对于主线程的 stop=true的修改是不可见的，这样将导致子线程出现死循环</li>
 <li>当 stop增加了volatile修饰时，子线程可以获取到主线程对于 stop=true的值，子线程while循环条件不满足退出循环</li>
 </ul>
-<p><strong>增加volatile关键字以后，main线程对于共享变量 stop值的更新，对于子线程 thread可见，这就是volatile的作用</strong></p>]]></description></item><item><title>并发编程学习(2)synchronized与锁的唤醒</title><link>https://yakax.gitee.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A02synchronized%E4%B8%8E%E9%94%81%E7%9A%84%E5%94%A4%E9%86%92/</link><pubDate>Tue, 25 Jun 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A02synchronized%E4%B8%8E%E9%94%81%E7%9A%84%E5%94%A4%E9%86%92/</guid><description><![CDATA[<h3 id="synchronized-的基本认识">synchronized 的基本认识</h3>
-<p>在多线程并发编程中 synchronized 一直是元老级角色，很多人都会称呼它为重量级锁。但是，随着 Java SE 1.6 对synchronized 进行了各种优化之后，有些情况下它就并不那么重，Java SE 1.6 中为了减少获得锁和释放锁带来的性能消耗而引入的偏向锁和轻量级锁。</p>
-<h3 id="synchronized-的基本语法">synchronized 的基本语法</h3>
-<p>synchronized 有三种方式来加锁，分别是</p>
-<ol>
-<li>修饰实例方法，作用于当前实例加锁，进入同步代码前要获得当前实例的锁</li>
-<li>静态方法，作用于当前类对象加锁，进入同步代码前要获得当前类对象的锁</li>
-<li>修饰代码块，指定加锁对象，对给定对象加锁，进入同步代码库前要获得给定对象的锁。</li>
-</ol>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">public class SyncDemo {
-    Object lock = new Object();
-
-    public synchronized void demo1() {
-
-    }
-
-    public void demo2() {
-        // TODO
-        synchronized (this) {
-
-        }
-        // TODO
-    }
-
-    public synchronized static void demo3() {
-
-    }
-
-    public void demo4() {
-        synchronized (SyncDemo.class) {
-
-        }
-    }
-
-    public void demo5() {
-        synchronized (lock) {
-
-        }
-    }
-}
-</code></pre></td></tr></table>
-</div>
-</div><p>不同的修饰类型，代表锁的控制粒度</p>]]></description></item></channel></rss>
+<p><strong>增加volatile关键字以后，main线程对于共享变量 stop值的更新，对于子线程 thread可见，这就是volatile的作用</strong></p>]]></description></item></channel></rss>
