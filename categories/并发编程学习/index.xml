@@ -69,7 +69,7 @@
 <p>持有锁的waitstatus 状态 来标识node线程状态</p>
 <p><a data-fancybox="gallery" href="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/aqs/QQ%E6%88%AA%E5%9B%BE20200916143206.png">
     
-</a></p>]]></description></item><item><title>SynchronousQueue</title><link>https://yakax.gitee.io/synchronousqueue%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/synchronousqueue%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<blockquote>
+</a></p>]]></description></item><item><title>SynchronousQueue源码学习</title><link>https://yakax.gitee.io/synchronousqueue%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/synchronousqueue%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<blockquote>
 <p>SynchronousQueue 是实现了BlockingQueue的一个队列。特点是SynchronousQueue 没有容器。</p>
 <p>在生产者消费者情况下。生产者生产数据后<strong>没人消费是会阻塞的</strong>。当有消费者消费了，消费者与生产者同时退出队列。</p>
 </blockquote>
