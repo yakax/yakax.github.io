@@ -1,4 +1,4 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>所有文章 - yakax</title><link>https://yakax.gitee.io/posts/</link><description>所有文章 | yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Fri, 22 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.gitee.io/posts/" rel="self" type="application/rss+xml"/><item><title>ConcurrentHashMap源码学习</title><link>https://yakax.gitee.io/concurrenthashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/concurrenthashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description>&lt;h3 id="整体结构图">整体结构图&lt;/h3>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>所有文章 - yakax</title><link>https://yakax.gitee.io/posts/</link><description>所有文章 | yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Fri, 22 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.gitee.io/posts/" rel="self" type="application/rss+xml"/><item><title>AQS应用工具类源码学习</title><link>https://yakax.gitee.io/aqs%E5%BA%94%E7%94%A8%E5%B7%A5%E5%85%B7%E7%B1%BB%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/aqs%E5%BA%94%E7%94%A8%E5%B7%A5%E5%85%B7%E7%B1%BB%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description>AQS的共享锁 CountDownLatch 基本结构图 1 基本就是当state值更改为0时就开始唤醒aqs队列第一个节点 然后，就会调用 setHeadAndPropagate 这个方法 唤醒持续唤醒后继节点。 简单</description></item><item><title>ConcurrentHashMap源码学习</title><link>https://yakax.gitee.io/concurrenthashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/concurrenthashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description>&lt;h3 id="整体结构图">整体结构图&lt;/h3>
 &lt;p>&lt;/p></description></item><item><title>Condition源码学习</title><link>https://yakax.gitee.io/condition%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/condition%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description>&lt;p>总体Condition产生的图&lt;/p>
 &lt;p>&lt;/p></description></item><item><title>FutureTask源码学习</title><link>https://yakax.gitee.io/futuretask%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/futuretask%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h4 id="基本属性"><strong>基本属性</strong></h4>
 <div class="highlight"><div class="chroma">
@@ -173,66 +173,4 @@
 <h4 id="不可重复读-与可重复读">不可重复读 与可重复读</h4>
 <p>事务A修改了值并且提交了事务    B读取到   然后B在执行事务期间 C又修改了值并且提交了。这时B读取到的值又变了。 这就时不可重复读问题。 可重复读就相反 并且读取到的值是相同的。</p>
 <h4 id="幻读">幻读</h4>
-<p>其实就是在事务执行期间第二次查询相比第一次查询出现了之前没出现过的数据。</p>]]></description></item><item><title>MySQL-成本与统计数据学习</title><link>https://yakax.gitee.io/mysql-%E6%88%90%E6%9C%AC%E4%B8%8E%E7%BB%9F%E8%AE%A1%E6%95%B0%E6%8D%AE%E5%AD%A6%E4%B9%A0/</link><pubDate>Wed, 20 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E6%88%90%E6%9C%AC%E4%B8%8E%E7%BB%9F%E8%AE%A1%E6%95%B0%E6%8D%AE%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<blockquote>
-<p>MySQL执行一个查询可以有不同的执行方案，它会选择其中成本最低，或者说代价最低的那种方案去真正的执行查询</p>
-</blockquote>
-<h2 id="基于成本的优化步骤">基于成本的优化步骤</h2>
-<ol>
-<li>根据搜索条件，找出所有可能使用的索引</li>
-<li>计算全表扫描的代价</li>
-<li>计算使用不同索引执行查询的代价</li>
-<li>对比各种执行方案的代价，找出成本最低的那一个</li>
-</ol>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="nf">single_table</span> <span class="p">(</span>
-    <span class="n">id</span> <span class="kt">INT</span> <span class="k">NOT</span> <span class="no">NULL</span> <span class="kp">AUTO_INCREMENT</span><span class="p">,</span>
-    <span class="n">key1</span> <span class="kt">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
-    <span class="n">key2</span> <span class="kt">INT</span><span class="p">,</span>
-    <span class="n">key3</span> <span class="kt">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
-    <span class="n">key_part1</span> <span class="kt">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
-    <span class="n">key_part2</span> <span class="kt">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
-    <span class="n">key_part3</span> <span class="kt">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
-    <span class="n">common_field</span> <span class="kt">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
-    <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">id</span><span class="p">),</span>
-    <span class="k">KEY</span> <span class="nf">idx_key1</span> <span class="p">(</span><span class="n">key1</span><span class="p">),</span>
-    <span class="k">UNIQUE</span> <span class="k">KEY</span> <span class="nf">idx_key2</span> <span class="p">(</span><span class="n">key2</span><span class="p">),</span>
-    <span class="k">KEY</span> <span class="nf">idx_key3</span> <span class="p">(</span><span class="n">key3</span><span class="p">),</span>
-    <span class="k">KEY</span> <span class="nf">idx_key_part</span><span class="p">(</span><span class="n">key_part1</span><span class="p">,</span> <span class="n">key_part2</span><span class="p">,</span> <span class="n">key_part3</span><span class="p">)</span>
-<span class="p">)</span> <span class="kp">Engine</span><span class="o">=</span><span class="n">InnoDB</span> <span class="kp">CHARSET</span><span class="o">=</span><span class="n">utf8</span><span class="p">;</span>
-<span class="c1">## 执行sql语句
-</span><span class="c1"></span><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">single_table</span> <span class="k">WHERE</span> 
-    <span class="n">key1</span> <span class="k">IN</span> <span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">)</span> <span class="k">AND</span> 
-    <span class="n">key2</span> <span class="o">&gt;</span> <span class="mi">10</span> <span class="k">AND</span> <span class="n">key2</span> <span class="o">&lt;</span> <span class="mi">1000</span> <span class="k">AND</span> 
-    <span class="n">key3</span> <span class="o">&gt;</span> <span class="n">key2</span> <span class="k">AND</span> 
-    <span class="n">key_part1</span> <span class="k">LIKE</span> <span class="s1">&#39;%hello%&#39;</span> <span class="k">AND</span>
-    <span class="n">common_field</span> <span class="o">=</span> <span class="s1">&#39;123&#39;</span><span class="p">;</span>
-<span class="c1">## possible keys只有idx_key1和idx_key2。
-</span></code></pre></td></tr></table>
-</div>
-</div>]]></description></item></channel></rss>
+<p>其实就是在事务执行期间第二次查询相比第一次查询出现了之前没出现过的数据。</p>]]></description></item></channel></rss>
