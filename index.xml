@@ -69,7 +69,15 @@
 <p>持有锁的waitstatus 状态 来标识node线程状态</p>
 <p><a data-fancybox="gallery" href="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/aqs/QQ%E6%88%AA%E5%9B%BE20200916143206.png">
     
-</a></p>]]></description></item><item><title>ThreadLocal源码学习</title><link>https://yakax.gitee.io/threadlocal%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/threadlocal%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description>&lt;h3 id="基本结构图片">基本结构图片&lt;/h3>
+</a></p>]]></description></item><item><title>SynchronousQueue</title><link>https://yakax.gitee.io/synchronousqueue%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/synchronousqueue%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<blockquote>
+<p>SynchronousQueue 是实现了BlockingQueue的一个队列。特点是SynchronousQueue 没有容器。</p>
+<p>在生产者消费者情况下。生产者生产数据后<strong>没人消费是会阻塞的</strong>。当有消费者消费了，消费者与生产者同时退出队列。</p>
+</blockquote>
+<h2 id="synchronousqueue-的两种实现方式">SynchronousQueue 的两种实现方式</h2>
+<ul>
+<li>公平模式 就是队列 <strong>TransferQueue</strong></li>
+<li>非公平模式 就是栈  <strong>TransferStack</strong></li>
+</ul>]]></description></item><item><title>ThreadLocal源码学习</title><link>https://yakax.gitee.io/threadlocal%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/threadlocal%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description>&lt;h3 id="基本结构图片">基本结构图片&lt;/h3>
 &lt;p>&lt;/p></description></item><item><title>ThreadPoolExecutor源码学习</title><link>https://yakax.gitee.io/threadpoolexecutor%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/threadpoolexecutor%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h4 id="属性字段说明">属性字段说明</h4>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -166,15 +174,4 @@
 <p>查询解析器解析sql 是否正确后，然后基本优化sql，生成执行计划，选择引擎执行。</p>
 <p>而InnoDB 在执行时 为了保证对数据的执行更快，省去磁盘IO开销 引入了Buffer Pool</p>
 </blockquote>]]></description></item><item><title>MySQL-Explain学习</title><link>https://yakax.gitee.io/mysql-explain%E5%AD%A6%E4%B9%A0/</link><pubDate>Wed, 20 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-explain%E5%AD%A6%E4%B9%A0/</guid><description>&lt;h2 id="执行计划各列详解">执行计划各列详解&lt;/h2>
-&lt;p>&lt;/p></description></item><item><title>MySQL-一些问题</title><link>https://yakax.gitee.io/mysql-%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98/</link><pubDate>Wed, 20 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98/</guid><description><![CDATA[<h4 id="优化器未使用你想用的索引">优化器未使用你想用的索引</h4>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">t</span> <span class="k">force</span> <span class="k">index</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">where</span> <span class="n">a</span> <span class="k">between</span> <span class="mi">10000</span> <span class="k">and</span> <span class="mi">20000</span><span class="p">;</span>
-<span class="o">//</span> <span class="err">利用参数</span><span class="n">force</span> <span class="k">index</span>
-</code></pre></td></tr></table>
-</div>
-</div>]]></description></item></channel></rss>
+&lt;p>&lt;/p></description></item></channel></rss>

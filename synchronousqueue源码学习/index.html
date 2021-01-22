@@ -1,0 +1,1372 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>SynchronousQueue - yakax</title><meta name=Description content><meta property="og:title" content="SynchronousQueue"><meta property="og:description" content="SynchronousQueue 是实现了BlockingQueue的一个队列。特点是SynchronousQueue 没有容器。
+在生产者消费者情况下。生产者生产数据后没人消费是会阻塞的。当有消费者消费了，消费者与生产者同时退出队列。
+
+SynchronousQueue 的两种实现方式
+
+公平模式 就是队列 TransferQueue
+非公平模式 就是栈  TransferStack"><meta property="og:type" content="article"><meta property="og:url" content="https://yakax.gitee.io/synchronousqueue%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/"><meta property="og:image" content="https://yakax.gitee.io/images/1.png"><meta property="article:published_time" content="2021-01-22T00:00:00+00:00"><meta property="article:modified_time" content="2021-01-22T00:00:00+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://yakax.gitee.io/images/1.png"><meta name=twitter:title content="SynchronousQueue"><meta name=twitter:description content="SynchronousQueue 是实现了BlockingQueue的一个队列。特点是SynchronousQueue 没有容器。
+在生产者消费者情况下。生产者生产数据后没人消费是会阻塞的。当有消费者消费了，消费者与生产者同时退出队列。
+
+SynchronousQueue 的两种实现方式
+
+公平模式 就是队列 TransferQueue
+非公平模式 就是栈  TransferStack"><meta name=application-name content="yakax"><meta name=apple-mobile-web-app-title content="yakax"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:'==document.location.protocol?'https:':'http:')+"//widget.daovoice.io/widget/af744044.js","daovoice")
+daovoice('init',{app_id:"af744044"});daovoice('update');</script><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://yakax.gitee.io/synchronousqueue%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/><link rel=prev href=https://yakax.gitee.io/threadlocal%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/><link rel=next href=https://yakax.gitee.io/reentrantlock-aqs%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"SynchronousQueue","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/yakax.gitee.io\/synchronousqueue%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0\/"},"image":["https:\/\/yakax.gitee.io\/images\/avatar.png"],"genre":"posts","keywords":"SynchronousQueue, BlockingQueue","wordcount":9116,"url":"https:\/\/yakax.gitee.io\/synchronousqueue%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0\/","datePublished":"2021-01-22T00:00:00+00:00","dateModified":"2021-01-22T00:00:00+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"yakax","logo":"https:\/\/yakax.gitee.io\/images\/avatar.png"},"author":{"@type":"Person","name":"yakax"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':('auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark'))&&document.body.setAttribute('theme','dark');</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class="fas fa-crosshairs fa-sm"></i></span><span id=id-1 class=typeit></span></a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>所有文章 </a><a class=menu-item href=/tags/>标签 </a><a class=menu-item href=/categories/>分类 </a><a class=menu-item href=/about/>关于 </a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i></a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop><input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span></span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class="fas fa-crosshairs fa-sm"></i></span><span id=id-2 class=typeit></span></a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/>所有文章</a><a class=menu-item href=/tags/>标签</a><a class=menu-item href=/categories/>分类</a><a class=menu-item href=/about/>关于</a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">SynchronousQueue</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>yakax</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/><i class="far fa-folder fa-fw"></i>并发编程学习</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-01-22>2021-01-22</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 9116 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 19 分钟&nbsp;<span id=/synchronousqueue%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/ class=leancloud_visitors data-flag-title=SynchronousQueue>
+<i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
+</span>&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#synchronousqueue-的两种实现方式>SynchronousQueue 的两种实现方式</a></li><li><a href=#transferer-抽象类>Transferer 抽象类</a></li><li><a href=#puttake>put|take</a><ul><li><a href=#heading></a></li></ul></li><li><a href=#非公平模式的实现分析>非公平模式的实现分析</a><ul><li><a href=#transferstack基本字段说明>TransferStack基本字段说明</a></li><li><a href=#transfer>transfer</a><ul><li><a href=#trymatch-尝试匹配>tryMatch 尝试匹配</a></li><li><a href=#awaitfulfill-阻塞自旋等待>awaitFulfill 阻塞&自旋等待</a></li><li><a href=#clean-清空线程>clean 清空线程</a></li></ul></li></ul></li><li><a href=#公平模式的实现分析>公平模式的实现分析</a><ul><li><a href=#transferqueue基本字段说明>TransferQueue基本字段说明</a></li><li><a href=#transfer-1>transfer</a><ul><li><a href=#出队操作>出队操作</a></li><li><a href=#awaitfulfill-阻塞自旋等待-1>awaitFulfill 阻塞&自旋等待</a></li><li><a href=#清空>清空</a><ul><li><a href=#示例代码-队首节点取消逻辑>示例代码-队首节点取消逻辑</a><ul><li><a href=#流程图>流程图</a></li></ul></li><li><a href=#示例代码-队中节点取消逻辑>示例代码-队中节点取消逻辑</a><ul><li><a href=#流程图-1>流程图</a></li></ul></li><li><a href=#示例代码-队尾节点取消逻辑>示例代码-队尾节点取消逻辑</a><ul><li><a href=#流程图-2>流程图</a></li></ul></li></ul></li></ul></li></ul></li></ul></nav></div></div><div class=content id=content><blockquote><p>SynchronousQueue 是实现了BlockingQueue的一个队列。特点是SynchronousQueue 没有容器。</p><p>在生产者消费者情况下。生产者生产数据后<strong>没人消费是会阻塞的</strong>。当有消费者消费了，消费者与生产者同时退出队列。</p></blockquote><h2 id=synchronousqueue-的两种实现方式>SynchronousQueue 的两种实现方式</h2><ul><li>公平模式 就是队列 <strong>TransferQueue</strong></li><li>非公平模式 就是栈 <strong>TransferStack</strong></li></ul><h2 id=transferer-抽象类>Transferer 抽象类</h2><blockquote><p>不管非公平还是公平都是这个抽象方法来实现的数据交换</p></blockquote><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java><span class=kd>abstract</span> <span class=kd>static</span> <span class=kd>class</span> <span class=nc>Transferer</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=o>{</span>
+        <span class=cm>/**
+</span><span class=cm>         * @param e 可以为null，null时表示这个请求是一个 REQUEST 类型的请求
+</span><span class=cm>         *          如果不是null，说明这个请求是一个 DATA 类型的请求。
+</span><span class=cm>         *
+</span><span class=cm>         * @param timed 
+</span><span class=cm>         * 如果为true 表示指定了超时时间 ,如果为false 表示不支持超时，表示当前请求一直等待到匹配为止，或者被中断。
+</span><span class=cm>         * @param nanos 超时时间限制 单位 纳秒
+</span><span class=cm>         *
+</span><span class=cm>         * @return E 
+</span><span class=cm>         * 如果当前请求是一个 REQUEST类型的请求，返回值如果不为null 表示 匹配成功，
+</span><span class=cm>         * 如果返回null，表示REQUEST类型的请求超时 或 被中断。
+</span><span class=cm>         * 如果当前请求是一个 DATA 类型的请求，返回值如果不为null 表示 匹配成功，返回当前线程put的数据。
+</span><span class=cm>         * 如果返回值为null 表示，DATA类型的请求超时 或者 被中断..都会返回Null。
+</span><span class=cm>         */</span>
+        <span class=kd>abstract</span> <span class=n>E</span> <span class=nf>transfer</span><span class=o>(</span><span class=n>E</span> <span class=n>e</span><span class=o>,</span> <span class=kt>boolean</span> <span class=n>timed</span><span class=o>,</span> <span class=kt>long</span> <span class=n>nanos</span><span class=o>);</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table></div></div><h2 id=puttake>put|take</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java><span class=kd>public</span> <span class=kt>void</span> <span class=nf>put</span><span class=o>(</span><span class=n>E</span> <span class=n>e</span><span class=o>)</span> <span class=kd>throws</span> <span class=n>InterruptedException</span> <span class=o>{</span>
+        <span class=k>if</span> <span class=o>(</span><span class=n>e</span> <span class=o>==</span> <span class=kc>null</span><span class=o>)</span> <span class=k>throw</span> <span class=k>new</span> <span class=n>NullPointerException</span><span class=o>();</span>
+        <span class=k>if</span> <span class=o>(</span><span class=n>transferer</span><span class=o>.</span><span class=na>transfer</span><span class=o>(</span><span class=n>e</span><span class=o>,</span> <span class=kc>false</span><span class=o>,</span> <span class=n>0</span><span class=o>)</span> <span class=o>==</span> <span class=kc>null</span><span class=o>)</span> <span class=o>{</span>
+            <span class=n>Thread</span><span class=o>.</span><span class=na>interrupted</span><span class=o>();</span>
+            <span class=k>throw</span> <span class=k>new</span> <span class=n>InterruptedException</span><span class=o>();</span>
+        <span class=o>}</span>
+    <span class=o>}</span>
+<span class=kd>public</span> <span class=n>E</span> <span class=nf>take</span><span class=o>()</span> <span class=kd>throws</span> <span class=n>InterruptedException</span> <span class=o>{</span>
+        <span class=n>E</span> <span class=n>e</span> <span class=o>=</span> <span class=n>transferer</span><span class=o>.</span><span class=na>transfer</span><span class=o>(</span><span class=kc>null</span><span class=o>,</span> <span class=kc>false</span><span class=o>,</span> <span class=n>0</span><span class=o>);</span>
+        <span class=k>if</span> <span class=o>(</span><span class=n>e</span> <span class=o>!=</span> <span class=kc>null</span><span class=o>)</span>
+            <span class=k>return</span> <span class=n>e</span><span class=o>;</span>
+        <span class=n>Thread</span><span class=o>.</span><span class=na>interrupted</span><span class=o>();</span>
+        <span class=k>throw</span> <span class=k>new</span> <span class=n>InterruptedException</span><span class=o>();</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table></div></div><h3 id=heading></h3><h2 id=非公平模式的实现分析>非公平模式的实现分析</h2><blockquote><p>其实主要还是节点进来 就判断与栈顶是否相同</p><p>相同 入栈 并把自己改成栈顶</p><p>不同 就尝试匹配</p><p>这里面有一个fulfilling状态是正在匹配的节点</p></blockquote><p><a data-fancybox=gallery href=https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/SynchronousQueue/TransferStack.png!print><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/SynchronousQueue/TransferStack.png!print data-srcset="https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/SynchronousQueue/TransferStack.png!print, https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/SynchronousQueue/TransferStack.png!print 1.5x, https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/SynchronousQueue/TransferStack.png!print 2x" data-sizes=auto alt=https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/SynchronousQueue/TransferStack.png!print title=https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/SynchronousQueue/TransferStack.png!print></a></p><h3 id=transferstack基本字段说明>TransferStack基本字段说明</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java><span class=cm>/** 表示Node类型为 消费者请求类型 */</span>
+<span class=kd>static</span> <span class=kd>final</span> <span class=kt>int</span> <span class=n>REQUEST</span>    <span class=o>=</span> <span class=n>0</span><span class=o>;</span>
+<span class=cm>/** 表示Node类型为 生产者数据类型 */</span>
+<span class=kd>static</span> <span class=kd>final</span> <span class=kt>int</span> <span class=n>DATA</span>       <span class=o>=</span> <span class=n>1</span><span class=o>;</span>
+<span class=cm>/** 表示Node类型为 匹配中类型
+</span><span class=cm>* 假设栈顶元素为 REQUEST-NODE，当前请求类型为 DATA的话，入栈会修改类型为 FULFILLING 【栈顶 &amp; 栈顶之下的一个node】。
+</span><span class=cm>* 假设栈顶元素为 DATA-NODE，当前请求类型为 REQUEST的话，入栈会修改类型为 FULFILLING 【栈顶 &amp; 栈顶之下的一个node】。
+</span><span class=cm>*/</span>
+<span class=kd>static</span> <span class=kd>final</span> <span class=kt>int</span> <span class=n>FULFILLING</span> <span class=o>=</span> <span class=n>2</span><span class=o>;</span>
+
+<span class=kd>static</span> <span class=kd>final</span> <span class=kd>class</span> <span class=nc>SNode</span> <span class=o>{</span>
+            <span class=c1>//指向下一个栈帧
+</span><span class=c1></span>            <span class=kd>volatile</span> <span class=n>SNode</span> <span class=n>next</span><span class=o>;</span>        
+            <span class=c1>//与当前node匹配的节点
+</span><span class=c1></span>            <span class=kd>volatile</span> <span class=n>SNode</span> <span class=n>match</span><span class=o>;</span>      
+            <span class=c1>//假设当前node对应的线程 自旋期间未被匹配成功，那么node对应的线程需要挂起，挂起前 waiter 保存对应的线程引用，
+</span><span class=c1></span>            <span class=c1>//方便 匹配成功后，被唤醒。
+</span><span class=c1></span>            <span class=kd>volatile</span> <span class=n>Thread</span> <span class=n>waiter</span><span class=o>;</span>     
+            <span class=c1>//数据域，data不为空 表示当前Node对应的请求类型为 DATA类型。 反之则表示Node为 REQUEST类型。
+</span><span class=c1></span>            <span class=n>Object</span> <span class=n>item</span><span class=o>;</span>                
+            <span class=c1>//表示当前Node的模式 【DATA/REQUEST/FULFILLING】
+</span><span class=c1></span>            <span class=kt>int</span> <span class=n>mode</span><span class=o>;</span>
+</code></pre></td></tr></table></div></div><h3 id=transfer>transfer</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>  1
+</span><span class=lnt>  2
+</span><span class=lnt>  3
+</span><span class=lnt>  4
+</span><span class=lnt>  5
+</span><span class=lnt>  6
+</span><span class=lnt>  7
+</span><span class=lnt>  8
+</span><span class=lnt>  9
+</span><span class=lnt> 10
+</span><span class=lnt> 11
+</span><span class=lnt> 12
+</span><span class=lnt> 13
+</span><span class=lnt> 14
+</span><span class=lnt> 15
+</span><span class=lnt> 16
+</span><span class=lnt> 17
+</span><span class=lnt> 18
+</span><span class=lnt> 19
+</span><span class=lnt> 20
+</span><span class=lnt> 21
+</span><span class=lnt> 22
+</span><span class=lnt> 23
+</span><span class=lnt> 24
+</span><span class=lnt> 25
+</span><span class=lnt> 26
+</span><span class=lnt> 27
+</span><span class=lnt> 28
+</span><span class=lnt> 29
+</span><span class=lnt> 30
+</span><span class=lnt> 31
+</span><span class=lnt> 32
+</span><span class=lnt> 33
+</span><span class=lnt> 34
+</span><span class=lnt> 35
+</span><span class=lnt> 36
+</span><span class=lnt> 37
+</span><span class=lnt> 38
+</span><span class=lnt> 39
+</span><span class=lnt> 40
+</span><span class=lnt> 41
+</span><span class=lnt> 42
+</span><span class=lnt> 43
+</span><span class=lnt> 44
+</span><span class=lnt> 45
+</span><span class=lnt> 46
+</span><span class=lnt> 47
+</span><span class=lnt> 48
+</span><span class=lnt> 49
+</span><span class=lnt> 50
+</span><span class=lnt> 51
+</span><span class=lnt> 52
+</span><span class=lnt> 53
+</span><span class=lnt> 54
+</span><span class=lnt> 55
+</span><span class=lnt> 56
+</span><span class=lnt> 57
+</span><span class=lnt> 58
+</span><span class=lnt> 59
+</span><span class=lnt> 60
+</span><span class=lnt> 61
+</span><span class=lnt> 62
+</span><span class=lnt> 63
+</span><span class=lnt> 64
+</span><span class=lnt> 65
+</span><span class=lnt> 66
+</span><span class=lnt> 67
+</span><span class=lnt> 68
+</span><span class=lnt> 69
+</span><span class=lnt> 70
+</span><span class=lnt> 71
+</span><span class=lnt> 72
+</span><span class=lnt> 73
+</span><span class=lnt> 74
+</span><span class=lnt> 75
+</span><span class=lnt> 76
+</span><span class=lnt> 77
+</span><span class=lnt> 78
+</span><span class=lnt> 79
+</span><span class=lnt> 80
+</span><span class=lnt> 81
+</span><span class=lnt> 82
+</span><span class=lnt> 83
+</span><span class=lnt> 84
+</span><span class=lnt> 85
+</span><span class=lnt> 86
+</span><span class=lnt> 87
+</span><span class=lnt> 88
+</span><span class=lnt> 89
+</span><span class=lnt> 90
+</span><span class=lnt> 91
+</span><span class=lnt> 92
+</span><span class=lnt> 93
+</span><span class=lnt> 94
+</span><span class=lnt> 95
+</span><span class=lnt> 96
+</span><span class=lnt> 97
+</span><span class=lnt> 98
+</span><span class=lnt> 99
+</span><span class=lnt>100
+</span><span class=lnt>101
+</span><span class=lnt>102
+</span><span class=lnt>103
+</span><span class=lnt>104
+</span><span class=lnt>105
+</span><span class=lnt>106
+</span><span class=lnt>107
+</span><span class=lnt>108
+</span><span class=lnt>109
+</span><span class=lnt>110
+</span><span class=lnt>111
+</span><span class=lnt>112
+</span><span class=lnt>113
+</span><span class=lnt>114
+</span><span class=lnt>115
+</span><span class=lnt>116
+</span><span class=lnt>117
+</span><span class=lnt>118
+</span><span class=lnt>119
+</span><span class=lnt>120
+</span><span class=lnt>121
+</span><span class=lnt>122
+</span><span class=lnt>123
+</span><span class=lnt>124
+</span><span class=lnt>125
+</span><span class=lnt>126
+</span><span class=lnt>127
+</span><span class=lnt>128
+</span><span class=lnt>129
+</span><span class=lnt>130
+</span><span class=lnt>131
+</span><span class=lnt>132
+</span><span class=lnt>133
+</span><span class=lnt>134
+</span><span class=lnt>135
+</span><span class=lnt>136
+</span><span class=lnt>137
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java><span class=n>E</span> <span class=nf>transfer</span><span class=o>(</span><span class=n>E</span> <span class=n>e</span><span class=o>,</span> <span class=kt>boolean</span> <span class=n>timed</span><span class=o>,</span> <span class=kt>long</span> <span class=n>nanos</span><span class=o>)</span> <span class=o>{</span>
+            <span class=c1>//包装当前线程的Node
+</span><span class=c1></span>            <span class=n>SNode</span> <span class=n>s</span> <span class=o>=</span> <span class=kc>null</span><span class=o>;</span> <span class=c1>// constructed/reused as needed
+</span><span class=c1></span>            <span class=c1>//e == null 条件成立：当前线程是一个REQUEST线程。
+</span><span class=c1></span>            <span class=c1>//否则 e!=null 说明 当前线程是一个DATA线程，提交数据的线程。
+</span><span class=c1></span>            <span class=kt>int</span> <span class=n>mode</span> <span class=o>=</span> <span class=o>(</span><span class=n>e</span> <span class=o>==</span> <span class=kc>null</span><span class=o>)</span> <span class=o>?</span> <span class=n>REQUEST</span> <span class=o>:</span> <span class=n>DATA</span><span class=o>;</span>
+
+            <span class=c1>//自旋
+</span><span class=c1></span>            <span class=k>for</span> <span class=o>(;;)</span> <span class=o>{</span>
+                <span class=c1>//h 表示栈顶指针
+</span><span class=c1></span>                <span class=n>SNode</span> <span class=n>h</span> <span class=o>=</span> <span class=n>head</span><span class=o>;</span>
+
+                <span class=c1>//CASE1：当前栈内为空 或者 栈顶Node模式与当前请求模式一致，都是需要做入栈操作。
+</span><span class=c1></span>                <span class=k>if</span> <span class=o>(</span><span class=n>h</span> <span class=o>==</span> <span class=kc>null</span> <span class=o>||</span> <span class=n>h</span><span class=o>.</span><span class=na>mode</span> <span class=o>==</span> <span class=n>mode</span><span class=o>)</span> <span class=o>{</span>  <span class=c1>// empty or same-mode
+</span><span class=c1></span>
+                    <span class=c1>//条件一：成立，说明当前请求是指定了 超时限制的
+</span><span class=c1></span>                    <span class=c1>//条件二：nanos &lt;= 0 , nanos == 0. 表示这个请求 不支持 “阻塞等待”。
+</span><span class=c1></span>                    <span class=k>if</span> <span class=o>(</span><span class=n>timed</span> <span class=o>&amp;&amp;</span> <span class=n>nanos</span> <span class=o>&lt;=</span> <span class=n>0</span><span class=o>)</span> <span class=o>{</span>      <span class=c1>// can&#39;t wait
+</span><span class=c1></span>                        <span class=c1>//条件成立：说明栈顶已经取消状态了，协助栈顶出栈。
+</span><span class=c1></span>                        <span class=c1>// 里面判断就是判断当前线程是否等于node 的match 取消的时候会这样赋值
+</span><span class=c1></span>                        <span class=k>if</span> <span class=o>(</span><span class=n>h</span> <span class=o>!=</span> <span class=kc>null</span> <span class=o>&amp;&amp;</span> <span class=n>h</span><span class=o>.</span><span class=na>isCancelled</span><span class=o>())</span>
+                            <span class=c1>// 重新设置栈顶为下一个
+</span><span class=c1></span>                            <span class=n>casHead</span><span class=o>(</span><span class=n>h</span><span class=o>,</span> <span class=n>h</span><span class=o>.</span><span class=na>next</span><span class=o>);</span>     <span class=c1>// pop cancelled node
+</span><span class=c1></span>                        <span class=k>else</span>
+                            <span class=c1>//大部分生产者情况从这里返回。
+</span><span class=c1></span>                            <span class=k>return</span> <span class=kc>null</span><span class=o>;</span>
+
+                    <span class=o>}</span>
+
+                    <span class=c1>//什么时候执行else if 呢？queue.offer();也可能是put 过来的
+</span><span class=c1></span>                    <span class=c1>//当前栈顶为空 或者 模式与当前请求一致，且当前请求允许 阻塞等待。
+</span><span class=c1></span>                    <span class=c1>//casHead(h, s = snode(s, e, h, mode))  入栈操作。 把当前node设置为头部
+</span><span class=c1></span>                    <span class=k>else</span> <span class=k>if</span> <span class=o>(</span><span class=n>casHead</span><span class=o>(</span><span class=n>h</span><span class=o>,</span> <span class=n>s</span> <span class=o>=</span> <span class=n>snode</span><span class=o>(</span><span class=n>s</span><span class=o>,</span> <span class=n>e</span><span class=o>,</span> <span class=n>h</span><span class=o>,</span> <span class=n>mode</span><span class=o>)))</span> <span class=o>{</span>
+                        <span class=c1>// 主要还是下面逻辑会阻塞线程
+</span><span class=c1></span>                        <span class=c1>//执行到这里，说明 当前请求入栈成功。
+</span><span class=c1></span>                        <span class=c1>//          等待被匹配！
+</span><span class=c1></span>                        <span class=c1>//1.正常情况：返回匹配的节点  里面阻塞与自旋的时候会匹配节点 如果匹配成功或者其他线程唤醒了他 都会返回数据
+</span><span class=c1></span>                        <span class=c1>//2.取消情况：返回当前节点  s节点进去，返回s节点...
+</span><span class=c1></span>                        <span class=n>SNode</span> <span class=n>m</span> <span class=o>=</span> <span class=n>awaitFulfill</span><span class=o>(</span><span class=n>s</span><span class=o>,</span> <span class=n>timed</span><span class=o>,</span> <span class=n>nanos</span><span class=o>);</span>
+
+                        <span class=c1>//条件成立：说明当前Node状态是 取消状态...
+</span><span class=c1></span>                        <span class=k>if</span> <span class=o>(</span><span class=n>m</span> <span class=o>==</span> <span class=n>s</span><span class=o>)</span> <span class=o>{</span>               <span class=c1>// wait was cancelled
+</span><span class=c1></span>                            <span class=c1>//将取消状态的节点 出栈...
+</span><span class=c1></span>                            <span class=n>clean</span><span class=o>(</span><span class=n>s</span><span class=o>);</span>
+                            <span class=c1>//取消状态 最终返回null
+</span><span class=c1></span>                            <span class=k>return</span> <span class=kc>null</span><span class=o>;</span>
+                        <span class=o>}</span>
+                        <span class=c1>//执行到这里 被唤醒 说明当前Node已经被匹配了...
+</span><span class=c1></span>                        <span class=c1>//条件一：成立，说明栈顶是有Node
+</span><span class=c1></span>                        <span class=c1>//条件二：成立，说明 Fulfill 和 当前Node 还未出栈，需要协助出栈。
+</span><span class=c1></span>                        <span class=k>if</span> <span class=o>((</span><span class=n>h</span> <span class=o>=</span> <span class=n>head</span><span class=o>)</span> <span class=o>!=</span> <span class=kc>null</span> <span class=o>&amp;&amp;</span> <span class=n>h</span><span class=o>.</span><span class=na>next</span> <span class=o>==</span> <span class=n>s</span><span class=o>)</span>
+                            <span class=c1>//将fulfill 和 当前Node 结对 出栈
+</span><span class=c1></span>                            <span class=n>casHead</span><span class=o>(</span><span class=n>h</span><span class=o>,</span> <span class=n>s</span><span class=o>.</span><span class=na>next</span><span class=o>);</span>     <span class=c1>// help s&#39;s fulfiller
+</span><span class=c1></span>
+                        <span class=c1>//当前NODE模式为REQUEST类型：返回匹配节点的m.item 数据域
+</span><span class=c1></span>                        <span class=c1>//当前NODE模式为DATA类型：返回Node.item 数据域，当前请求提交的 数据e
+</span><span class=c1></span>                        <span class=k>return</span> <span class=o>(</span><span class=n>E</span><span class=o>)</span> <span class=o>((</span><span class=n>mode</span> <span class=o>==</span> <span class=n>REQUEST</span><span class=o>)</span> <span class=o>?</span> <span class=n>m</span><span class=o>.</span><span class=na>item</span> <span class=o>:</span> <span class=n>s</span><span class=o>.</span><span class=na>item</span><span class=o>);</span>
+                    <span class=o>}</span>
+                <span class=o>}</span>
+                <span class=c1>//栈顶Node的模式与当前请求的模式不一致，会执行else if 的条件。
+</span><span class=c1></span>                <span class=c1>//栈顶是 (DATA  Reqeust)    (Request   DATA)   (FULFILLING  REQUEST/DATA)
+</span><span class=c1></span>                <span class=c1>//CASE2：当前栈顶模式与请求模式不一致，且栈顶不是FULFILLING
+</span><span class=c1></span>                <span class=k>else</span> <span class=k>if</span> <span class=o>(!</span><span class=n>isFulfilling</span><span class=o>(</span><span class=n>h</span><span class=o>.</span><span class=na>mode</span><span class=o>))</span> <span class=o>{</span> <span class=c1>// try to fulfill
+</span><span class=c1></span>                    <span class=c1>//条件成立：说明当前栈顶状态为 取消状态，当前线程协助它出栈。
+</span><span class=c1></span>                    <span class=k>if</span> <span class=o>(</span><span class=n>h</span><span class=o>.</span><span class=na>isCancelled</span><span class=o>())</span>            <span class=c1>// already cancelled
+</span><span class=c1></span>                        <span class=c1>//协助 取消状态节点 出栈。
+</span><span class=c1></span>                        <span class=n>casHead</span><span class=o>(</span><span class=n>h</span><span class=o>,</span> <span class=n>h</span><span class=o>.</span><span class=na>next</span><span class=o>);</span>         <span class=c1>// pop and retry
+</span><span class=c1></span>
+                        <span class=c1>//条件成立：说明压栈节点成功，入栈一个 FULFILLING | mode  按位与
+</span><span class=c1></span>                    <span class=k>else</span> <span class=k>if</span> <span class=o>(</span><span class=n>casHead</span><span class=o>(</span><span class=n>h</span><span class=o>,</span> <span class=n>s</span><span class=o>=</span><span class=n>snode</span><span class=o>(</span><span class=n>s</span><span class=o>,</span> <span class=n>e</span><span class=o>,</span> <span class=n>h</span><span class=o>,</span> <span class=n>FULFILLING</span><span class=o>|</span><span class=n>mode</span><span class=o>)))</span> <span class=o>{</span>
+                        <span class=c1>//当前请求入栈成功  现在头结点和头结点下一个 开始匹配了
+</span><span class=c1></span>
+                        <span class=c1>//自旋，fulfill 节点 和 fulfill.next 节点进行匹配工作...
+</span><span class=c1></span>                        <span class=k>for</span> <span class=o>(;;)</span> <span class=o>{</span> <span class=c1>// loop until matched or waiters disappear
+</span><span class=c1></span>                            <span class=c1>//m 与当前s 匹配节点。
+</span><span class=c1></span>                            <span class=n>SNode</span> <span class=n>m</span> <span class=o>=</span> <span class=n>s</span><span class=o>.</span><span class=na>next</span><span class=o>;</span>       <span class=c1>// m is s&#39;s match
+</span><span class=c1></span>
+                            <span class=c1>//m == null 什么时候可能成立呢？ ！！！！
+</span><span class=c1></span>                            <span class=c1>//当s.next节点 超时或者被外部线程中断唤醒后，会执行 clean 操作 将 自己清理出栈，此时
+</span><span class=c1></span>                            <span class=c1>//站在匹配者线程 来看，真有可能拿到一个null。
+</span><span class=c1></span>                            <span class=k>if</span> <span class=o>(</span><span class=n>m</span> <span class=o>==</span> <span class=kc>null</span><span class=o>)</span> <span class=o>{</span>        <span class=c1>// all waiters are gone
+</span><span class=c1></span>                                <span class=c1>//将整个栈清空。
+</span><span class=c1></span>                                <span class=n>casHead</span><span class=o>(</span><span class=n>s</span><span class=o>,</span> <span class=kc>null</span><span class=o>);</span>   <span class=c1>// pop fulfill node
+</span><span class=c1></span>                                <span class=n>s</span> <span class=o>=</span> <span class=kc>null</span><span class=o>;</span>           <span class=c1>// use new node next time
+</span><span class=c1></span>                                <span class=c1>//回到外层大的 自旋中，再重新选择路径执行，此时有可能 插入一个节点。
+</span><span class=c1></span>                                <span class=k>break</span><span class=o>;</span>              <span class=c1>// restart main loop
+</span><span class=c1></span>                            <span class=o>}</span>
+
+                            <span class=c1>//什么时候会执行到这里呢？
+</span><span class=c1></span>                            <span class=c1>//fulfilling 匹配节点不为null，进行真正的匹配工作。
+</span><span class=c1></span>
+                            <span class=c1>//获取 匹配节点的 下一个节点。
+</span><span class=c1></span>                            <span class=n>SNode</span> <span class=n>mn</span> <span class=o>=</span> <span class=n>m</span><span class=o>.</span><span class=na>next</span><span class=o>;</span>
+                            <span class=c1>//尝试匹配，匹配成功，则将fulfilling 和 m 一起出栈。
+</span><span class=c1></span>                            <span class=k>if</span> <span class=o>(</span><span class=n>m</span><span class=o>.</span><span class=na>tryMatch</span><span class=o>(</span><span class=n>s</span><span class=o>))</span> <span class=o>{</span>
+                                <span class=c1>//结对出栈
+</span><span class=c1></span>                                <span class=n>casHead</span><span class=o>(</span><span class=n>s</span><span class=o>,</span> <span class=n>mn</span><span class=o>);</span>     <span class=c1>// pop both s and m
+</span><span class=c1></span>
+                                <span class=c1>//当前NODE模式为REQUEST类型：返回匹配节点的m.item 数据域
+</span><span class=c1></span>                                <span class=c1>//当前NODE模式为DATA类型：返回Node.item 数据域，当前请求提交的 数据e
+</span><span class=c1></span>                                <span class=k>return</span> <span class=o>(</span><span class=n>E</span><span class=o>)</span> <span class=o>((</span><span class=n>mode</span> <span class=o>==</span> <span class=n>REQUEST</span><span class=o>)</span> <span class=o>?</span> <span class=n>m</span><span class=o>.</span><span class=na>item</span> <span class=o>:</span> <span class=n>s</span><span class=o>.</span><span class=na>item</span><span class=o>);</span>
+                            <span class=o>}</span> <span class=k>else</span>                  <span class=c1>// lost match
+</span><span class=c1></span>                                <span class=c1>//强制出栈 cas 失败只有可能有线程超时了 这样就让超时的线程出栈就行了
+</span><span class=c1></span>                                <span class=n>s</span><span class=o>.</span><span class=na>casNext</span><span class=o>(</span><span class=n>m</span><span class=o>,</span> <span class=n>mn</span><span class=o>);</span>   <span class=c1>// help unlink
+</span><span class=c1></span>                        <span class=o>}</span>
+
+                    <span class=o>}</span>
+                <span class=o>}</span>
+
+                <span class=c1>//CASE3：什么时候会执行？
+</span><span class=c1></span>                <span class=c1>//栈顶模式为 FULFILLING模式，表示栈顶和栈顶下面的栈帧正在发生匹配...
+</span><span class=c1></span>                <span class=c1>//当前请求需要做 协助 工作。
+</span><span class=c1></span>                <span class=k>else</span> <span class=o>{</span>                            <span class=c1>// help a fulfiller
+</span><span class=c1></span>                    <span class=c1>//h 表示的是 fulfilling节点,m fulfilling匹配的节点。
+</span><span class=c1></span>                    <span class=n>SNode</span> <span class=n>m</span> <span class=o>=</span> <span class=n>h</span><span class=o>.</span><span class=na>next</span><span class=o>;</span>               <span class=c1>// m is h&#39;s match
+</span><span class=c1></span>                    <span class=c1>//m == null 什么时候可能成立呢？
+</span><span class=c1></span>                    <span class=c1>//当s.next节点 超时或者被外部线程中断唤醒后，会执行 clean 操作 将 自己清理出栈，此时
+</span><span class=c1></span>                    <span class=c1>//站在匹配者线程 来看，真有可能拿到一个null。
+</span><span class=c1></span>                    <span class=k>if</span> <span class=o>(</span><span class=n>m</span> <span class=o>==</span> <span class=kc>null</span><span class=o>)</span>                  <span class=c1>// waiter is gone
+</span><span class=c1></span>                        <span class=c1>//清空栈
+</span><span class=c1></span>                        <span class=n>casHead</span><span class=o>(</span><span class=n>h</span><span class=o>,</span> <span class=kc>null</span><span class=o>);</span>           <span class=c1>// pop fulfilling node
+</span><span class=c1></span>
+                        <span class=c1>//大部分情况：走else分支。
+</span><span class=c1></span>                    <span class=k>else</span> <span class=o>{</span>
+                        <span class=c1>//获取栈顶匹配节点的 下一个节点
+</span><span class=c1></span>                        <span class=n>SNode</span> <span class=n>mn</span> <span class=o>=</span> <span class=n>m</span><span class=o>.</span><span class=na>next</span><span class=o>;</span>
+                        <span class=c1>//条件成立：说明 m 和 栈顶 匹配成功
+</span><span class=c1></span>                        <span class=k>if</span> <span class=o>(</span><span class=n>m</span><span class=o>.</span><span class=na>tryMatch</span><span class=o>(</span><span class=n>h</span><span class=o>))</span>          <span class=c1>// help match
+</span><span class=c1></span>                            <span class=c1>//双双出栈，让栈顶指针指向 匹配节点的下一个节点。
+</span><span class=c1></span>                            <span class=n>casHead</span><span class=o>(</span><span class=n>h</span><span class=o>,</span> <span class=n>mn</span><span class=o>);</span>         <span class=c1>// pop both h and m
+</span><span class=c1></span>                        <span class=k>else</span>                        <span class=c1>// lost match
+</span><span class=c1></span>                            <span class=c1>//强制出栈
+</span><span class=c1></span>                            <span class=n>h</span><span class=o>.</span><span class=na>casNext</span><span class=o>(</span><span class=n>m</span><span class=o>,</span> <span class=n>mn</span><span class=o>);</span>       <span class=c1>// help unlink
+</span><span class=c1></span>                    <span class=o>}</span>
+                <span class=o>}</span>
+            <span class=o>}</span>
+        <span class=o>}</span>
+</code></pre></td></tr></table></div></div><h4 id=trymatch-尝试匹配>tryMatch 尝试匹配</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java> 			<span class=cm>/*
+</span><span class=cm>             * 尝试匹配
+</span><span class=cm>             * 调用tryMatch的对象是 栈顶节点的下一个节点，与栈顶匹配的节点。
+</span><span class=cm>             *
+</span><span class=cm>             * @return ture 匹配成功。 否则匹配失败..
+</span><span class=cm>             */</span>
+            <span class=kt>boolean</span> <span class=nf>tryMatch</span><span class=o>(</span><span class=n>SNode</span> <span class=n>s</span><span class=o>)</span> <span class=o>{</span>
+                <span class=c1>//条件一：match == null 成立，说明当前Node尚未与任何节点发生过匹配...
+</span><span class=c1></span>                <span class=c1>//条件二 成立：使用CAS方式 设置match字段，表示当前Node已经被匹配了
+</span><span class=c1></span>                <span class=k>if</span> <span class=o>(</span><span class=n>match</span> <span class=o>==</span> <span class=kc>null</span> <span class=o>&amp;&amp;</span>
+                        <span class=n>UNSAFE</span><span class=o>.</span><span class=na>compareAndSwapObject</span><span class=o>(</span><span class=k>this</span><span class=o>,</span> <span class=n>matchOffset</span><span class=o>,</span> <span class=kc>null</span><span class=o>,</span> <span class=n>s</span><span class=o>))</span> <span class=o>{</span>
+        <span class=c1>//当前Node如果自旋结束，那么会使用LockSupport.park 方法挂起，挂起之前会将Node对应的Thread 保留到 waiter字段。
+</span><span class=c1></span>                    <span class=n>Thread</span> <span class=n>w</span> <span class=o>=</span> <span class=n>waiter</span><span class=o>;</span>
+                    <span class=c1>//条件成立：说明Node对应的Thread已经挂起了...
+</span><span class=c1></span>                    <span class=k>if</span> <span class=o>(</span><span class=n>w</span> <span class=o>!=</span> <span class=kc>null</span><span class=o>)</span> <span class=o>{</span>    <span class=c1>// waiters need at most one unpark
+</span><span class=c1></span>                        <span class=n>waiter</span> <span class=o>=</span> <span class=kc>null</span><span class=o>;</span>
+                        <span class=c1>//使用unpark方式唤醒。
+</span><span class=c1></span>                        <span class=n>LockSupport</span><span class=o>.</span><span class=na>unpark</span><span class=o>(</span><span class=n>w</span><span class=o>);</span>
+                    <span class=o>}</span>
+                    <span class=k>return</span> <span class=kc>true</span><span class=o>;</span>
+                <span class=o>}</span>
+                <span class=k>return</span> <span class=n>match</span> <span class=o>==</span> <span class=n>s</span><span class=o>;</span>
+            <span class=o>}</span>
+</code></pre></td></tr></table></div></div><h4 id=awaitfulfill-阻塞自旋等待>awaitFulfill 阻塞&自旋等待</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span><span class=lnt>72
+</span><span class=lnt>73
+</span><span class=lnt>74
+</span><span class=lnt>75
+</span><span class=lnt>76
+</span><span class=lnt>77
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java><span class=n>SNode</span> <span class=nf>awaitFulfill</span><span class=o>(</span><span class=n>SNode</span> <span class=n>s</span><span class=o>,</span> <span class=kt>boolean</span> <span class=n>timed</span><span class=o>,</span> <span class=kt>long</span> <span class=n>nanos</span><span class=o>)</span> <span class=o>{</span>
+           
+            <span class=c1>//等待的截止时间。  timed == true  =&gt;  System.nanoTime() + nanos
+</span><span class=c1></span>            <span class=kd>final</span> <span class=kt>long</span> <span class=n>deadline</span> <span class=o>=</span> <span class=n>timed</span> <span class=o>?</span> <span class=n>System</span><span class=o>.</span><span class=na>nanoTime</span><span class=o>()</span> <span class=o>+</span> <span class=n>nanos</span> <span class=o>:</span> <span class=n>0L</span><span class=o>;</span>
+
+            <span class=c1>//获取当前请求线程..
+</span><span class=c1></span>            <span class=n>Thread</span> <span class=n>w</span> <span class=o>=</span> <span class=n>Thread</span><span class=o>.</span><span class=na>currentThread</span><span class=o>();</span>
+
+           <span class=c1>//spins 表示当前请求线程 在 下面的 for(;;) 自旋检查中，自旋次数。 
+</span><span class=c1></span>          <span class=c1>// 如果达到spins自旋次数时，当前线程对应的Node 仍然未被匹配成功，
+</span><span class=c1></span>            <span class=c1>//那么再选择 挂起 当前请求线程。
+</span><span class=c1></span>            <span class=kt>int</span> <span class=n>spins</span> <span class=o>=</span> <span class=o>(</span><span class=n>shouldSpin</span><span class=o>(</span><span class=n>s</span><span class=o>)</span> <span class=o>?</span>
+                    <span class=c1>//timed == true 指定了超时限制的，这个时候采用 maxTimedSpins == 32 ,否则采用 32 * 16
+</span><span class=c1></span>                    <span class=o>(</span><span class=n>timed</span> <span class=o>?</span> <span class=n>maxTimedSpins</span> <span class=o>:</span> <span class=n>maxUntimedSpins</span><span class=o>)</span> <span class=o>:</span> <span class=n>0</span><span class=o>);</span>
+
+            <span class=c1>//自旋检查逻辑：1.是否匹配  2.是否超时  3.是否被中断..
+</span><span class=c1></span>            <span class=k>for</span> <span class=o>(;;)</span> <span class=o>{</span>
+
+                <span class=c1>//条件成立：说明当前线程收到中断信号，需要设置Node状态为 取消状态。
+</span><span class=c1></span>                <span class=k>if</span> <span class=o>(</span><span class=n>w</span><span class=o>.</span><span class=na>isInterrupted</span><span class=o>())</span>
+                    <span class=c1>//Node对象的 match 指向 当前Node 说明该Node状态就是 取消状态。
+</span><span class=c1></span>                    <span class=c1>// 这里取消指向了自己
+</span><span class=c1></span>                    <span class=n>s</span><span class=o>.</span><span class=na>tryCancel</span><span class=o>();</span>
+
+
+                <span class=c1>//m 表示与当前Node匹配的节点。
+</span><span class=c1></span>                <span class=c1>//1.正常情况：有一个请求 与 当前Node 匹配成功，这个时候 s.match 指向 匹配节点。
+</span><span class=c1></span>                <span class=c1>//2.取消情况：当前match 指向 当前Node...
+</span><span class=c1></span>                <span class=n>SNode</span> <span class=n>m</span> <span class=o>=</span> <span class=n>s</span><span class=o>.</span><span class=na>match</span><span class=o>;</span>
+
+                <span class=k>if</span> <span class=o>(</span><span class=n>m</span> <span class=o>!=</span> <span class=kc>null</span><span class=o>)</span>
+                    <span class=c1>//可能正常 也可能是 取消... 外面有判断
+</span><span class=c1></span>                    <span class=k>return</span> <span class=n>m</span><span class=o>;</span>
+
+                <span class=c1>//条件成立：说明指定了超时限制..
+</span><span class=c1></span>                <span class=k>if</span> <span class=o>(</span><span class=n>timed</span><span class=o>)</span> <span class=o>{</span>
+                    <span class=c1>//nanos 表示距离超时 还有多少纳秒..
+</span><span class=c1></span>                    <span class=n>nanos</span> <span class=o>=</span> <span class=n>deadline</span> <span class=o>-</span> <span class=n>System</span><span class=o>.</span><span class=na>nanoTime</span><span class=o>();</span>
+                    <span class=c1>//条件成立：说明已经超时了...
+</span><span class=c1></span>                    <span class=k>if</span> <span class=o>(</span><span class=n>nanos</span> <span class=o>&lt;=</span> <span class=n>0L</span><span class=o>)</span> <span class=o>{</span>
+                        <span class=c1>//设置当前Node状态为 取消状态.. match--&gt;当前Node
+</span><span class=c1></span>                        <span class=n>s</span><span class=o>.</span><span class=na>tryCancel</span><span class=o>();</span>
+                        <span class=k>continue</span><span class=o>;</span>
+                    <span class=o>}</span>
+                <span class=o>}</span>
+
+
+                <span class=c1>//条件成立：说明当前线程还可以进行自旋检查...
+</span><span class=c1></span>                <span class=k>if</span> <span class=o>(</span><span class=n>spins</span> <span class=o>&gt;</span> <span class=n>0</span><span class=o>)</span>
+                    <span class=c1>//自旋次数 累积 递减。。。
+</span><span class=c1></span>                    <span class=n>spins</span> <span class=o>=</span> <span class=n>shouldSpin</span><span class=o>(</span><span class=n>s</span><span class=o>)</span> <span class=o>?</span> <span class=o>(</span><span class=n>spins</span><span class=o>-</span><span class=n>1</span><span class=o>)</span> <span class=o>:</span> <span class=n>0</span><span class=o>;</span>
+                    <span class=c1>//spins == 0 ，已经不允许再进行自旋检查了
+</span><span class=c1></span>                <span class=k>else</span> <span class=k>if</span> <span class=o>(</span><span class=n>s</span><span class=o>.</span><span class=na>waiter</span> <span class=o>==</span> <span class=kc>null</span><span class=o>)</span>
+                    <span class=c1>// node 存储当前线程的引用
+</span><span class=c1></span>                    <span class=c1>//把当前Node对应的Thread 保存到 Node.waiter字段中..
+</span><span class=c1></span>                    <span class=n>s</span><span class=o>.</span><span class=na>waiter</span> <span class=o>=</span> <span class=n>w</span><span class=o>;</span> <span class=c1>// establish waiter so can park next iter
+</span><span class=c1></span>
+                    <span class=c1>//条件成立：说明当前Node对应的请求  未指定超时限制。
+</span><span class=c1></span>                <span class=k>else</span> <span class=k>if</span> <span class=o>(!</span><span class=n>timed</span><span class=o>)</span>
+                    <span class=c1>// 一般是这里阻塞
+</span><span class=c1></span>                    <span class=c1>//使用不指定超时限制的park方法 挂起当前线程，直到 当前线程被外部线程 使用unpark唤醒。
+</span><span class=c1></span>                    <span class=n>LockSupport</span><span class=o>.</span><span class=na>park</span><span class=o>(</span><span class=k>this</span><span class=o>);</span>
+                
+                    <span class=c1>//什么时候执行到这里？ timed == true 设置了 超时限制..
+</span><span class=c1></span>                    <span class=c1>//条件成立：nanos &gt; 1000 纳秒的值，只有这种情况下，才允许挂起当前线程..否则 说明 超时给的太少了...挂起和唤醒的成本 远大于 空转自旋...
+</span><span class=c1></span>                <span class=k>else</span> <span class=k>if</span> <span class=o>(</span><span class=n>nanos</span> <span class=o>&gt;</span> <span class=n>spinForTimeoutThreshold</span><span class=o>)</span>
+                    <span class=n>LockSupport</span><span class=o>.</span><span class=na>parkNanos</span><span class=o>(</span><span class=k>this</span><span class=o>,</span> <span class=n>nanos</span><span class=o>);</span>
+            <span class=o>}</span>
+        <span class=o>}</span>
+<span class=kt>boolean</span> <span class=nf>shouldSpin</span><span class=o>(</span><span class=n>SNode</span> <span class=n>s</span><span class=o>)</span> <span class=o>{</span>
+     <span class=c1>//获取栈顶
+</span><span class=c1></span>     <span class=n>SNode</span> <span class=n>h</span> <span class=o>=</span> <span class=n>head</span><span class=o>;</span>
+   <span class=c1>//条件一 h == s ：条件成立 说明当前s 就是栈顶，允许自旋检查...
+</span><span class=c1></span>   <span class=c1>//条件二 h == null : 什么时候成立？ 当前s节点 自旋检查期间，又来了一个 与当前s 节点匹配的请求，双双出栈了...条件会成立。
+</span><span class=c1>//条件三 isFulfilling(h.mode)：前提 当前 s 不是 栈顶元素。并且当前栈顶正在匹配中，这种状态 栈顶下面的元素，都允许自旋检查。
+</span><span class=c1></span>    <span class=k>return</span> <span class=o>(</span><span class=n>h</span> <span class=o>==</span> <span class=n>s</span> <span class=o>||</span> <span class=n>h</span> <span class=o>==</span> <span class=kc>null</span> <span class=o>||</span> <span class=n>isFulfilling</span><span class=o>(</span><span class=n>h</span><span class=o>.</span><span class=na>mode</span><span class=o>));</span>
+<span class=o>}</span>
+</code></pre></td></tr></table></div></div><h4 id=clean-清空线程>clean 清空线程</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java><span class=kt>void</span> <span class=nf>clean</span><span class=o>(</span><span class=n>SNode</span> <span class=n>s</span><span class=o>)</span> <span class=o>{</span>
+            <span class=c1>//清空数据域
+</span><span class=c1></span>            <span class=n>s</span><span class=o>.</span><span class=na>item</span> <span class=o>=</span> <span class=kc>null</span><span class=o>;</span>   <span class=c1>// forget item
+</span><span class=c1></span>            <span class=c1>//释放线程引用..
+</span><span class=c1></span>            <span class=n>s</span><span class=o>.</span><span class=na>waiter</span> <span class=o>=</span> <span class=kc>null</span><span class=o>;</span> <span class=c1>// forget thread
+</span><span class=c1></span>            <span class=c1>//检查取消节点的截止位置
+</span><span class=c1></span>            <span class=n>SNode</span> <span class=n>past</span> <span class=o>=</span> <span class=n>s</span><span class=o>.</span><span class=na>next</span><span class=o>;</span>
+
+            <span class=k>if</span> <span class=o>(</span><span class=n>past</span> <span class=o>!=</span> <span class=kc>null</span> <span class=o>&amp;&amp;</span> <span class=n>past</span><span class=o>.</span><span class=na>isCancelled</span><span class=o>())</span>
+                <span class=n>past</span> <span class=o>=</span> <span class=n>past</span><span class=o>.</span><span class=na>next</span><span class=o>;</span>
+
+            <span class=c1>// Absorb cancelled nodes at head
+</span><span class=c1></span>            <span class=c1>//当前循环检查节点
+</span><span class=c1></span>            <span class=n>SNode</span> <span class=n>p</span><span class=o>;</span>
+            <span class=c1>//从栈顶开始向下检查，将栈顶开始向下连续的 取消状态的节点 全部清理出去，直到碰到past为止。
+</span><span class=c1></span>            <span class=k>while</span> <span class=o>((</span><span class=n>p</span> <span class=o>=</span> <span class=n>head</span><span class=o>)</span> <span class=o>!=</span> <span class=kc>null</span> <span class=o>&amp;&amp;</span> <span class=n>p</span> <span class=o>!=</span> <span class=n>past</span> <span class=o>&amp;&amp;</span> <span class=n>p</span><span class=o>.</span><span class=na>isCancelled</span><span class=o>())</span>
+                <span class=n>casHead</span><span class=o>(</span><span class=n>p</span><span class=o>,</span> <span class=n>p</span><span class=o>.</span><span class=na>next</span><span class=o>);</span>
+
+            <span class=c1>// Unsplice embedded nodes
+</span><span class=c1></span>            <span class=k>while</span> <span class=o>(</span><span class=n>p</span> <span class=o>!=</span> <span class=kc>null</span> <span class=o>&amp;&amp;</span> <span class=n>p</span> <span class=o>!=</span> <span class=n>past</span><span class=o>)</span> <span class=o>{</span>
+                <span class=c1>//获取p.next  
+</span><span class=c1></span>                <span class=n>SNode</span> <span class=n>n</span> <span class=o>=</span> <span class=n>p</span><span class=o>.</span><span class=na>next</span><span class=o>;</span>
+                <span class=c1>// 跳过出栈的node 设置p.next
+</span><span class=c1></span>                <span class=k>if</span> <span class=o>(</span><span class=n>n</span> <span class=o>!=</span> <span class=kc>null</span> <span class=o>&amp;&amp;</span> <span class=n>n</span><span class=o>.</span><span class=na>isCancelled</span><span class=o>())</span>
+                    <span class=n>p</span><span class=o>.</span><span class=na>casNext</span><span class=o>(</span><span class=n>n</span><span class=o>,</span> <span class=n>n</span><span class=o>.</span><span class=na>next</span><span class=o>);</span>
+                <span class=k>else</span>
+                    <span class=n>p</span> <span class=o>=</span> <span class=n>n</span><span class=o>;</span>
+            <span class=o>}</span>
+        <span class=o>}</span>
+</code></pre></td></tr></table></div></div><h2 id=公平模式的实现分析>公平模式的实现分析</h2><blockquote><p>主要是 节点进来判断链表尾结点是否与自己相同</p><p>相同 我就进入链表并把自己设置为尾结点</p><p>不同 就与链表头结点互补出队</p></blockquote><p><a data-fancybox=gallery href=https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/SynchronousQueue/TransferQueue.png!print><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/SynchronousQueue/TransferQueue.png!print data-srcset="https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/SynchronousQueue/TransferQueue.png!print, https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/SynchronousQueue/TransferQueue.png!print 1.5x, https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/SynchronousQueue/TransferQueue.png!print 2x" data-sizes=auto alt=https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/SynchronousQueue/TransferQueue.png!print title=https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/SynchronousQueue/TransferQueue.png!print></a></p><h3 id=transferqueue基本字段说明>TransferQueue基本字段说明</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java><span class=kd>static</span> <span class=kd>final</span> <span class=kd>class</span> <span class=nc>QNode</span> <span class=o>{</span>
+            <span class=c1>//指向当前节点的下一个节点，组装链表使用的。
+</span><span class=c1></span>            <span class=kd>volatile</span> <span class=n>QNode</span> <span class=n>next</span><span class=o>;</span>         
+            <span class=c1>//数据域  Node代表的是DATA类型，item表示数据   否则 Node代表的REQUEST类型，item == null
+</span><span class=c1></span>            <span class=kd>volatile</span> <span class=n>Object</span> <span class=n>item</span><span class=o>;</span>         
+            <span class=c1>//当Node对应的线程 未匹配到节点时，对应的线程 最终会挂起，挂起之前会保留 线程引用到waiter ，
+</span><span class=c1></span>            <span class=c1>//方法 其它Node匹配当前节点时 唤醒 当前线程..
+</span><span class=c1></span>            <span class=kd>volatile</span> <span class=n>Thread</span> <span class=n>waiter</span><span class=o>;</span>      
+            <span class=c1>//true 当前Node是一个DATA类型   false表示当前Node是一个REQUEST类型。
+</span><span class=c1></span>            <span class=kd>final</span> <span class=kt>boolean</span> <span class=n>isData</span><span class=o>;</span> 
+
+
+            <span class=n>QNode</span><span class=o>(</span><span class=n>Object</span> <span class=n>item</span><span class=o>,</span> <span class=kt>boolean</span> <span class=n>isData</span><span class=o>)</span> <span class=o>{</span>
+                <span class=k>this</span><span class=o>.</span><span class=na>item</span> <span class=o>=</span> <span class=n>item</span><span class=o>;</span>
+                <span class=k>this</span><span class=o>.</span><span class=na>isData</span> <span class=o>=</span> <span class=n>isData</span><span class=o>;</span>
+            <span class=o>}</span>
+
+            <span class=c1>//修改当前节点next引用
+</span><span class=c1></span>            <span class=kt>boolean</span> <span class=nf>casNext</span><span class=o>(</span><span class=n>QNode</span> <span class=n>cmp</span><span class=o>,</span> <span class=n>QNode</span> <span class=n>val</span><span class=o>)</span> <span class=o>{</span>
+                <span class=k>return</span> <span class=n>next</span> <span class=o>==</span> <span class=n>cmp</span> <span class=o>&amp;&amp;</span>
+                        <span class=n>UNSAFE</span><span class=o>.</span><span class=na>compareAndSwapObject</span><span class=o>(</span><span class=k>this</span><span class=o>,</span> <span class=n>nextOffset</span><span class=o>,</span> <span class=n>cmp</span><span class=o>,</span> <span class=n>val</span><span class=o>);</span>
+            <span class=o>}</span>
+
+            <span class=c1>//修改当前节点数据域item
+</span><span class=c1></span>            <span class=kt>boolean</span> <span class=nf>casItem</span><span class=o>(</span><span class=n>Object</span> <span class=n>cmp</span><span class=o>,</span> <span class=n>Object</span> <span class=n>val</span><span class=o>)</span> <span class=o>{</span>
+                <span class=k>return</span> <span class=n>item</span> <span class=o>==</span> <span class=n>cmp</span> <span class=o>&amp;&amp;</span>
+                        <span class=n>UNSAFE</span><span class=o>.</span><span class=na>compareAndSwapObject</span><span class=o>(</span><span class=k>this</span><span class=o>,</span> <span class=n>itemOffset</span><span class=o>,</span> <span class=n>cmp</span><span class=o>,</span> <span class=n>val</span><span class=o>);</span>
+            <span class=o>}</span>
+</code></pre></td></tr></table></div></div><h3 id=transfer-1>transfer</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>  1
+</span><span class=lnt>  2
+</span><span class=lnt>  3
+</span><span class=lnt>  4
+</span><span class=lnt>  5
+</span><span class=lnt>  6
+</span><span class=lnt>  7
+</span><span class=lnt>  8
+</span><span class=lnt>  9
+</span><span class=lnt> 10
+</span><span class=lnt> 11
+</span><span class=lnt> 12
+</span><span class=lnt> 13
+</span><span class=lnt> 14
+</span><span class=lnt> 15
+</span><span class=lnt> 16
+</span><span class=lnt> 17
+</span><span class=lnt> 18
+</span><span class=lnt> 19
+</span><span class=lnt> 20
+</span><span class=lnt> 21
+</span><span class=lnt> 22
+</span><span class=lnt> 23
+</span><span class=lnt> 24
+</span><span class=lnt> 25
+</span><span class=lnt> 26
+</span><span class=lnt> 27
+</span><span class=lnt> 28
+</span><span class=lnt> 29
+</span><span class=lnt> 30
+</span><span class=lnt> 31
+</span><span class=lnt> 32
+</span><span class=lnt> 33
+</span><span class=lnt> 34
+</span><span class=lnt> 35
+</span><span class=lnt> 36
+</span><span class=lnt> 37
+</span><span class=lnt> 38
+</span><span class=lnt> 39
+</span><span class=lnt> 40
+</span><span class=lnt> 41
+</span><span class=lnt> 42
+</span><span class=lnt> 43
+</span><span class=lnt> 44
+</span><span class=lnt> 45
+</span><span class=lnt> 46
+</span><span class=lnt> 47
+</span><span class=lnt> 48
+</span><span class=lnt> 49
+</span><span class=lnt> 50
+</span><span class=lnt> 51
+</span><span class=lnt> 52
+</span><span class=lnt> 53
+</span><span class=lnt> 54
+</span><span class=lnt> 55
+</span><span class=lnt> 56
+</span><span class=lnt> 57
+</span><span class=lnt> 58
+</span><span class=lnt> 59
+</span><span class=lnt> 60
+</span><span class=lnt> 61
+</span><span class=lnt> 62
+</span><span class=lnt> 63
+</span><span class=lnt> 64
+</span><span class=lnt> 65
+</span><span class=lnt> 66
+</span><span class=lnt> 67
+</span><span class=lnt> 68
+</span><span class=lnt> 69
+</span><span class=lnt> 70
+</span><span class=lnt> 71
+</span><span class=lnt> 72
+</span><span class=lnt> 73
+</span><span class=lnt> 74
+</span><span class=lnt> 75
+</span><span class=lnt> 76
+</span><span class=lnt> 77
+</span><span class=lnt> 78
+</span><span class=lnt> 79
+</span><span class=lnt> 80
+</span><span class=lnt> 81
+</span><span class=lnt> 82
+</span><span class=lnt> 83
+</span><span class=lnt> 84
+</span><span class=lnt> 85
+</span><span class=lnt> 86
+</span><span class=lnt> 87
+</span><span class=lnt> 88
+</span><span class=lnt> 89
+</span><span class=lnt> 90
+</span><span class=lnt> 91
+</span><span class=lnt> 92
+</span><span class=lnt> 93
+</span><span class=lnt> 94
+</span><span class=lnt> 95
+</span><span class=lnt> 96
+</span><span class=lnt> 97
+</span><span class=lnt> 98
+</span><span class=lnt> 99
+</span><span class=lnt>100
+</span><span class=lnt>101
+</span><span class=lnt>102
+</span><span class=lnt>103
+</span><span class=lnt>104
+</span><span class=lnt>105
+</span><span class=lnt>106
+</span><span class=lnt>107
+</span><span class=lnt>108
+</span><span class=lnt>109
+</span><span class=lnt>110
+</span><span class=lnt>111
+</span><span class=lnt>112
+</span><span class=lnt>113
+</span><span class=lnt>114
+</span><span class=lnt>115
+</span><span class=lnt>116
+</span><span class=lnt>117
+</span><span class=lnt>118
+</span><span class=lnt>119
+</span><span class=lnt>120
+</span><span class=lnt>121
+</span><span class=lnt>122
+</span><span class=lnt>123
+</span><span class=lnt>124
+</span><span class=lnt>125
+</span><span class=lnt>126
+</span><span class=lnt>127
+</span><span class=lnt>128
+</span><span class=lnt>129
+</span><span class=lnt>130
+</span><span class=lnt>131
+</span><span class=lnt>132
+</span><span class=lnt>133
+</span><span class=lnt>134
+</span><span class=lnt>135
+</span><span class=lnt>136
+</span><span class=lnt>137
+</span><span class=lnt>138
+</span><span class=lnt>139
+</span><span class=lnt>140
+</span><span class=lnt>141
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java><span class=n>E</span> <span class=nf>transfer</span><span class=o>(</span><span class=n>E</span> <span class=n>e</span><span class=o>,</span> <span class=kt>boolean</span> <span class=n>timed</span><span class=o>,</span> <span class=kt>long</span> <span class=n>nanos</span><span class=o>)</span> <span class=o>{</span>
+           
+            <span class=c1>//s 指向当前请求 对应Node
+</span><span class=c1></span>            <span class=n>QNode</span> <span class=n>s</span> <span class=o>=</span> <span class=kc>null</span><span class=o>;</span> <span class=c1>// constructed/reused as needed
+</span><span class=c1></span>        <span class=c1>//isData == true 表示 当前请求是一个写数据操作（DATA）   否则isData == false 表示当前请求是一个 REQUEST操作。
+</span><span class=c1></span>            <span class=kt>boolean</span> <span class=n>isData</span> <span class=o>=</span> <span class=o>(</span><span class=n>e</span> <span class=o>!=</span> <span class=kc>null</span><span class=o>);</span>
+            <span class=c1>//自旋..
+</span><span class=c1></span>            <span class=k>for</span> <span class=o>(;;)</span> <span class=o>{</span>
+                <span class=n>QNode</span> <span class=n>t</span> <span class=o>=</span> <span class=n>tail</span><span class=o>;</span>
+                <span class=n>QNode</span> <span class=n>h</span> <span class=o>=</span> <span class=n>head</span><span class=o>;</span>
+                <span class=k>if</span> <span class=o>(</span><span class=n>t</span> <span class=o>==</span> <span class=kc>null</span> <span class=o>||</span> <span class=n>h</span> <span class=o>==</span> <span class=kc>null</span><span class=o>)</span>         
+                    <span class=k>continue</span><span class=o>;</span>                       
+                <span class=c1>//CASE1：入队
+</span><span class=c1></span>                <span class=c1>//条件一：成立，说明head和tail同时指向dummy节点，当前队列实际情况 就是 空队列。
+</span><span class=c1></span>                <span class=c1>// 此时当前请求需要做入队操作，因为没有任何节点 可以去匹配。
+</span><span class=c1></span>            <span class=c1>//条件二：队列不是空，队尾节点与当前请求类型是一致的情况。说明也是无法完成匹配操作的情况，此时当前节点只能入队...
+</span><span class=c1></span>                <span class=k>if</span> <span class=o>(</span><span class=n>h</span> <span class=o>==</span> <span class=n>t</span> <span class=o>||</span> <span class=n>t</span><span class=o>.</span><span class=na>isData</span> <span class=o>==</span> <span class=n>isData</span><span class=o>)</span> <span class=o>{</span> 
+                    <span class=c1>//获取当前队尾t 的next节点 tn - t.next
+</span><span class=c1></span>                    <span class=n>QNode</span> <span class=n>tn</span> <span class=o>=</span> <span class=n>t</span><span class=o>.</span><span class=na>next</span><span class=o>;</span>
+                    <span class=c1>//因为多线程环境，当前线程在入队之前，其它线程有可能已经入队过了..改变了 tail 引用。
+</span><span class=c1></span>                    <span class=k>if</span> <span class=o>(</span><span class=n>t</span> <span class=o>!=</span> <span class=n>tail</span><span class=o>)</span>                    
+                        <span class=c1>//线程回到自旋...再选择路径执行。
+</span><span class=c1></span>                        <span class=k>continue</span> <span class=o>;</span>
+
+                 <span class=c1>//条件成立：说明已经有线程 入队了，且只完成了 入队的 第一步：设置t.next = newNode， 第二步可能尚未完成..
+</span><span class=c1></span>                    <span class=k>if</span> <span class=o>(</span><span class=n>tn</span> <span class=o>!=</span> <span class=kc>null</span><span class=o>)</span> <span class=o>{</span>              
+                        <span class=c1>//协助更新tail 指向新的　尾结点。
+</span><span class=c1></span>                        <span class=n>advanceTail</span><span class=o>(</span><span class=n>t</span><span class=o>,</span> <span class=n>tn</span><span class=o>);</span>
+                        <span class=c1>//线程回到自旋...再选择路径执行。
+</span><span class=c1></span>                        <span class=k>continue</span><span class=o>;</span>
+                    <span class=o>}</span>
+
+           <span class=c1>//条件成立：说明当前调用transfer方法的 上层方法 可能是 offer() 无参的这种方法进来的，这种方法不支持 阻塞等待...
+</span><span class=c1></span>                    <span class=k>if</span> <span class=o>(</span><span class=n>timed</span> <span class=o>&amp;&amp;</span> <span class=n>nanos</span> <span class=o>&lt;=</span> <span class=n>0</span><span class=o>)</span>       
+                        <span class=c1>//检查未匹配到,直接返回null。
+</span><span class=c1></span>                        <span class=k>return</span> <span class=kc>null</span><span class=o>;</span>
+
+                    <span class=c1>//条件成立：说明当前请求尚未 创建对应的node
+</span><span class=c1></span>                    <span class=k>if</span> <span class=o>(</span><span class=n>s</span> <span class=o>==</span> <span class=kc>null</span><span class=o>)</span>
+                        <span class=c1>//创建node过程...
+</span><span class=c1></span>                        <span class=n>s</span> <span class=o>=</span> <span class=k>new</span> <span class=n>QNode</span><span class=o>(</span><span class=n>e</span><span class=o>,</span> <span class=n>isData</span><span class=o>);</span>
+
+
+                    <span class=c1>//条件 不成立：!t.casNext(null, s)  说明当前t仍然是tail，当前线程对应的Node入队的第一步 完成！
+</span><span class=c1></span>                    <span class=k>if</span> <span class=o>(!</span><span class=n>t</span><span class=o>.</span><span class=na>casNext</span><span class=o>(</span><span class=kc>null</span><span class=o>,</span> <span class=n>s</span><span class=o>))</span>        
+                    <span class=c1>//更新队尾 为咱们请求节点。
+</span><span class=c1></span>                    <span class=n>advanceTail</span><span class=o>(</span><span class=n>t</span><span class=o>,</span> <span class=n>s</span><span class=o>);</span>             
+
+                    <span class=c1>//当前节点 等待匹配....
+</span><span class=c1></span>                    <span class=c1>//当前请求为DATA模式时：e 请求带来的数据
+</span><span class=c1></span>                    <span class=c1>//x == this 当前SNode对应的线程 取消状态
+</span><span class=c1></span>                    <span class=c1>//x == null 表示已经有匹配节点了，并且匹配节点拿走了item数据。
+</span><span class=c1></span>
+                    <span class=c1>//当前请求为REQUEST模式时：e == null
+</span><span class=c1></span>                    <span class=c1>//x == this 当前SNode对应的线程 取消状态
+</span><span class=c1></span>                    <span class=c1>//x != null 且 item != this  表示当前REQUEST类型的Node已经匹配到一个DATA类型的Node了。
+</span><span class=c1></span>                    <span class=n>Object</span> <span class=n>x</span> <span class=o>=</span> <span class=n>awaitFulfill</span><span class=o>(</span><span class=n>s</span><span class=o>,</span> <span class=n>e</span><span class=o>,</span> <span class=n>timed</span><span class=o>,</span> <span class=n>nanos</span><span class=o>);</span>
+
+                    <span class=c1>//说明当前Node状态为 取消状态，需要做 出队逻辑。
+</span><span class=c1></span>                    <span class=k>if</span> <span class=o>(</span><span class=n>x</span> <span class=o>==</span> <span class=n>s</span><span class=o>)</span> <span class=o>{</span>                   <span class=c1>// wait was cancelled
+</span><span class=c1></span>                        <span class=c1>//清理出队逻辑，最后讲。
+</span><span class=c1></span>                        <span class=n>clean</span><span class=o>(</span><span class=n>t</span><span class=o>,</span> <span class=n>s</span><span class=o>);</span>
+                        <span class=k>return</span> <span class=kc>null</span><span class=o>;</span>
+                    <span class=o>}</span>
+
+     <span class=c1>//执行到这里说明 当前Node 匹配成功了...
+</span><span class=c1></span>    <span class=c1>//1.当前线程在awaitFulfill方法内，已经挂起了...此时运行到这里时是被 匹配节点的线程使用LockSupport.unpark() 唤醒的..
+</span><span class=c1></span>     <span class=c1>//被唤醒：当前请求对应的节点，肯定已经出队了，因为匹配者线程 是先让当前Node出队的，再唤醒当前Node对应线程的。
+</span><span class=c1></span>     <span class=c1>// 这个条件会打开下面的是否在队列条件
+</span><span class=c1></span>    <span class=c1>//2.当前线程在awaitFulfill方法内，处于自旋状态...此时匹配节点 匹配后，它检查发现了，然后返回到上层transfer方法的。
+</span><span class=c1></span>     <span class=c1>//自旋状态返回时：当前请求对应的节点，不一定就出队了...
+</span><span class=c1></span>
+
+                    <span class=c1>//被唤醒时：s.isOffList() 条件会成立。  !s.isOffList() 不会成立。
+</span><span class=c1></span>                    <span class=c1>//条件成立：说明当前Node仍然在队列内，需要做 匹配成功后 出队逻辑。
+</span><span class=c1></span>                    <span class=k>if</span> <span class=o>(!</span><span class=n>s</span><span class=o>.</span><span class=na>isOffList</span><span class=o>())</span> <span class=o>{</span>         
+                        <span class=c1>//其实这里面做的事情，就是防止当前Node是自旋检查状态时发现 被匹配了，然后当前线程 需要将
+</span><span class=c1></span>                        <span class=c1>//当前线程对应的Node做出队逻辑.
+</span><span class=c1></span>
+                        <span class=c1>//t 当前s节点的前驱节点，更新dummy节点为 s节点。表示head.next节点已经出队了...
+</span><span class=c1></span>                        <span class=n>advanceHead</span><span class=o>(</span><span class=n>t</span><span class=o>,</span> <span class=n>s</span><span class=o>);</span>          
+
+                        <span class=c1>//x != null 且 item != this  表示当前REQUEST类型的Node已经匹配到一个DATA类型的Node了。
+</span><span class=c1></span>                        <span class=c1>//因为s节点已经出队了，所以需要把它的item域 给设置为它自己，表示它是个取消出队状态。
+</span><span class=c1></span>                        <span class=k>if</span> <span class=o>(</span><span class=n>x</span> <span class=o>!=</span> <span class=kc>null</span><span class=o>)</span>              
+                            <span class=n>s</span><span class=o>.</span><span class=na>item</span> <span class=o>=</span> <span class=n>s</span><span class=o>;</span>
+                        <span class=c1>//因为s已经出队，所以waiter一定要保证是null。
+</span><span class=c1></span>                        <span class=n>s</span><span class=o>.</span><span class=na>waiter</span> <span class=o>=</span> <span class=kc>null</span><span class=o>;</span>
+                    <span class=o>}</span>
+
+                    <span class=c1>//x != null 成立，说明当前请求是REQUEST类型，返回匹配到的数据x
+</span><span class=c1></span>                    <span class=c1>//x != null 不成立，说明当前请求是DATA类型，返回DATA请求时的e。
+</span><span class=c1></span>                    <span class=k>return</span> <span class=o>(</span><span class=n>x</span> <span class=o>!=</span> <span class=kc>null</span><span class=o>)</span> <span class=o>?</span> <span class=o>(</span><span class=n>E</span><span class=o>)</span><span class=n>x</span> <span class=o>:</span> <span class=n>e</span><span class=o>;</span>
+                <span class=o>}</span>
+
+       <span class=c1>//CASE2：队尾节点 与 当前请求节点 互补 （队尾-&gt;DATA，请求类型-&gt;REQUEST）  (队尾-&gt;REQUEST, 请求类型-&gt;DATA)
+</span><span class=c1></span>                <span class=k>else</span> <span class=o>{</span>                           
+         <span class=c1>//h.next节点 其实是真正的队头，请求节点 与队尾模式不同，需要与队头 发生匹配。因为TransferQueue是一个 公平模式
+</span><span class=c1></span>                    <span class=n>QNode</span> <span class=n>m</span> <span class=o>=</span> <span class=n>h</span><span class=o>.</span><span class=na>next</span><span class=o>;</span>      
+                    
+ 		<span class=c1>//条件一：t != tail 什么时候成立呢？ 肯定是并发导致的，其它线程已经修改过tail了，
+</span><span class=c1></span>        <span class=c1>//有其它线程入队过了..当前线程看到的是过期数据，需要重新循环
+</span><span class=c1></span>        <span class=c1>//条件二：m == null 什么时候成立呢？ 肯定是其它请求先当前请求一步，匹配走了head.next节点。
+</span><span class=c1></span>        <span class=c1>//条件三：条件成立，说明已经有其它请求匹配走head.next了。。。当前线程看到的是过期数据。。。重新循环...
+</span><span class=c1></span>                    <span class=k>if</span> <span class=o>(</span><span class=n>t</span> <span class=o>!=</span> <span class=n>tail</span> <span class=o>||</span> <span class=n>m</span> <span class=o>==</span> <span class=kc>null</span> <span class=o>||</span> <span class=n>h</span> <span class=o>!=</span> <span class=n>head</span><span class=o>)</span>
+                        <span class=k>continue</span><span class=o>;</span>                   
+
+                    <span class=c1>//执行到这里，说明t m h 不是过期数据,是准确数据。目前来看是准确的！
+</span><span class=c1></span>                    <span class=c1>//获取匹配节点的数据域 保存到x
+</span><span class=c1></span>                    <span class=n>Object</span> <span class=n>x</span> <span class=o>=</span> <span class=n>m</span><span class=o>.</span><span class=na>item</span><span class=o>;</span>
+
+                    <span class=c1>//条件一：在data类型数据为空   在req类型数据域不为空这种特殊情况
+</span><span class=c1></span>    				<span class=c1>//条件二：条件成立，说明m节点已经是 取消状态了...不能完成匹配，当前请求需要continue，
+</span><span class=c1></span>
+                    <span class=c1>//条件三：!m.casItem(x, e)，前提条件 m 非取消状态。
+</span><span class=c1></span>                    <span class=c1>//1.假设当前请求为REQUEST类型   e == null
+</span><span class=c1></span>                    <span class=c1>//m 是 DATA类型了...
+</span><span class=c1></span>                    <span class=c1>//相当于将匹配的DATA Node的数据域清空了，相当于REQUEST 拿走了 它的数据。
+</span><span class=c1></span>
+                    <span class=c1>//2.假设当前请求为DATA类型    e != null
+</span><span class=c1></span>                    <span class=c1>//m 是 REQUEST类型了...
+</span><span class=c1></span>                 <span class=c1>//相当于将匹配的REQUEST Node的数据域 填充了，填充了 当前DATA 的 数据。相当于传递给REQUEST请求数据了...
+</span><span class=c1></span>                    <span class=k>if</span> <span class=o>(</span><span class=n>isData</span> <span class=o>==</span> <span class=o>(</span><span class=n>x</span> <span class=o>!=</span> <span class=kc>null</span><span class=o>)</span> <span class=o>||</span>    
+                            <span class=n>x</span> <span class=o>==</span> <span class=n>m</span> <span class=o>||</span>                  
+                            <span class=o>!</span><span class=n>m</span><span class=o>.</span><span class=na>casItem</span><span class=o>(</span><span class=n>x</span><span class=o>,</span> <span class=n>e</span><span class=o>))</span> <span class=o>{</span>         
+                        <span class=n>advanceHead</span><span class=o>(</span><span class=n>h</span><span class=o>,</span> <span class=n>m</span><span class=o>);</span>        
+                        <span class=k>continue</span><span class=o>;</span>
+                    <span class=o>}</span>
+
+                    <span class=c1>//执行到这里，说明匹配已经完成了，匹配完成后，需要做什么？
+</span><span class=c1></span>                    <span class=c1>//1.将真正的头节点 出队。让这个真正的头结点成为dummy节点
+</span><span class=c1></span>                    <span class=n>advanceHead</span><span class=o>(</span><span class=n>h</span><span class=o>,</span> <span class=n>m</span><span class=o>);</span>              
+                    <span class=c1>//2.唤醒匹配节点的线程..
+</span><span class=c1></span>                    <span class=n>LockSupport</span><span class=o>.</span><span class=na>unpark</span><span class=o>(</span><span class=n>m</span><span class=o>.</span><span class=na>waiter</span><span class=o>);</span>
+
+                    <span class=c1>//x != null 成立，说明当前请求是REQUEST类型，返回匹配到的数据x
+</span><span class=c1></span>                    <span class=c1>//x != null 不成立，说明当前请求是DATA类型，返回DATA请求时的e。
+</span><span class=c1></span>                    <span class=k>return</span> <span class=o>(</span><span class=n>x</span> <span class=o>!=</span> <span class=kc>null</span><span class=o>)</span> <span class=o>?</span> <span class=o>(</span><span class=n>E</span><span class=o>)</span><span class=n>x</span> <span class=o>:</span> <span class=n>e</span><span class=o>;</span>
+                <span class=o>}</span>
+            <span class=o>}</span>
+        <span class=o>}</span>
+</code></pre></td></tr></table></div></div><h4 id=出队操作>出队操作</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java><span class=cm>/**
+</span><span class=cm> * Tries to cas nh as new head; if successful, unlink
+</span><span class=cm> * old head&#39;s next node to avoid garbage retention.
+</span><span class=cm> * 设置头指针指向新的节点，蕴含操作：老的头节点出队。
+</span><span class=cm> */</span>
+<span class=kt>void</span> <span class=nf>advanceHead</span><span class=o>(</span><span class=n>QNode</span> <span class=n>h</span><span class=o>,</span> <span class=n>QNode</span> <span class=n>nh</span><span class=o>)</span> <span class=o>{</span>
+    <span class=k>if</span> <span class=o>(</span><span class=n>h</span> <span class=o>==</span> <span class=n>head</span> <span class=o>&amp;&amp;</span>
+            <span class=n>UNSAFE</span><span class=o>.</span><span class=na>compareAndSwapObject</span><span class=o>(</span><span class=k>this</span><span class=o>,</span> <span class=n>headOffset</span><span class=o>,</span> <span class=n>h</span><span class=o>,</span> <span class=n>nh</span><span class=o>))</span>
+        <span class=n>h</span><span class=o>.</span><span class=na>next</span> <span class=o>=</span> <span class=n>h</span><span class=o>;</span> <span class=c1>// forget old next
+</span><span class=c1></span><span class=o>}</span>
+</code></pre></td></tr></table></div></div><h4 id=awaitfulfill-阻塞自旋等待-1>awaitFulfill 阻塞&自旋等待</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span><span class=lnt>72
+</span><span class=lnt>73
+</span><span class=lnt>74
+</span><span class=lnt>75
+</span><span class=lnt>76
+</span><span class=lnt>77
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java><span class=n>Object</span> <span class=nf>awaitFulfill</span><span class=o>(</span><span class=n>QNode</span> <span class=n>s</span><span class=o>,</span> <span class=n>E</span> <span class=n>e</span><span class=o>,</span> <span class=kt>boolean</span> <span class=n>timed</span><span class=o>,</span> <span class=kt>long</span> <span class=n>nanos</span><span class=o>)</span> <span class=o>{</span>
+            <span class=c1>//deadline 表示等待截止时间...
+</span><span class=c1></span>            <span class=kd>final</span> <span class=kt>long</span> <span class=n>deadline</span> <span class=o>=</span> <span class=n>timed</span> <span class=o>?</span> <span class=n>System</span><span class=o>.</span><span class=na>nanoTime</span><span class=o>()</span> <span class=o>+</span> <span class=n>nanos</span> <span class=o>:</span> <span class=n>0L</span><span class=o>;</span>
+            <span class=c1>//当前请求节点的线程..
+</span><span class=c1></span>            <span class=n>Thread</span> <span class=n>w</span> <span class=o>=</span> <span class=n>Thread</span><span class=o>.</span><span class=na>currentThread</span><span class=o>();</span>
+            <span class=c1>//允许自旋检查的次数..
+</span><span class=c1></span>            <span class=kt>int</span> <span class=n>spins</span> <span class=o>=</span> <span class=o>((</span><span class=n>head</span><span class=o>.</span><span class=na>next</span> <span class=o>==</span> <span class=n>s</span><span class=o>)</span> <span class=o>?</span>
+                    <span class=o>(</span><span class=n>timed</span> <span class=o>?</span> <span class=n>maxTimedSpins</span> <span class=o>:</span> <span class=n>maxUntimedSpins</span><span class=o>)</span> <span class=o>:</span> <span class=n>0</span><span class=o>);</span>
+
+            <span class=c1>//自旋：1.检查状态等待匹配  2.挂起线程  3.检查状态 是否被中断 或者 超时..
+</span><span class=c1></span>            <span class=k>for</span> <span class=o>(;;)</span> <span class=o>{</span>
+                <span class=c1>//条件成立：说明线程等待过程中，收到了中断信号，属于中断唤醒..
+</span><span class=c1></span>                <span class=k>if</span> <span class=o>(</span><span class=n>w</span><span class=o>.</span><span class=na>isInterrupted</span><span class=o>())</span>
+                    <span class=c1>//更新线程对应的Node状态为 取消状态..
+</span><span class=c1></span>                    <span class=c1>//数据域item 指向当前Node自身，表示取消状态.
+</span><span class=c1></span>                    <span class=n>s</span><span class=o>.</span><span class=na>tryCancel</span><span class=o>(</span><span class=n>e</span><span class=o>);</span>
+
+
+                <span class=c1>//获取当前Node数据域
+</span><span class=c1></span>                <span class=n>Object</span> <span class=n>x</span> <span class=o>=</span> <span class=n>s</span><span class=o>.</span><span class=na>item</span><span class=o>;</span>
+                <span class=c1>//item有几种情况呢？
+</span><span class=c1></span>                <span class=c1>//当SNode模式为DATA模式时：
+</span><span class=c1></span>                <span class=c1>//1.item != null 且 item != this  表示请求要传递的数据 put(E e)
+</span><span class=c1></span>                <span class=c1>//2.item == this 当前SNode对应的线程 取消状态
+</span><span class=c1></span>                <span class=c1>//3.item == null 表示已经有匹配节点了，并且匹配节点拿走了item数据。
+</span><span class=c1></span>
+                <span class=c1>//当SNode模式为REQUEST模式时：
+</span><span class=c1></span>                <span class=c1>//1.item == null 时，正常状态，当前请求仍然未匹配到对应的DATA请求。
+</span><span class=c1></span>                <span class=c1>//2.item == this 当前SNode对应的线程 取消状态
+</span><span class=c1></span>                <span class=c1>//3.item != null 且 item != this  表示当前REQUEST类型的Node已经匹配到一个DATA类型的Node了。
+</span><span class=c1></span>
+
+                <span class=c1>//条件成立：
+</span><span class=c1></span>                <span class=c1>//当前请求为DATA模式时：e 请求带来的数据
+</span><span class=c1></span>                <span class=c1>//item == this 当前SNode对应的线程 取消状态
+</span><span class=c1></span>                <span class=c1>//item == null 表示已经有匹配节点了，并且匹配节点拿走了item数据。
+</span><span class=c1></span>
+                <span class=c1>//当前请求为REQUEST模式时：e == null
+</span><span class=c1></span>                <span class=c1>//item == this 当前SNode对应的线程 取消状态
+</span><span class=c1></span>                <span class=c1>//item != null 且 item != this  表示当前REQUEST类型的Node已经匹配到一个DATA类型的Node了。
+</span><span class=c1></span>                <span class=k>if</span> <span class=o>(</span><span class=n>x</span> <span class=o>!=</span> <span class=n>e</span><span class=o>)</span>
+                    <span class=k>return</span> <span class=n>x</span><span class=o>;</span>
+
+                <span class=c1>//条件成立：说明请求指定了超时限制..
+</span><span class=c1></span>                <span class=k>if</span> <span class=o>(</span><span class=n>timed</span><span class=o>)</span> <span class=o>{</span>
+                    <span class=c1>//nanos表示距离截止时间的长度..
+</span><span class=c1></span>                    <span class=n>nanos</span> <span class=o>=</span> <span class=n>deadline</span> <span class=o>-</span> <span class=n>System</span><span class=o>.</span><span class=na>nanoTime</span><span class=o>();</span>
+                    <span class=c1>//条件成立：说明当前Node对应的线程 已经等待超时了，需要取消了.
+</span><span class=c1></span>                    <span class=k>if</span> <span class=o>(</span><span class=n>nanos</span> <span class=o>&lt;=</span> <span class=n>0L</span><span class=o>)</span> <span class=o>{</span>
+                        <span class=n>s</span><span class=o>.</span><span class=na>tryCancel</span><span class=o>(</span><span class=n>e</span><span class=o>);</span>
+                        <span class=k>continue</span><span class=o>;</span>
+                    <span class=o>}</span>
+                <span class=o>}</span>
+
+
+
+                <span class=c1>//条件成立：说明当前线程 还可以进行自旋检查..
+</span><span class=c1></span>                <span class=k>if</span> <span class=o>(</span><span class=n>spins</span> <span class=o>&gt;</span> <span class=n>0</span><span class=o>)</span>
+                    <span class=c1>//递减..
+</span><span class=c1></span>                    <span class=o>--</span><span class=n>spins</span><span class=o>;</span>
+                    <span class=c1>//执行到这里，说明spins == 0;
+</span><span class=c1></span>                    <span class=c1>//条件成立：当前Node尚未设置waiter字段..
+</span><span class=c1></span>                <span class=k>else</span> <span class=k>if</span> <span class=o>(</span><span class=n>s</span><span class=o>.</span><span class=na>waiter</span> <span class=o>==</span> <span class=kc>null</span><span class=o>)</span>
+                    <span class=c1>//保存当前Node对应的线程，方便后面挂起线程后，外部线程使用s.waiter字段唤醒 当前Node对应的线程。
+</span><span class=c1></span>                    <span class=n>s</span><span class=o>.</span><span class=na>waiter</span> <span class=o>=</span> <span class=n>w</span><span class=o>;</span>
+
+                    <span class=c1>//条件成立：说明当前请求未指定超时限制。挂起采用 不指定超时的挂起方法..
+</span><span class=c1></span>                <span class=k>else</span> <span class=k>if</span> <span class=o>(!</span><span class=n>timed</span><span class=o>)</span>
+                    <span class=n>LockSupport</span><span class=o>.</span><span class=na>park</span><span class=o>(</span><span class=k>this</span><span class=o>);</span>
+
+                    <span class=c1>//执行到这里，说明 timed==true
+</span><span class=c1></span>                    <span class=c1>//条件 不成立：nanos 太小了，没有必要挂起线程了，还不如自旋 实在。
+</span><span class=c1></span>                <span class=k>else</span> <span class=k>if</span> <span class=o>(</span><span class=n>nanos</span> <span class=o>&gt;</span> <span class=n>spinForTimeoutThreshold</span><span class=o>)</span>
+                    <span class=c1>//nanos &gt; 1000.
+</span><span class=c1></span>                    <span class=n>LockSupport</span><span class=o>.</span><span class=na>parkNanos</span><span class=o>(</span><span class=k>this</span><span class=o>,</span> <span class=n>nanos</span><span class=o>);</span>
+            <span class=o>}</span>
+        <span class=o>}</span>
+</code></pre></td></tr></table></div></div><h4 id=清空>清空</h4><h5 id=示例代码-队首节点取消逻辑>示例代码-队首节点取消逻辑</h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java><span class=kd>public</span> <span class=kd>static</span> <span class=kt>void</span> <span class=nf>main</span><span class=o>(</span><span class=n>String</span><span class=o>[]</span> <span class=n>args</span><span class=o>)</span> <span class=kd>throws</span> <span class=n>InterruptedException</span> <span class=o>{</span>
+        <span class=n>SynchronousQueue</span><span class=o>&lt;</span><span class=n>Integer</span><span class=o>&gt;</span> <span class=n>queue</span> <span class=o>=</span> <span class=k>new</span> <span class=n>SynchronousQueue</span><span class=o>&lt;&gt;(</span><span class=kc>true</span><span class=o>);</span>
+
+        <span class=n>Thread</span> <span class=n>thread1</span> <span class=o>=</span> <span class=k>new</span> <span class=n>Thread</span><span class=o>(()</span> <span class=o>-&gt;</span> <span class=o>{</span>
+            <span class=k>try</span> <span class=o>{</span>
+                <span class=n>queue</span><span class=o>.</span><span class=na>put</span><span class=o>(</span><span class=n>1</span><span class=o>);</span>
+            <span class=o>}</span> <span class=k>catch</span> <span class=o>(</span><span class=n>InterruptedException</span> <span class=n>e</span><span class=o>)</span> <span class=o>{</span>
+                <span class=n>e</span><span class=o>.</span><span class=na>printStackTrace</span><span class=o>();</span>
+            <span class=o>}</span>
+        <span class=o>});</span>
+        <span class=n>thread1</span><span class=o>.</span><span class=na>start</span><span class=o>();</span>
+        <span class=n>Thread</span><span class=o>.</span><span class=na>sleep</span><span class=o>(</span><span class=n>1000</span><span class=o>);</span>
+
+        <span class=n>Thread</span> <span class=n>thread2</span> <span class=o>=</span> <span class=k>new</span> <span class=n>Thread</span><span class=o>(()</span> <span class=o>-&gt;</span> <span class=o>{</span>
+            <span class=k>try</span> <span class=o>{</span>
+                <span class=n>queue</span><span class=o>.</span><span class=na>put</span><span class=o>(</span><span class=n>2</span><span class=o>);</span>
+            <span class=o>}</span> <span class=k>catch</span> <span class=o>(</span><span class=n>InterruptedException</span> <span class=n>e</span><span class=o>)</span> <span class=o>{</span>
+                <span class=n>e</span><span class=o>.</span><span class=na>printStackTrace</span><span class=o>();</span>
+            <span class=o>}</span>
+        <span class=o>});</span>
+        <span class=n>thread2</span><span class=o>.</span><span class=na>start</span><span class=o>();</span>
+
+        <span class=n>Thread</span><span class=o>.</span><span class=na>sleep</span><span class=o>(</span><span class=n>100</span><span class=o>);</span>
+        <span class=n>thread1</span><span class=o>.</span><span class=na>interrupt</span><span class=o>();</span>
+
+    <span class=o>}</span>
+</code></pre></td></tr></table></div></div><h6 id=流程图>流程图</h6><p><img src="https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/SynchronousQueue/1 (1).png!print" style=zoom:50%></p><p><img src="https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/SynchronousQueue/1 (2).png!print" style=zoom:50%></p><p><img src="https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/SynchronousQueue/1 (3).png!print" style=zoom:33%></p><h5 id=示例代码-队中节点取消逻辑>示例代码-队中节点取消逻辑</h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java><span class=kd>public</span> <span class=kd>static</span> <span class=kt>void</span> <span class=nf>main</span><span class=o>(</span><span class=n>String</span><span class=o>[]</span> <span class=n>args</span><span class=o>)</span> <span class=kd>throws</span> <span class=n>InterruptedException</span> <span class=o>{</span>
+        <span class=n>SynchronousQueue</span><span class=o>&lt;</span><span class=n>Integer</span><span class=o>&gt;</span> <span class=n>queue</span> <span class=o>=</span> <span class=k>new</span> <span class=n>SynchronousQueue</span><span class=o>&lt;&gt;(</span><span class=kc>true</span><span class=o>);</span>
+
+        <span class=n>Thread</span> <span class=n>thread1</span> <span class=o>=</span> <span class=k>new</span> <span class=n>Thread</span><span class=o>(()</span> <span class=o>-&gt;</span> <span class=o>{</span>
+            <span class=k>try</span> <span class=o>{</span>
+                <span class=n>queue</span><span class=o>.</span><span class=na>put</span><span class=o>(</span><span class=n>1</span><span class=o>);</span>
+            <span class=o>}</span> <span class=k>catch</span> <span class=o>(</span><span class=n>InterruptedException</span> <span class=n>e</span><span class=o>)</span> <span class=o>{</span>
+                <span class=n>e</span><span class=o>.</span><span class=na>printStackTrace</span><span class=o>();</span>
+            <span class=o>}</span>
+        <span class=o>});</span>
+        <span class=n>thread1</span><span class=o>.</span><span class=na>start</span><span class=o>();</span>
+
+        <span class=n>Thread</span><span class=o>.</span><span class=na>sleep</span><span class=o>(</span><span class=n>200</span><span class=o>);</span>
+        <span class=n>Thread</span> <span class=n>thread2</span> <span class=o>=</span> <span class=k>new</span> <span class=n>Thread</span><span class=o>(()</span> <span class=o>-&gt;</span> <span class=o>{</span>
+            <span class=k>try</span> <span class=o>{</span>
+                <span class=n>queue</span><span class=o>.</span><span class=na>put</span><span class=o>(</span><span class=n>2</span><span class=o>);</span>
+            <span class=o>}</span> <span class=k>catch</span> <span class=o>(</span><span class=n>InterruptedException</span> <span class=n>e</span><span class=o>)</span> <span class=o>{</span>
+                <span class=n>e</span><span class=o>.</span><span class=na>printStackTrace</span><span class=o>();</span>
+            <span class=o>}</span>
+        <span class=o>});</span>
+        <span class=n>thread2</span><span class=o>.</span><span class=na>start</span><span class=o>();</span>
+
+        <span class=n>Thread</span><span class=o>.</span><span class=na>sleep</span><span class=o>(</span><span class=n>200</span><span class=o>);</span>
+        <span class=n>Thread</span> <span class=n>thread3</span> <span class=o>=</span> <span class=k>new</span> <span class=n>Thread</span><span class=o>(()</span> <span class=o>-&gt;</span> <span class=o>{</span>
+            <span class=k>try</span> <span class=o>{</span>
+                <span class=n>queue</span><span class=o>.</span><span class=na>put</span><span class=o>(</span><span class=n>3</span><span class=o>);</span>
+            <span class=o>}</span> <span class=k>catch</span> <span class=o>(</span><span class=n>InterruptedException</span> <span class=n>e</span><span class=o>)</span> <span class=o>{</span>
+                <span class=n>e</span><span class=o>.</span><span class=na>printStackTrace</span><span class=o>();</span>
+            <span class=o>}</span>
+        <span class=o>});</span>
+        <span class=n>thread3</span><span class=o>.</span><span class=na>start</span><span class=o>();</span>
+
+        <span class=n>Thread</span><span class=o>.</span><span class=na>sleep</span><span class=o>(</span><span class=n>200</span><span class=o>);</span>
+        <span class=n>thread2</span><span class=o>.</span><span class=na>interrupt</span><span class=o>();</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table></div></div><h6 id=流程图-1>流程图</h6><p><img src=https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/SynchronousQueue/2.png!print style=zoom:67%></p><p><img src=https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/SynchronousQueue/2.1.png!print style=zoom:67%></p><h5 id=示例代码-队尾节点取消逻辑>示例代码-队尾节点取消逻辑</h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java><span class=kd>public</span> <span class=kd>static</span> <span class=kt>void</span> <span class=nf>main</span><span class=o>(</span><span class=n>String</span><span class=o>[]</span> <span class=n>args</span><span class=o>)</span> <span class=kd>throws</span> <span class=n>InterruptedException</span> <span class=o>{</span>
+        <span class=n>SynchronousQueue</span><span class=o>&lt;</span><span class=n>Integer</span><span class=o>&gt;</span> <span class=n>queue</span> <span class=o>=</span> <span class=k>new</span> <span class=n>SynchronousQueue</span><span class=o>&lt;&gt;(</span><span class=kc>true</span><span class=o>);</span>
+
+        <span class=n>Thread</span> <span class=n>thread1</span> <span class=o>=</span> <span class=k>new</span> <span class=n>Thread</span><span class=o>(()</span> <span class=o>-&gt;</span> <span class=o>{</span>
+            <span class=k>try</span> <span class=o>{</span>
+                <span class=n>queue</span><span class=o>.</span><span class=na>put</span><span class=o>(</span><span class=n>1</span><span class=o>);</span>
+            <span class=o>}</span> <span class=k>catch</span> <span class=o>(</span><span class=n>InterruptedException</span> <span class=n>e</span><span class=o>)</span> <span class=o>{</span>
+                <span class=n>e</span><span class=o>.</span><span class=na>printStackTrace</span><span class=o>();</span>
+            <span class=o>}</span>
+        <span class=o>});</span>
+        <span class=n>thread1</span><span class=o>.</span><span class=na>start</span><span class=o>();</span>
+
+        <span class=n>Thread</span><span class=o>.</span><span class=na>sleep</span><span class=o>(</span><span class=n>200</span><span class=o>);</span>
+        <span class=n>Thread</span> <span class=n>thread2</span> <span class=o>=</span> <span class=k>new</span> <span class=n>Thread</span><span class=o>(()</span> <span class=o>-&gt;</span> <span class=o>{</span>
+            <span class=k>try</span> <span class=o>{</span>
+                <span class=n>queue</span><span class=o>.</span><span class=na>put</span><span class=o>(</span><span class=n>2</span><span class=o>);</span>
+            <span class=o>}</span> <span class=k>catch</span> <span class=o>(</span><span class=n>InterruptedException</span> <span class=n>e</span><span class=o>)</span> <span class=o>{</span>
+                <span class=n>e</span><span class=o>.</span><span class=na>printStackTrace</span><span class=o>();</span>
+            <span class=o>}</span>
+        <span class=o>});</span>
+        <span class=n>thread2</span><span class=o>.</span><span class=na>start</span><span class=o>();</span>
+
+        <span class=n>Thread</span><span class=o>.</span><span class=na>sleep</span><span class=o>(</span><span class=n>200</span><span class=o>);</span>
+        <span class=n>thread2</span><span class=o>.</span><span class=na>interrupt</span><span class=o>();</span>
+
+        <span class=n>Thread</span><span class=o>.</span><span class=na>sleep</span><span class=o>(</span><span class=n>200</span><span class=o>);</span>
+
+        <span class=n>Thread</span> <span class=n>thread3</span> <span class=o>=</span> <span class=k>new</span> <span class=n>Thread</span><span class=o>(()</span> <span class=o>-&gt;</span> <span class=o>{</span>
+            <span class=k>try</span> <span class=o>{</span>
+                <span class=n>queue</span><span class=o>.</span><span class=na>put</span><span class=o>(</span><span class=n>3</span><span class=o>);</span>
+            <span class=o>}</span> <span class=k>catch</span> <span class=o>(</span><span class=n>InterruptedException</span> <span class=n>e</span><span class=o>)</span> <span class=o>{</span>
+                <span class=n>e</span><span class=o>.</span><span class=na>printStackTrace</span><span class=o>();</span>
+            <span class=o>}</span>
+        <span class=o>});</span>
+        <span class=n>thread3</span><span class=o>.</span><span class=na>start</span><span class=o>();</span>
+
+        <span class=n>Thread</span><span class=o>.</span><span class=na>sleep</span><span class=o>(</span><span class=n>200</span><span class=o>);</span>
+        <span class=n>thread3</span><span class=o>.</span><span class=na>interrupt</span><span class=o>();</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table></div></div><h6 id=流程图-2>流程图</h6><p><img src="https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/SynchronousQueue/3 (2).png!print"></p><p><img src=https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/SynchronousQueue/3.1.png!print></p></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2021-01-22</span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/synchronousqueue/>SynchronousQueue</a>,&nbsp;<a href=/tags/blockingqueue/>BlockingQueue</a></section><section><span><a href=javascript:void(0); onclick=window.history.back();>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/threadlocal%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/ class=prev rel=prev title=ThreadLocal源码学习><i class="fas fa-angle-left fa-fw"></i>ThreadLocal源码学习</a>
+<a href=/reentrantlock-aqs%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/ class=next rel=next title="ReentrantLock + AQS源码学习">ReentrantLock + AQS源码学习<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments><div id=valine class=comment></div><noscript>Please enable JavaScript to view the comments powered by <a href=https://valine.js.org/>Valine</a>.</noscript></div></article></div></main><script src=https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css><script src=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js></script><footer class=footer><div class=footer-container><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2018 - 2021</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>yakax</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i></a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=/lib/valine/valine.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/typeit@7.0.4/dist/typeit.min.js></script><script type=text/javascript>window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{"valine":{"appId":"5N5rRFns9c2fqiQJPbpBwcgm-MdYXbMMI","appKey":"ycoYfhjB1KFExKvNn4bkSG16","avatar":"mp","el":"#valine","emojiCDN":"https://cdn.jsdelivr.net/npm/emoji-datasource-google@5.0.1/img/google/64/","emojiMaps":{"100":"1f4af.png","alien":"1f47d.png","anger":"1f4a2.png","angry":"1f620.png","anguished":"1f627.png","astonished":"1f632.png","black_heart":"1f5a4.png","blue_heart":"1f499.png","blush":"1f60a.png","bomb":"1f4a3.png","boom":"1f4a5.png","broken_heart":"1f494.png","brown_heart":"1f90e.png","clown_face":"1f921.png","cold_face":"1f976.png","cold_sweat":"1f630.png","confounded":"1f616.png","confused":"1f615.png","cry":"1f622.png","crying_cat_face":"1f63f.png","cupid":"1f498.png","dash":"1f4a8.png","disappointed":"1f61e.png","disappointed_relieved":"1f625.png","dizzy":"1f4ab.png","dizzy_face":"1f635.png","drooling_face":"1f924.png","exploding_head":"1f92f.png","expressionless":"1f611.png","face_vomiting":"1f92e.png","face_with_cowboy_hat":"1f920.png","face_with_hand_over_mouth":"1f92d.png","face_with_head_bandage":"1f915.png","face_with_monocle":"1f9d0.png","face_with_raised_eyebrow":"1f928.png","face_with_rolling_eyes":"1f644.png","face_with_symbols_on_mouth":"1f92c.png","face_with_thermometer":"1f912.png","fearful":"1f628.png","flushed":"1f633.png","frowning":"1f626.png","ghost":"1f47b.png","gift_heart":"1f49d.png","green_heart":"1f49a.png","grimacing":"1f62c.png","grin":"1f601.png","grinning":"1f600.png","hankey":"1f4a9.png","hear_no_evil":"1f649.png","heart":"2764-fe0f.png","heart_decoration":"1f49f.png","heart_eyes":"1f60d.png","heart_eyes_cat":"1f63b.png","heartbeat":"1f493.png","heartpulse":"1f497.png","heavy_heart_exclamation_mark_ornament":"2763-fe0f.png","hole":"1f573-fe0f.png","hot_face":"1f975.png","hugging_face":"1f917.png","hushed":"1f62f.png","imp":"1f47f.png","innocent":"1f607.png","japanese_goblin":"1f47a.png","japanese_ogre":"1f479.png","joy":"1f602.png","joy_cat":"1f639.png","kiss":"1f48b.png","kissing":"1f617.png","kissing_cat":"1f63d.png","kissing_closed_eyes":"1f61a.png","kissing_heart":"1f618.png","kissing_smiling_eyes":"1f619.png","laughing":"1f606.png","left_speech_bubble":"1f5e8-fe0f.png","love_letter":"1f48c.png","lying_face":"1f925.png","mask":"1f637.png","money_mouth_face":"1f911.png","nauseated_face":"1f922.png","nerd_face":"1f913.png","neutral_face":"1f610.png","no_mouth":"1f636.png","open_mouth":"1f62e.png","orange_heart":"1f9e1.png","partying_face":"1f973.png","pensive":"1f614.png","persevere":"1f623.png","pleading_face":"1f97a.png","pouting_cat":"1f63e.png","purple_heart":"1f49c.png","rage":"1f621.png","relaxed":"263a-fe0f.png","relieved":"1f60c.png","revolving_hearts":"1f49e.png","right_anger_bubble":"1f5ef-fe0f.png","robot_face":"1f916.png","rolling_on_the_floor_laughing":"1f923.png","scream":"1f631.png","scream_cat":"1f640.png","see_no_evil":"1f648.png","shushing_face":"1f92b.png","skull":"1f480.png","skull_and_crossbones":"2620-fe0f.png","sleeping":"1f634.png","sleepy":"1f62a.png","slightly_frowning_face":"1f641.png","slightly_smiling_face":"1f642.png","smile":"1f604.png","smile_cat":"1f638.png","smiley":"1f603.png","smiley_cat":"1f63a.png","smiling_face_with_3_hearts":"1f970.png","smiling_imp":"1f608.png","smirk":"1f60f.png","smirk_cat":"1f63c.png","sneezing_face":"1f927.png","sob":"1f62d.png","space_invader":"1f47e.png","sparkling_heart":"1f496.png","speak_no_evil":"1f64a.png","speech_balloon":"1f4ac.png","star-struck":"1f929.png","stuck_out_tongue":"1f61b.png","stuck_out_tongue_closed_eyes":"1f61d.png","stuck_out_tongue_winking_eye":"1f61c.png","sunglasses":"1f60e.png","sweat":"1f613.png","sweat_drops":"1f4a6.png","sweat_smile":"1f605.png","thinking_face":"1f914.png","thought_balloon":"1f4ad.png","tired_face":"1f62b.png","triumph":"1f624.png","two_hearts":"1f495.png","unamused":"1f612.png","upside_down_face":"1f643.png","weary":"1f629.png","white_frowning_face":"2639-fe0f.png","white_heart":"1f90d.png","wink":"1f609.png","woozy_face":"1f974.png","worried":"1f61f.png","yawning_face":"1f971.png","yellow_heart":"1f49b.png","yum":"1f60b.png","zany_face":"1f92a.png","zipper_mouth_face":"1f910.png","zzz":"1f4a4.png"},"enableQQ":false,"highlight":true,"lang":"zh-cn","pageSize":10,"placeholder":"来都来了，说两句把。 支持markdown","recordIP":true,"visitor":true}},"data":{"id-1":"yakax.blog","id-2":"yakax.blog"},"lightGallery":{"actualSize":false,"exThumbImage":"data-thumbnail","hideBarsDelay":2000,"selector":".lightgallery","speed":400,"thumbContHeight":80,"thumbWidth":80,"thumbnail":true},"search":{"algoliaAppID":"3MT6GW9D7W","algoliaIndex":"blog","algoliaSearchKey":"41ebe3571ca584723e8648600bbf45ce","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":150,"type":"algolia"},"typeit":{"cursorChar":"_","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":200}};</script><script type=text/javascript src=/js/theme.min.js></script></body></html>
