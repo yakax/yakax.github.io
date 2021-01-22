@@ -52,6 +52,99 @@
 </span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">volatile</span> <span class="n">WaitNode</span> <span class="n">waiters</span><span class="o">;</span>
 </code></pre></td></tr></table>
 </div>
+</div>]]></description></item><item><title>ReentrantLock + AQS源码学习</title><link>https://yakax.gitee.io/reentrantlock-aqs%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/reentrantlock-aqs%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<p>ReentrantLock 里面所使用到的基本结构</p>
+<p>持有锁的waitstatus 状态 来标识node线程状态</p>
+<p><a data-fancybox="gallery" href="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/aqs/QQ%E6%88%AA%E5%9B%BE20200916143206.png">
+    
+</a></p>]]></description></item><item><title>ThreadPoolExecutor源码学习</title><link>https://yakax.gitee.io/threadpoolexecutor%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/threadpoolexecutor%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h4 id="属性字段说明">属性字段说明</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="c1">//高3位：表示当前线程池运行状态   除去高3位之后的低位：表示当前线程池中所拥有的线程数量
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">final</span> <span class="n">AtomicInteger</span> <span class="n">ctl</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AtomicInteger</span><span class="o">(</span><span class="n">ctlOf</span><span class="o">(</span><span class="n">RUNNING</span><span class="o">,</span> <span class="n">0</span><span class="o">));</span>
+    <span class="c1">//表示在ctl中，低COUNT_BITS位 是用于存放当前线程数量的位。
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">COUNT_BITS</span> <span class="o">=</span> <span class="n">Integer</span><span class="o">.</span><span class="na">SIZE</span> <span class="o">-</span> <span class="n">3</span><span class="o">;</span>
+    <span class="c1">//低COUNT_BITS位 所能表达的最大数值。 000 11111111111111111111 =&gt; 5亿多。
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">CAPACITY</span>   <span class="o">=</span> <span class="o">(</span><span class="n">1</span> <span class="o">&lt;&lt;</span> <span class="n">COUNT_BITS</span><span class="o">)</span> <span class="o">-</span> <span class="n">1</span><span class="o">;</span>
+
+    <span class="c1">// runState is stored in the high-order bits
+</span><span class="c1"></span>    <span class="c1">//111 000000000000000000  转换成整数，其实是一个负数
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">RUNNING</span>    <span class="o">=</span> <span class="o">-</span><span class="n">1</span> <span class="o">&lt;&lt;</span> <span class="n">COUNT_BITS</span><span class="o">;</span>
+    <span class="c1">//000 000000000000000000
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">SHUTDOWN</span>   <span class="o">=</span>  <span class="n">0</span> <span class="o">&lt;&lt;</span> <span class="n">COUNT_BITS</span><span class="o">;</span>
+    <span class="c1">//001 000000000000000000
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">STOP</span>       <span class="o">=</span>  <span class="n">1</span> <span class="o">&lt;&lt;</span> <span class="n">COUNT_BITS</span><span class="o">;</span>
+    <span class="c1">//010 000000000000000000
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">TIDYING</span>    <span class="o">=</span>  <span class="n">2</span> <span class="o">&lt;&lt;</span> <span class="n">COUNT_BITS</span><span class="o">;</span>
+    <span class="c1">//011 000000000000000000
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">TERMINATED</span> <span class="o">=</span>  <span class="n">3</span> <span class="o">&lt;&lt;</span> <span class="n">COUNT_BITS</span><span class="o">;</span>
+
+    <span class="c1">// Packing and unpacking ctl
+</span><span class="c1"></span>    <span class="c1">//获取当前线程池运行状态
+</span><span class="c1"></span>    <span class="c1">//~000 11111111111111111111 =&gt; 111 000000000000000000000
+</span><span class="c1"></span>    <span class="c1">//c == ctl = 111 000000000000000000111
+</span><span class="c1"></span>    <span class="c1">//111 000000000000000000111
+</span><span class="c1"></span>    <span class="c1">//111 000000000000000000000
+</span><span class="c1"></span>    <span class="c1">//111 000000000000000000000
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">runStateOf</span><span class="o">(</span><span class="kt">int</span> <span class="n">c</span><span class="o">)</span>     <span class="o">{</span> <span class="k">return</span> <span class="n">c</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">CAPACITY</span><span class="o">;</span> <span class="o">}</span>
+
+    <span class="c1">//获取当前线程池线程数量
+</span><span class="c1"></span>    <span class="c1">//c == ctl = 111 000000000000000000111
+</span><span class="c1"></span>    <span class="c1">//111 000000000000000000111
+</span><span class="c1"></span>    <span class="c1">//000 111111111111111111111
+</span><span class="c1"></span>    <span class="c1">//000 000000000000000000111 =&gt; 7
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">workerCountOf</span><span class="o">(</span><span class="kt">int</span> <span class="n">c</span><span class="o">)</span>  <span class="o">{</span> <span class="k">return</span> <span class="n">c</span> <span class="o">&amp;</span> <span class="n">CAPACITY</span><span class="o">;</span> <span class="o">}</span>
+
+    <span class="c1">//用在重置当前线程池ctl值时  会用到
+</span><span class="c1"></span>    <span class="c1">//rs 表示线程池状态   wc 表示当前线程池中worker（线程）数量
+</span><span class="c1"></span>    <span class="c1">//111 000000000000000000
+</span><span class="c1"></span>    <span class="c1">//000 000000000000000111
+</span><span class="c1"></span>    <span class="c1">//111 000000000000000111
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">ctlOf</span><span class="o">(</span><span class="kt">int</span> <span class="n">rs</span><span class="o">,</span> <span class="kt">int</span> <span class="n">wc</span><span class="o">)</span> <span class="o">{</span> <span class="k">return</span> <span class="n">rs</span> <span class="o">|</span> <span class="n">wc</span><span class="o">;</span> <span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
 </div>]]></description></item><item><title>MySQL-Buffer Pool 学习</title><link>https://yakax.gitee.io/mysql-buffer-pool-%E5%AD%A6%E4%B9%A0-copy/</link><pubDate>Wed, 20 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-buffer-pool-%E5%AD%A6%E4%B9%A0-copy/</guid><description><![CDATA[<h4 id="一条sql执行基本流程">一条sql执行基本流程</h4>
 <p></p>
 <blockquote>
@@ -149,39 +242,4 @@
 <li>当参数是1时，就是必须把redo log写入磁盘才能提交事务。0 的时候就是不会有redo日志、2 的时候是先写oscache  这两种都有丢失数据的风险</li>
 <li>buffer pool就是我们一直在操作的数据的缓冲区。</li>
 <li>redo log 文件里面也是一块一块追加在一起的</li>
-</ol>]]></description></item><item><title>MySQL-查询-SQL简化与子查询的物化</title><link>https://yakax.gitee.io/mysql-%E6%9F%A5%E8%AF%A2-sql%E7%AE%80%E5%8C%96%E4%B8%8E%E5%AD%90%E6%9F%A5%E8%AF%A2%E7%9A%84%E7%89%A9%E5%8C%96/</link><pubDate>Wed, 20 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E6%9F%A5%E8%AF%A2-sql%E7%AE%80%E5%8C%96%E4%B8%8E%E5%AD%90%E6%9F%A5%E8%AF%A2%E7%9A%84%E7%89%A9%E5%8C%96/</guid><description><![CDATA[<h2 id="条件化简">条件化简</h2>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="c1">## 移除不必要的括号
-</span><span class="c1"></span><span class="p">((</span><span class="n">a</span> <span class="o">=</span> <span class="mi">5</span> <span class="k">AND</span> <span class="n">b</span> <span class="o">=</span> <span class="n">c</span><span class="p">)</span> <span class="k">OR</span> <span class="p">((</span><span class="n">a</span> <span class="o">&gt;</span> <span class="n">c</span><span class="p">)</span> <span class="k">AND</span> <span class="p">(</span><span class="n">c</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">)))</span> <span class="err">改</span> <span class="p">(</span><span class="n">a</span> <span class="o">=</span> <span class="mi">5</span> <span class="k">and</span> <span class="n">b</span> <span class="o">=</span> <span class="n">c</span><span class="p">)</span> <span class="k">OR</span> <span class="p">(</span><span class="n">a</span> <span class="o">&gt;</span> <span class="n">c</span> <span class="k">AND</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">)</span>
-<span class="c1">## 常量传递（constant_propagation）
-</span><span class="c1"></span><span class="n">a</span> <span class="o">=</span> <span class="mi">5</span> <span class="k">AND</span> <span class="n">b</span> <span class="o">&gt;</span> <span class="n">a</span>  <span class="err">改</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">5</span> <span class="k">AND</span> <span class="n">b</span> <span class="o">&gt;</span> <span class="mi">5</span>
-<span class="c1">## 移除没用的条件（trivial_condition_removal）
-</span><span class="c1"></span><span class="p">(</span><span class="n">a</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="k">and</span> <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">)</span> <span class="k">OR</span> <span class="p">(</span><span class="n">a</span> <span class="o">=</span> <span class="mi">6</span> <span class="k">OR</span> <span class="mi">5</span> <span class="o">!=</span> <span class="mi">5</span><span class="p">)</span>
-<span class="err">很明显，</span><span class="n">b</span> <span class="o">=</span> <span class="n">b这个表达式永远为TRUE</span><span class="err">，</span><span class="mi">5</span> <span class="o">!=</span> <span class="mi">5</span><span class="err">这个表达式永远为</span><span class="no">FALSE</span><span class="err">，所以简化后的表达式就是这样的：</span>
-<span class="n">a</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="k">OR</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">6</span>
-<span class="c1">## 表达式计算 
-</span><span class="c1"></span><span class="n">a</span> <span class="o">=</span> <span class="mi">5</span> <span class="o">+</span> <span class="mi">1</span> <span class="err">改成</span> <span class="n">a</span><span class="o">=</span><span class="mi">6</span> <span class="err">表达式不会对带有符号或者函数的进行化简</span><span class="p">,</span><span class="err">只有搜索条件中索引列和常数使用某些运算符连接起来才可能使用到索引</span>
-<span class="c1">##HAVING子句和WHERE子句的合并
-</span><span class="c1"></span><span class="err">如果查询语句中没有出现诸如</span><span class="n">SUM</span><span class="err">、</span><span class="n">MAX等等的聚集函数以及GROUP</span> <span class="n">BY子句</span><span class="err">，优化器就把</span><span class="n">HAVING子句和WHERE子句合并起来</span><span class="err">。</span>
-</code></pre></td></tr></table>
-</div>
-</div>]]></description></item><item><title>MySQL-索引-索引合并学习</title><link>https://yakax.gitee.io/mysql-%E7%B4%A2%E5%BC%95-%E7%B4%A2%E5%BC%95%E5%90%88%E5%B9%B6%E5%AD%A6%E4%B9%A0/</link><pubDate>Wed, 20 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E7%B4%A2%E5%BC%95-%E7%B4%A2%E5%BC%95%E5%90%88%E5%B9%B6%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<blockquote>
-<p>MySQL在一般情况下执行一个查询时最多只会用到单个二级索引，但是，在这些特殊情况下也可能在一个查询中使用到多个二级索引，设计MySQL的把这种使用到多个索引来完成一次查询的执行方法称之为：index merge</p>
-</blockquote>
-<p><strong><font color=red >所有的索引合并往往还是需要看数据回表的数量与 mysql 的优化器！优化器只有在单独根据搜索条件从某个二级索引中
-获取的记录数比较少，通过Union索引合并后进行访问的代价比全表扫描更小时才会使用Union索引合并</font></strong></p>]]></description></item></channel></rss>
+</ol>]]></description></item></channel></rss>

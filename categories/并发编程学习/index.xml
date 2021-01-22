@@ -52,6 +52,99 @@
 </span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">volatile</span> <span class="n">WaitNode</span> <span class="n">waiters</span><span class="o">;</span>
 </code></pre></td></tr></table>
 </div>
+</div>]]></description></item><item><title>ReentrantLock + AQS源码学习</title><link>https://yakax.gitee.io/reentrantlock-aqs%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/reentrantlock-aqs%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<p>ReentrantLock 里面所使用到的基本结构</p>
+<p>持有锁的waitstatus 状态 来标识node线程状态</p>
+<p><a data-fancybox="gallery" href="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/aqs/QQ%E6%88%AA%E5%9B%BE20200916143206.png">
+    
+</a></p>]]></description></item><item><title>ThreadPoolExecutor源码学习</title><link>https://yakax.gitee.io/threadpoolexecutor%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/threadpoolexecutor%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h4 id="属性字段说明">属性字段说明</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="c1">//高3位：表示当前线程池运行状态   除去高3位之后的低位：表示当前线程池中所拥有的线程数量
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">final</span> <span class="n">AtomicInteger</span> <span class="n">ctl</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AtomicInteger</span><span class="o">(</span><span class="n">ctlOf</span><span class="o">(</span><span class="n">RUNNING</span><span class="o">,</span> <span class="n">0</span><span class="o">));</span>
+    <span class="c1">//表示在ctl中，低COUNT_BITS位 是用于存放当前线程数量的位。
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">COUNT_BITS</span> <span class="o">=</span> <span class="n">Integer</span><span class="o">.</span><span class="na">SIZE</span> <span class="o">-</span> <span class="n">3</span><span class="o">;</span>
+    <span class="c1">//低COUNT_BITS位 所能表达的最大数值。 000 11111111111111111111 =&gt; 5亿多。
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">CAPACITY</span>   <span class="o">=</span> <span class="o">(</span><span class="n">1</span> <span class="o">&lt;&lt;</span> <span class="n">COUNT_BITS</span><span class="o">)</span> <span class="o">-</span> <span class="n">1</span><span class="o">;</span>
+
+    <span class="c1">// runState is stored in the high-order bits
+</span><span class="c1"></span>    <span class="c1">//111 000000000000000000  转换成整数，其实是一个负数
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">RUNNING</span>    <span class="o">=</span> <span class="o">-</span><span class="n">1</span> <span class="o">&lt;&lt;</span> <span class="n">COUNT_BITS</span><span class="o">;</span>
+    <span class="c1">//000 000000000000000000
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">SHUTDOWN</span>   <span class="o">=</span>  <span class="n">0</span> <span class="o">&lt;&lt;</span> <span class="n">COUNT_BITS</span><span class="o">;</span>
+    <span class="c1">//001 000000000000000000
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">STOP</span>       <span class="o">=</span>  <span class="n">1</span> <span class="o">&lt;&lt;</span> <span class="n">COUNT_BITS</span><span class="o">;</span>
+    <span class="c1">//010 000000000000000000
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">TIDYING</span>    <span class="o">=</span>  <span class="n">2</span> <span class="o">&lt;&lt;</span> <span class="n">COUNT_BITS</span><span class="o">;</span>
+    <span class="c1">//011 000000000000000000
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">TERMINATED</span> <span class="o">=</span>  <span class="n">3</span> <span class="o">&lt;&lt;</span> <span class="n">COUNT_BITS</span><span class="o">;</span>
+
+    <span class="c1">// Packing and unpacking ctl
+</span><span class="c1"></span>    <span class="c1">//获取当前线程池运行状态
+</span><span class="c1"></span>    <span class="c1">//~000 11111111111111111111 =&gt; 111 000000000000000000000
+</span><span class="c1"></span>    <span class="c1">//c == ctl = 111 000000000000000000111
+</span><span class="c1"></span>    <span class="c1">//111 000000000000000000111
+</span><span class="c1"></span>    <span class="c1">//111 000000000000000000000
+</span><span class="c1"></span>    <span class="c1">//111 000000000000000000000
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">runStateOf</span><span class="o">(</span><span class="kt">int</span> <span class="n">c</span><span class="o">)</span>     <span class="o">{</span> <span class="k">return</span> <span class="n">c</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">CAPACITY</span><span class="o">;</span> <span class="o">}</span>
+
+    <span class="c1">//获取当前线程池线程数量
+</span><span class="c1"></span>    <span class="c1">//c == ctl = 111 000000000000000000111
+</span><span class="c1"></span>    <span class="c1">//111 000000000000000000111
+</span><span class="c1"></span>    <span class="c1">//000 111111111111111111111
+</span><span class="c1"></span>    <span class="c1">//000 000000000000000000111 =&gt; 7
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">workerCountOf</span><span class="o">(</span><span class="kt">int</span> <span class="n">c</span><span class="o">)</span>  <span class="o">{</span> <span class="k">return</span> <span class="n">c</span> <span class="o">&amp;</span> <span class="n">CAPACITY</span><span class="o">;</span> <span class="o">}</span>
+
+    <span class="c1">//用在重置当前线程池ctl值时  会用到
+</span><span class="c1"></span>    <span class="c1">//rs 表示线程池状态   wc 表示当前线程池中worker（线程）数量
+</span><span class="c1"></span>    <span class="c1">//111 000000000000000000
+</span><span class="c1"></span>    <span class="c1">//000 000000000000000111
+</span><span class="c1"></span>    <span class="c1">//111 000000000000000111
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">ctlOf</span><span class="o">(</span><span class="kt">int</span> <span class="n">rs</span><span class="o">,</span> <span class="kt">int</span> <span class="n">wc</span><span class="o">)</span> <span class="o">{</span> <span class="k">return</span> <span class="n">rs</span> <span class="o">|</span> <span class="n">wc</span><span class="o">;</span> <span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
 </div>]]></description></item><item><title>LongAdder源码学习</title><link>https://yakax.gitee.io/longadder%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Tue, 29 Sep 2020 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/longadder%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description>&lt;p>&lt;/p></description></item><item><title>并发编程学习(6)CountDownLatch、Semaphore、CyclicBarrier</title><link>https://yakax.gitee.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A06countdownlatchsemaphorecyclicbarrier/</link><pubDate>Tue, 30 Jul 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A06countdownlatchsemaphorecyclicbarrier/</guid><description><![CDATA[<h3 id="countdownlatch">CountDownLatch</h3>
 <p>countdownlatch 是一个同步工具类，它允许一个或多个线程一直等待，直到其他线程的操作执行完毕再执行,countdownlatch 提供了两个方法，一个是 countDown，一个是 await。countdownlatch 初始化的时候需要传入一个整数，在这个整数倒数到 0 之前，调用了 await 方法的程序都必须要等待，然后通过 countDown 来倒数</p>
 <h4 id="示例代码">示例代码</h4>
@@ -256,8 +349,4 @@ void unlock() // 释放锁
 }
 </code></pre></td></tr></table>
 </div>
-</div><p>不同的修饰类型，代表锁的控制粒度</p>]]></description></item><item><title>并发编程学习(1)线程的创建、启动、停止</title><link>https://yakax.gitee.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A01%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%88%9B%E5%BB%BA%E5%90%AF%E5%8A%A8%E5%81%9C%E6%AD%A2/</link><pubDate>Mon, 17 Jun 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A01%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%88%9B%E5%BB%BA%E5%90%AF%E5%8A%A8%E5%81%9C%E6%AD%A2/</guid><description><![CDATA[<h3 id="单核cpu执行程序的流程">单核cpu执行程序的流程</h3>
-<p><a data-fancybox="gallery" href="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/1/2.png">
-    
-</a></p>
-<p><font color=red><strong>有了进程以后，可以让操作系统从宏观层面实现多应用并发。而并发的实现是通过 CPU 时间片不端切换执行的。对于单核 CPU 来说，在任意一个时刻只会有一个进程在被CPU 调度</strong></font></p>]]></description></item></channel></rss>
+</div><p>不同的修饰类型，代表锁的控制粒度</p>]]></description></item></channel></rss>
