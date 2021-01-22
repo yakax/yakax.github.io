@@ -1,4 +1,58 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>yakax</title><link>https://yakax.gitee.io/</link><description>yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 20 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.gitee.io/index.xml" rel="self" type="application/rss+xml"/><item><title>MySQL-Buffer Pool 学习</title><link>https://yakax.gitee.io/mysql-buffer-pool-%E5%AD%A6%E4%B9%A0-copy/</link><pubDate>Wed, 20 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-buffer-pool-%E5%AD%A6%E4%B9%A0-copy/</guid><description><![CDATA[<h4 id="一条sql执行基本流程">一条sql执行基本流程</h4>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>yakax</title><link>https://yakax.gitee.io/</link><description>yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Fri, 22 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.gitee.io/index.xml" rel="self" type="application/rss+xml"/><item><title>ConcurrentHashMap源码学习</title><link>https://yakax.gitee.io/concurrenthashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/concurrenthashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description>&lt;h3 id="整体结构图">整体结构图&lt;/h3>
+&lt;p>&lt;/p></description></item><item><title>FutureTask源码学习</title><link>https://yakax.gitee.io/futuretask%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/futuretask%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h4 id="基本属性"><strong>基本属性</strong></h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java">  	<span class="cm">/* Possible state transitions:
+</span><span class="cm">     * NEW -&gt; COMPLETING -&gt; NORMAL
+</span><span class="cm">     * NEW -&gt; COMPLETING -&gt; EXCEPTIONAL
+</span><span class="cm">     * NEW -&gt; CANCELLED
+</span><span class="cm">     * NEW -&gt; INTERRUPTING -&gt; INTERRUPTED
+</span><span class="cm">     */</span>
+    <span class="kd">private</span> <span class="kd">volatile</span> <span class="kt">int</span> <span class="n">state</span><span class="o">;</span> <span class="c1">//线程状态
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">NEW</span>          <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="c1">// 进来未执行的状态
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">COMPLETING</span>   <span class="o">=</span> <span class="n">1</span><span class="o">;</span> <span class="c1">// 表示正在结束，临时状态，用于结束前cas操作;异常和有结果前都会有
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">NORMAL</span>       <span class="o">=</span> <span class="n">2</span><span class="o">;</span> <span class="c1">// 正常结束
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">EXCEPTIONAL</span>  <span class="o">=</span> <span class="n">3</span><span class="o">;</span> <span class="c1">// 异常结束
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">CANCELLED</span>    <span class="o">=</span> <span class="n">4</span><span class="o">;</span> <span class="c1">// 任务被取消
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">INTERRUPTING</span> <span class="o">=</span> <span class="n">5</span><span class="o">;</span> <span class="c1">// 中断中 也是临时状态
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">INTERRUPTED</span>  <span class="o">=</span> <span class="n">6</span><span class="o">;</span> <span class="c1">// 已中断
+</span><span class="c1"></span>
+	<span class="c1">// 运行任务
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="n">Callable</span><span class="o">&lt;</span><span class="n">V</span><span class="o">&gt;</span> <span class="n">callable</span><span class="o">;</span> 
+    <span class="c1">// 整个任务周期中 存放值的对象，会有异常或者正常的值
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="n">Object</span> <span class="n">outcome</span><span class="o">;</span> 
+    <span class="c1">// 正在执行任务的线程 
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">volatile</span> <span class="n">Thread</span> <span class="n">runner</span><span class="o">;</span>
+    <span class="c1">// get任务阻塞的线程 会存在这个队列里面
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">volatile</span> <span class="n">WaitNode</span> <span class="n">waiters</span><span class="o">;</span>
+</code></pre></td></tr></table>
+</div>
+</div>]]></description></item><item><title>MySQL-Buffer Pool 学习</title><link>https://yakax.gitee.io/mysql-buffer-pool-%E5%AD%A6%E4%B9%A0-copy/</link><pubDate>Wed, 20 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-buffer-pool-%E5%AD%A6%E4%B9%A0-copy/</guid><description><![CDATA[<h4 id="一条sql执行基本流程">一条sql执行基本流程</h4>
 <p></p>
 <blockquote>
 <p>在老版本的MySQL中sql通过连接进来时会有查询缓存这一块的逻辑。</p>
@@ -130,25 +184,4 @@
 <p>MySQL在一般情况下执行一个查询时最多只会用到单个二级索引，但是，在这些特殊情况下也可能在一个查询中使用到多个二级索引，设计MySQL的把这种使用到多个索引来完成一次查询的执行方法称之为：index merge</p>
 </blockquote>
 <p><strong><font color=red >所有的索引合并往往还是需要看数据回表的数量与 mysql 的优化器！优化器只有在单独根据搜索条件从某个二级索引中
-获取的记录数比较少，通过Union索引合并后进行访问的代价比全表扫描更小时才会使用Union索引合并</font></strong></p>]]></description></item><item><title>MySQL-索引基本学习</title><link>https://yakax.gitee.io/mysql-%E7%B4%A2%E5%BC%95%E5%9F%BA%E6%9C%AC%E5%AD%A6%E4%B9%A0/</link><pubDate>Wed, 20 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E7%B4%A2%E5%BC%95%E5%9F%BA%E6%9C%AC%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h2 id="innodb索引结构">InnoDB索引结构</h2>
-<p></p>
-<ul>
-<li>每个页里面有最大和最小记录标识record_type=2,3</li>
-<li>record_type=1是目录项 0是最终存储记录项</li>
-<li>一个页16kb=16384字节 可以存很多记录了基本3层就已经很多条记录了</li>
-<li>每个节点的左儿子小于父节点，父节点又小于右儿子</li>
-<li><strong>索引每个节点的数据是已经排序好了的，当然如果你是联合索引，那也是排序好了的。</strong></li>
-</ul>]]></description></item><item><title>MySQL-连接查询学习</title><link>https://yakax.gitee.io/mysql-%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E5%AD%A6%E4%B9%A0/</link><pubDate>Wed, 20 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h2 id="连接查询的基本语法">连接查询的基本语法</h2>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="k">INNER</span> <span class="k">JOIN</span>  <span class="c1">## 内连接和外连接的根本区别就是在驱动表中的记录不符合ON子句中的连接条件时不会把该记录加入到最后的结果集
-</span><span class="c1"></span><span class="k">LEFT</span> <span class="k">JOIN</span>  <span class="c1">## 右边未匹配的null展示
-</span><span class="c1"></span><span class="k">RIGHT</span> <span class="k">JOIN</span>   <span class="c1">## 左边未匹配的null展示
-</span></code></pre></td></tr></table>
-</div>
-</div>]]></description></item></channel></rss>
+获取的记录数比较少，通过Union索引合并后进行访问的代价比全表扫描更小时才会使用Union索引合并</font></strong></p>]]></description></item></channel></rss>

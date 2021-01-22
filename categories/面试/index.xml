@@ -209,7 +209,7 @@ public class FloatWrapperTest {
 </tbody>
 </table>
 <h4 id="实际在开发中的用处">实际在开发中的用处</h4>
-<p>我们知道Java是一个面相对象的编程语言，基本类型并不具有对象的性质，为了让基本类型也具有对象的特征，就出现了包装类型（如我们在使用集合时就一定要使用包装类型而非基本类型），它相当于将基本类型“包装起来”，使得它具有了对象的性质，并且为其添加了属性和方法，丰富了基本类型的操作。比如list 他的类型就必须写包装类型。</p>]]></description></item><item><title>switch中的参数可以为那些类型</title><link>https://yakax.gitee.io/switch%E4%B8%AD%E7%9A%84%E5%8F%82%E6%95%B0%E5%8F%AF%E4%BB%A5%E4%B8%BA%E9%82%A3%E4%BA%9B%E7%B1%BB%E5%9E%8B/</link><pubDate>Tue, 13 Nov 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/switch%E4%B8%AD%E7%9A%84%E5%8F%82%E6%95%B0%E5%8F%AF%E4%BB%A5%E4%B8%BA%E9%82%A3%E4%BA%9B%E7%B1%BB%E5%9E%8B/</guid><description><![CDATA[<p><strong>之前面试被问懵了一个很简单的问题，switch中的参数支持string吗，我当时想都没想，直接回答string可以为switch的参数，因为在我写的代码中我的确拿string当过参数：然而面试官说不可以。
+<p>我们知道Java是一个面相对象的编程语言，基本类型并不具有对象的性质，为了让基本类型也具有对象的特征，就出现了包装类型（如我们在使用集合时就一定要使用包装类型而非基本类型），它相当于将基本类型“包装起来”，使得它具有了对象的性质，并且为其添加了属性和方法，丰富了基本类型的操作。比如list 他的类型就必须写包装类型。</p>]]></description></item><item><title>Switch中的参数可以为那些类型</title><link>https://yakax.gitee.io/switch%E4%B8%AD%E7%9A%84%E5%8F%82%E6%95%B0%E5%8F%AF%E4%BB%A5%E4%B8%BA%E9%82%A3%E4%BA%9B%E7%B1%BB%E5%9E%8B/</link><pubDate>Tue, 13 Nov 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/switch%E4%B8%AD%E7%9A%84%E5%8F%82%E6%95%B0%E5%8F%AF%E4%BB%A5%E4%B8%BA%E9%82%A3%E4%BA%9B%E7%B1%BB%E5%9E%8B/</guid><description><![CDATA[<p><strong>之前面试被问懵了一个很简单的问题，switch中的参数支持string吗，我当时想都没想，直接回答string可以为switch的参数，因为在我写的代码中我的确拿string当过参数：然而面试官说不可以。
 (经过我的验证，我发现jdk1.7以后switch就支持String类型了；面试官傻逼！)</strong></p>
 <h4 id="官方示例">官方示例</h4>
 <div class="highlight"><div class="chroma">

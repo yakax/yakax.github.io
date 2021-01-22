@@ -1,0 +1,54 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>FutureTask - 标签 - yakax</title><link>https://yakax.gitee.io/tags/futuretask/</link><description>FutureTask - 标签 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Fri, 22 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.gitee.io/tags/futuretask/" rel="self" type="application/rss+xml"/><item><title>FutureTask源码学习</title><link>https://yakax.gitee.io/futuretask%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/futuretask%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h4 id="基本属性"><strong>基本属性</strong></h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java">  	<span class="cm">/* Possible state transitions:
+</span><span class="cm">     * NEW -&gt; COMPLETING -&gt; NORMAL
+</span><span class="cm">     * NEW -&gt; COMPLETING -&gt; EXCEPTIONAL
+</span><span class="cm">     * NEW -&gt; CANCELLED
+</span><span class="cm">     * NEW -&gt; INTERRUPTING -&gt; INTERRUPTED
+</span><span class="cm">     */</span>
+    <span class="kd">private</span> <span class="kd">volatile</span> <span class="kt">int</span> <span class="n">state</span><span class="o">;</span> <span class="c1">//线程状态
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">NEW</span>          <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="c1">// 进来未执行的状态
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">COMPLETING</span>   <span class="o">=</span> <span class="n">1</span><span class="o">;</span> <span class="c1">// 表示正在结束，临时状态，用于结束前cas操作;异常和有结果前都会有
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">NORMAL</span>       <span class="o">=</span> <span class="n">2</span><span class="o">;</span> <span class="c1">// 正常结束
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">EXCEPTIONAL</span>  <span class="o">=</span> <span class="n">3</span><span class="o">;</span> <span class="c1">// 异常结束
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">CANCELLED</span>    <span class="o">=</span> <span class="n">4</span><span class="o">;</span> <span class="c1">// 任务被取消
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">INTERRUPTING</span> <span class="o">=</span> <span class="n">5</span><span class="o">;</span> <span class="c1">// 中断中 也是临时状态
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">INTERRUPTED</span>  <span class="o">=</span> <span class="n">6</span><span class="o">;</span> <span class="c1">// 已中断
+</span><span class="c1"></span>
+	<span class="c1">// 运行任务
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="n">Callable</span><span class="o">&lt;</span><span class="n">V</span><span class="o">&gt;</span> <span class="n">callable</span><span class="o">;</span> 
+    <span class="c1">// 整个任务周期中 存放值的对象，会有异常或者正常的值
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="n">Object</span> <span class="n">outcome</span><span class="o">;</span> 
+    <span class="c1">// 正在执行任务的线程 
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">volatile</span> <span class="n">Thread</span> <span class="n">runner</span><span class="o">;</span>
+    <span class="c1">// get任务阻塞的线程 会存在这个队列里面
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">volatile</span> <span class="n">WaitNode</span> <span class="n">waiters</span><span class="o">;</span>
+</code></pre></td></tr></table>
+</div>
+</div>]]></description></item></channel></rss>
