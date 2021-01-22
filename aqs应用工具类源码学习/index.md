@@ -11,7 +11,9 @@
 
 ![](https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/aqs/QQ%E6%88%AA%E5%9B%BE20200922142430.png)
 
+<!--more-->
 <img src="https://yakax-version2.oss-cn-chengdu.aliyuncs.com/blog/Concurrent/CountDownLatch-%E5%94%A4%E9%86%92%E6%B5%81%E7%A8%8B%E5%9B%BE.png!print" style="zoom:50%;" />
+
 
 ### 简单案例
 

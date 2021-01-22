@@ -1,4 +1,16 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>并发编程学习 - 分类 - yakax</title><link>https://yakax.gitee.io/categories/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/</link><description>并发编程学习 - 分类 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Fri, 22 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.gitee.io/categories/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/" rel="self" type="application/rss+xml"/><item><title>AQS应用工具类源码学习</title><link>https://yakax.gitee.io/aqs%E5%BA%94%E7%94%A8%E5%B7%A5%E5%85%B7%E7%B1%BB%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/aqs%E5%BA%94%E7%94%A8%E5%B7%A5%E5%85%B7%E7%B1%BB%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description>AQS的共享锁 CountDownLatch 基本结构图 1 基本就是当state值更改为0时就开始唤醒aqs队列第一个节点 然后，就会调用 setHeadAndPropagate 这个方法 唤醒持续唤醒后继节点。 简单</description></item><item><title>ConcurrentHashMap源码学习</title><link>https://yakax.gitee.io/concurrenthashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/concurrenthashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description>&lt;h3 id="整体结构图">整体结构图&lt;/h3>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>并发编程学习 - 分类 - yakax</title><link>https://yakax.gitee.io/categories/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/</link><description>并发编程学习 - 分类 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Fri, 22 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.gitee.io/categories/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/" rel="self" type="application/rss+xml"/><item><title>AQS应用工具类源码学习</title><link>https://yakax.gitee.io/aqs%E5%BA%94%E7%94%A8%E5%B7%A5%E5%85%B7%E7%B1%BB%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/aqs%E5%BA%94%E7%94%A8%E5%B7%A5%E5%85%B7%E7%B1%BB%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h2 id="aqs的共享锁-countdownlatch">AQS的共享锁 CountDownLatch</h2>
+<h3 id="基本结构图">基本结构图</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">基本就是当state值更改为0时就开始唤醒aqs队列第一个节点 然后，就会调用 setHeadAndPropagate 这个方法 唤醒持续唤醒后继节点。
+</code></pre></td></tr></table>
+</div>
+</div><p><a data-fancybox="gallery" href="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/aqs/QQ%E6%88%AA%E5%9B%BE20200922142430.png">
+    
+</a></p>]]></description></item><item><title>ConcurrentHashMap源码学习</title><link>https://yakax.gitee.io/concurrenthashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/concurrenthashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description>&lt;h3 id="整体结构图">整体结构图&lt;/h3>
 &lt;p>&lt;/p></description></item><item><title>Condition源码学习</title><link>https://yakax.gitee.io/condition%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/condition%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description>&lt;p>总体Condition产生的图&lt;/p>
 &lt;p>&lt;/p></description></item><item><title>FutureTask源码学习</title><link>https://yakax.gitee.io/futuretask%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/futuretask%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h4 id="基本属性"><strong>基本属性</strong></h4>
 <div class="highlight"><div class="chroma">
@@ -57,7 +69,8 @@
 <p>持有锁的waitstatus 状态 来标识node线程状态</p>
 <p><a data-fancybox="gallery" href="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/aqs/QQ%E6%88%AA%E5%9B%BE20200916143206.png">
     
-</a></p>]]></description></item><item><title>ThreadPoolExecutor源码学习</title><link>https://yakax.gitee.io/threadpoolexecutor%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/threadpoolexecutor%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h4 id="属性字段说明">属性字段说明</h4>
+</a></p>]]></description></item><item><title>ThreadLocal源码学习</title><link>https://yakax.gitee.io/threadlocal%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/threadlocal%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description>&lt;h3 id="基本结构图片">基本结构图片&lt;/h3>
+&lt;p>&lt;/p></description></item><item><title>ThreadPoolExecutor源码学习</title><link>https://yakax.gitee.io/threadpoolexecutor%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/threadpoolexecutor%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h4 id="属性字段说明">属性字段说明</h4>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -210,29 +223,4 @@ Thread3执行完毕
 </code></pre></td></tr></table>
 </div>
 </div>]]></description></item><item><title>并发编程学习(5)Condition</title><link>https://yakax.gitee.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A05condition/</link><pubDate>Sat, 27 Jul 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A05condition/</guid><description>&lt;h2 id="condition">Condition&lt;/h2>
-&lt;p>在前面学习 synchronized 的时候，有wait/notify 的基本使用，结合 synchronized 可以实现对线程的通信。那么，既然 J.U.C 里面提供了锁的实现机制，那 J.U.C 里面应该也有提供线程通信的机制,Condition 是一个多线程协调通信的工具类，可以让某些线程一起等待某个条件(condition)，只有满足条件时，线程才会被唤醒。&lt;/p></description></item><item><title>并发编程学习(4)Lock</title><link>https://yakax.gitee.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A04lock/</link><pubDate>Thu, 27 Jun 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A04lock/</guid><description><![CDATA[<h3 id="初步认识juc">初步认识JUC</h3>
-<p>Java.util.concurrent 是在并发编程中比较常用的工具类，里面包含很多用来在并发场景中使用的组件。比如线程池、阻塞队列、计时器、同步器、并发集合等等。并发包的作者是大名鼎鼎的 Doug Lea。</p>
-<h3 id="lock">lock</h3>
-<p>在 Lock 接口出现之前，Java 中的应用程序对于多线程的并发安全处理只能基于synchronized 关键字来解决。但是 synchronized 在有些场景中会存在一些短板，也就是它并不适合于所有的并发场景。但是在 Java5 以后，Lock 的出现可以解决synchronized 在某些场景中的短板，它比 synchronized 更加灵活。
-Lock 本质上是一个接口，它定义了释放锁和获得锁的抽象方法，定义成接口就意味着它定义了锁的一个标准规范，也同时意味着锁的不同实现。实现 Lock 接口的类有很多，以下为几个常见的锁实现</p>
-<h4 id="lock接口">Lock接口</h4>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">void lock() // 如果锁可用就获得锁，如果锁不可用就阻塞直到锁释放
-void lockInterruptibly() // 和lock()方法相似, 但阻塞的线程可中断，抛 出java.lang.InterruptedException 异常
-boolean tryLock() // 非阻塞获取锁;尝试获取锁，如果成功返回 true
-boolean tryLock(longtimeout, TimeUnit timeUnit)//带有超时时间的获取锁方法
-void unlock() // 释放锁
-</code></pre></td></tr></table>
-</div>
-</div><p>类图
-<a data-fancybox="gallery" href="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/4/6.png">
-    
-</a></p>]]></description></item></channel></rss>
+&lt;p>在前面学习 synchronized 的时候，有wait/notify 的基本使用，结合 synchronized 可以实现对线程的通信。那么，既然 J.U.C 里面提供了锁的实现机制，那 J.U.C 里面应该也有提供线程通信的机制,Condition 是一个多线程协调通信的工具类，可以让某些线程一起等待某个条件(condition)，只有满足条件时，线程才会被唤醒。&lt;/p></description></item></channel></rss>

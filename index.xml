@@ -1,4 +1,16 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>yakax</title><link>https://yakax.gitee.io/</link><description>yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Fri, 22 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.gitee.io/index.xml" rel="self" type="application/rss+xml"/><item><title>AQS应用工具类源码学习</title><link>https://yakax.gitee.io/aqs%E5%BA%94%E7%94%A8%E5%B7%A5%E5%85%B7%E7%B1%BB%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/aqs%E5%BA%94%E7%94%A8%E5%B7%A5%E5%85%B7%E7%B1%BB%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description>AQS的共享锁 CountDownLatch 基本结构图 1 基本就是当state值更改为0时就开始唤醒aqs队列第一个节点 然后，就会调用 setHeadAndPropagate 这个方法 唤醒持续唤醒后继节点。 简单</description></item><item><title>ConcurrentHashMap源码学习</title><link>https://yakax.gitee.io/concurrenthashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/concurrenthashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description>&lt;h3 id="整体结构图">整体结构图&lt;/h3>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>yakax</title><link>https://yakax.gitee.io/</link><description>yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Fri, 22 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.gitee.io/index.xml" rel="self" type="application/rss+xml"/><item><title>AQS应用工具类源码学习</title><link>https://yakax.gitee.io/aqs%E5%BA%94%E7%94%A8%E5%B7%A5%E5%85%B7%E7%B1%BB%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/aqs%E5%BA%94%E7%94%A8%E5%B7%A5%E5%85%B7%E7%B1%BB%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h2 id="aqs的共享锁-countdownlatch">AQS的共享锁 CountDownLatch</h2>
+<h3 id="基本结构图">基本结构图</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">基本就是当state值更改为0时就开始唤醒aqs队列第一个节点 然后，就会调用 setHeadAndPropagate 这个方法 唤醒持续唤醒后继节点。
+</code></pre></td></tr></table>
+</div>
+</div><p><a data-fancybox="gallery" href="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/aqs/QQ%E6%88%AA%E5%9B%BE20200922142430.png">
+    
+</a></p>]]></description></item><item><title>ConcurrentHashMap源码学习</title><link>https://yakax.gitee.io/concurrenthashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/concurrenthashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description>&lt;h3 id="整体结构图">整体结构图&lt;/h3>
 &lt;p>&lt;/p></description></item><item><title>Condition源码学习</title><link>https://yakax.gitee.io/condition%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/condition%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description>&lt;p>总体Condition产生的图&lt;/p>
 &lt;p>&lt;/p></description></item><item><title>FutureTask源码学习</title><link>https://yakax.gitee.io/futuretask%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/futuretask%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h4 id="基本属性"><strong>基本属性</strong></h4>
 <div class="highlight"><div class="chroma">
@@ -57,7 +69,8 @@
 <p>持有锁的waitstatus 状态 来标识node线程状态</p>
 <p><a data-fancybox="gallery" href="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/aqs/QQ%E6%88%AA%E5%9B%BE20200916143206.png">
     
-</a></p>]]></description></item><item><title>ThreadPoolExecutor源码学习</title><link>https://yakax.gitee.io/threadpoolexecutor%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/threadpoolexecutor%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h4 id="属性字段说明">属性字段说明</h4>
+</a></p>]]></description></item><item><title>ThreadLocal源码学习</title><link>https://yakax.gitee.io/threadlocal%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/threadlocal%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description>&lt;h3 id="基本结构图片">基本结构图片&lt;/h3>
+&lt;p>&lt;/p></description></item><item><title>ThreadPoolExecutor源码学习</title><link>https://yakax.gitee.io/threadpoolexecutor%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</link><pubDate>Fri, 22 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/threadpoolexecutor%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h4 id="属性字段说明">属性字段说明</h4>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -164,13 +177,4 @@
 <span class="o">//</span> <span class="err">利用参数</span><span class="n">force</span> <span class="k">index</span>
 </code></pre></td></tr></table>
 </div>
-</div>]]></description></item><item><title>MySQL-事务学习</title><link>https://yakax.gitee.io/mysql-%E4%BA%8B%E5%8A%A1%E5%AD%A6%E4%B9%A0/</link><pubDate>Wed, 20 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E4%BA%8B%E5%8A%A1%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h2 id="多事务并发处理数据产生的问题">多事务并发处理数据产生的问题</h2>
-<p><strong>脏读脏写 都是因为读取了事务未提交时的事务回滚情况</strong></p>
-<h4 id="脏写">脏写</h4>
-<p>事务A与事务B同时更新一条数据，由于其中一个事务回滚 导致另外事务执行成功的数据不存在了。</p>
-<h4 id="脏读">脏读</h4>
-<p>事务A还没提交事务时事务B拿到值做了大量的操作，事务A回滚后出现的数据异常问题。</p>
-<h4 id="不可重复读-与可重复读">不可重复读 与可重复读</h4>
-<p>事务A修改了值并且提交了事务    B读取到   然后B在执行事务期间 C又修改了值并且提交了。这时B读取到的值又变了。 这就时不可重复读问题。 可重复读就相反 并且读取到的值是相同的。</p>
-<h4 id="幻读">幻读</h4>
-<p>其实就是在事务执行期间第二次查询相比第一次查询出现了之前没出现过的数据。</p>]]></description></item></channel></rss>
+</div>]]></description></item></channel></rss>
