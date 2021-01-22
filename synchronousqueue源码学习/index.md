@@ -56,7 +56,6 @@ public E take() throws InterruptedException {
     }
 ```
 
-### 
 
 ## 非公平模式的实现分析
 
