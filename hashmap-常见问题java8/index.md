@@ -206,7 +206,7 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent, boolean evict) {
    }
    ```
 
-2. 在扩容时 low、high 两个TreeNode 长度小于6时 会退化为树。
+2. 在扩容时 low、high 两个TreeNode 长度小于6时 会退化为链表。
 
 ### HashMap 为什么选择红黑树
 
