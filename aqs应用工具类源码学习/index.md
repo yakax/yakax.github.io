@@ -6,7 +6,7 @@
 ### 基本结构图
 
 ```
-基本就是当state值更改为0时就开始唤醒aqs队列第一个节点 然后，就会调用 setHeadAndPropagate 这个方法 唤醒持续唤醒后继节点1。
+基本就是当state值更改为0时就开始唤醒aqs队列第一个节点 然后，就会调用 setHeadAndPropagate 这个方法 唤醒持续唤醒后继节点。
 ```
 
 ![](https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/aqs/QQ%E6%88%AA%E5%9B%BE20200922142430.png)
