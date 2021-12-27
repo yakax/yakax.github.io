@@ -58,12 +58,12 @@ show variables  like 'transaction_isolation';
 ##### Innodb对隔离级别的支持程度
 <font color=red>Innodb事务的隔离级别是通过锁+MVCC实现的</font>
 
-| 事务的隔离级别 | 脏读 | 不可重复读 |幻读|
-| :------: | :------: | :------: |
-| 未提交读(Read Uncommitted) | 可能 |可能|可能|
-| 已提交读(Read Committed) | 不可能 |可能|可能|
-| 可重复读(Repeatable Read) | 不可能 |不可能|<font color=red>对Innodb不可能(具体看MVCC)</font>|
-| 可串行化(Serializable) | 不可能 |不可能|不可能|
+| 事务的隔离级别             | 脏读   | 不可重复读 | 幻读                                              |
+| -------------------------- | ------ | ---------- | ------------------------------------------------- |
+| 未提交读(Read Uncommitted) | 可能   | 可能       | 可能                                              |
+| 已提交读(Read Committed)   | 不可能 | 可能       | 可能                                              |
+| 可重复读(Repeatable Read)  | 不可能 | 不可能     | <font color=red>对Innodb不可能(具体看MVCC)</font> |
+| 可串行化(Serializable)     | 不可能 | 不可能     | 不可能                                            |
 
 #### 锁
 >锁是用于管理不同事务对共享资源的并发访问
