@@ -2,9 +2,9 @@
 
 
 
-- v2rayN
+- clash
 
-> https://github.com/2dust/v2rayN
+> https://github.com/ender-zhao/Clash-for-Windows_Chinese
 
 - 谷歌浏览器
 
