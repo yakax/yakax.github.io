@@ -1,14 +1,14 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>连接查询 - 标签 - yakax</title><link>https://yakax.gitee.io/tags/%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2/</link><description>连接查询 - 标签 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 20 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.gitee.io/tags/%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2/" rel="self" type="application/rss+xml"/><item><title>MySQL-连接查询学习</title><link>https://yakax.gitee.io/mysql-%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E5%AD%A6%E4%B9%A0/</link><pubDate>Wed, 20 Jan 2021 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mysql-%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E5%AD%A6%E4%B9%A0/</guid><description><![CDATA[<h2 id="连接查询的基本语法">连接查询的基本语法</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="k">INNER</span> <span class="k">JOIN</span>  <span class="c1">## 内连接和外连接的根本区别就是在驱动表中的记录不符合ON子句中的连接条件时不会把该记录加入到最后的结果集
-</span><span class="c1"></span><span class="k">LEFT</span> <span class="k">JOIN</span>  <span class="c1">## 右边未匹配的null展示
-</span><span class="c1"></span><span class="k">RIGHT</span> <span class="k">JOIN</span>   <span class="c1">## 左边未匹配的null展示
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w">  </span><span class="c1">## 内连接和外连接的根本区别就是在驱动表中的记录不符合ON子句中的连接条件时不会把该记录加入到最后的结果集
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">LEFT</span><span class="w"> </span><span class="k">JOIN</span><span class="w">  </span><span class="c1">## 右边未匹配的null展示
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">RIGHT</span><span class="w"> </span><span class="k">JOIN</span><span class="w">   </span><span class="c1">## 左边未匹配的null展示
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div>]]></description></item></channel></rss>

@@ -5,7 +5,7 @@
 <p>先建立产品的接口方法类</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -13,18 +13,18 @@
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">/**
- * 定义一个牛奶的接口
- */
-public interface Milk {
-    String getName();
-}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">/**
+</span></span><span class="line"><span class="cl"> * 定义一个牛奶的接口
+</span></span><span class="line"><span class="cl"> */
+</span></span><span class="line"><span class="cl">public interface Milk {
+</span></span><span class="line"><span class="cl">    String getName();
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>产品实现功能</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -44,24 +44,24 @@ public interface Milk {
 </span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">/**
- * 伊利产品
- */
-public class Erie implements Milk {
-    @Override
-    public String getName() {
-        return &#34;伊利&#34;;
-    }
-}
-/**
- * 蒙牛产品
- */
-public class Mengniu implements Milk {
-    @Override
-    public String getName() {
-        return &#34;蒙牛&#34;;
-    }
-}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">/**
+</span></span><span class="line"><span class="cl"> * 伊利产品
+</span></span><span class="line"><span class="cl"> */
+</span></span><span class="line"><span class="cl">public class Erie implements Milk {
+</span></span><span class="line"><span class="cl">    @Override
+</span></span><span class="line"><span class="cl">    public String getName() {
+</span></span><span class="line"><span class="cl">        return &#34;伊利&#34;;
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">/**
+</span></span><span class="line"><span class="cl"> * 蒙牛产品
+</span></span><span class="line"><span class="cl"> */
+</span></span><span class="line"><span class="cl">public class Mengniu implements Milk {
+</span></span><span class="line"><span class="cl">    @Override
+</span></span><span class="line"><span class="cl">    public String getName() {
+</span></span><span class="line"><span class="cl">        return &#34;蒙牛&#34;;
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
 </div>
 </div>]]></description></item></channel></rss>

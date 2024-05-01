@@ -1,4 +1,6 @@
-<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>Nginx学习笔记 - yakax</title><meta name=Description content><meta property="og:title" content="Nginx学习笔记"><meta property="og:description" content="编译
+<!doctype html><html lang=zh-CN><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=X-UA-Compatible content="IE=edge, chrome=1"><title>Nginx学习笔记 - yakax</title><meta name=Description content><meta property="og:url" content="https://yakax.gitee.io/nginx%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+<meta property="og:site_name" content="yakax"><meta property="og:title" content="Nginx学习笔记"><meta property="og:description" content="编译 相关依赖
+1 2 3 4 5 6 yum update yum install wget wget http://nginx.org/download/nginx-1.19.1.tar.gz ## nginx 源码包 wget https://ftp.pcre.org/pub/pcre/pcre-8.44.tar.gz ## 正则会用到 wget https://zlib.net/zlib-1.2.11.tar.gz ##gzip 模块 tar xf 指定文件解压 "><meta property="og:locale" content="zh-CN"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2020-08-17T00:00:00+00:00"><meta property="article:modified_time" content="2020-08-17T00:00:00+00:00"><meta property="article:tag" content="Nginx"><meta property="article:tag" content="反向代理"><meta property="article:tag" content="负载均衡"><meta property="og:image" content="https://yakax.gitee.io/images/1.png"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://yakax.gitee.io/images/1.png"><meta name=twitter:title content="Nginx学习笔记"><meta name=twitter:description content="编译
 相关依赖
 
 
@@ -15,44 +17,35 @@ yum install wget
 wget http://nginx.org/download/nginx-1.19.1.tar.gz ## nginx 源码包
 wget https://ftp.pcre.org/pub/pcre/pcre-8.44.tar.gz ## 正则会用到
 wget https://zlib.net/zlib-1.2.11.tar.gz  ##gzip 模块
-tar xf 指定文件解压"><meta property="og:type" content="article"><meta property="og:url" content="https://yakax.gitee.io/nginx%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"><meta property="og:image" content="https://yakax.gitee.io/images/1.png"><meta property="article:published_time" content="2020-08-17T00:00:00+00:00"><meta property="article:modified_time" content="2020-08-17T00:00:00+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://yakax.gitee.io/images/1.png"><meta name=twitter:title content="Nginx学习笔记"><meta name=twitter:description content="编译
-相关依赖
+tar xf 指定文件解压
 
 
-1
-2
-3
-4
-5
-6
-
-
-yum update
-yum install wget
-wget http://nginx.org/download/nginx-1.19.1.tar.gz ## nginx 源码包
-wget https://ftp.pcre.org/pub/pcre/pcre-8.44.tar.gz ## 正则会用到
-wget https://zlib.net/zlib-1.2.11.tar.gz  ##gzip 模块
-tar xf 指定文件解压"><meta name=application-name content="yakax"><meta name=apple-mobile-web-app-title content="yakax"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:'==document.location.protocol?'https:':'http:')+"//widget.daovoice.io/widget/af744044.js","daovoice")
-daovoice('init',{app_id:"af744044"});daovoice('update');</script><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://yakax.gitee.io/nginx%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/><link rel=prev href=https://yakax.gitee.io/%E6%80%BB%E7%BB%93redis%E9%97%AE%E9%A2%98/><link rel=next href=https://yakax.gitee.io/jvm%E8%B0%83%E4%BC%98%E5%AD%A6%E4%B9%A0%E4%B9%8B%E6%97%85-8p-cms%E6%A1%88%E4%BE%8B%E4%BC%98%E5%8C%96%E5%88%86%E6%9E%90%E8%AE%B0%E5%BD%95%E4%B8%8E%E4%BC%98%E5%8C%96%E6%80%BB%E7%BB%93/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Nginx学习笔记","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/yakax.gitee.io\/nginx%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0\/"},"image":["https:\/\/yakax.gitee.io\/images\/avatar.png"],"genre":"posts","keywords":"Nginx, 反向代理, 负载均衡","wordcount":8959,"url":"https:\/\/yakax.gitee.io\/nginx%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0\/","datePublished":"2020-08-17T00:00:00+00:00","dateModified":"2020-08-17T00:00:00+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"yakax","logo":"https:\/\/yakax.gitee.io\/images\/avatar.png"},"author":{"@type":"Person","name":"yakax"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':('auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark'))&&document.body.setAttribute('theme','dark');</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class="fas fa-crosshairs fa-sm"></i></span><span id=id-1 class=typeit></span></a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>所有文章 </a><a class=menu-item href=/tags/>标签 </a><a class=menu-item href=/categories/>分类 </a><a class=menu-item href=/about/>关于 </a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i></a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop><input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span></span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class="fas fa-crosshairs fa-sm"></i></span><span id=id-2 class=typeit></span></a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/>所有文章</a><a class=menu-item href=/tags/>标签</a><a class=menu-item href=/categories/>分类</a><a class=menu-item href=/about/>关于</a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
-<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">Nginx学习笔记</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>yakax</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/%E8%BF%90%E7%BB%B4/><i class="far fa-folder fa-fw"></i>运维</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2020-08-17>2020-08-17</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 8959 字&nbsp;
+"><meta name=application-name content="yakax"><meta name=apple-mobile-web-app-title content="yakax"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><script>(function(e,t,n,s,o,i,a){e.DaoVoiceObject=o,e[o]=e[o]||function(){(e[o].q=e[o].q||[]).push(arguments)},e[o].l=1*new Date,i=t.createElement(n),a=t.getElementsByTagName(n)[0],i.async=1,i.src=s,i.charset="utf-8",a.parentNode.insertBefore(i,a)})(window,document,"script",("https:"==document.location.protocol?"https:":"http:")+"//widget.daovoice.io/widget/af744044.js","daovoice"),daovoice("init",{app_id:"af744044"}),daovoice("update")</script><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://yakax.gitee.io/nginx%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/><link rel=prev href=https://yakax.gitee.io/%E6%80%BB%E7%BB%93redis%E9%97%AE%E9%A2%98/><link rel=next href=https://yakax.gitee.io/jvm%E8%B0%83%E4%BC%98%E5%AD%A6%E4%B9%A0%E4%B9%8B%E6%97%85-8p-cms%E6%A1%88%E4%BE%8B%E4%BC%98%E5%8C%96%E5%88%86%E6%9E%90%E8%AE%B0%E5%BD%95%E4%B8%8E%E4%BC%98%E5%8C%96%E6%80%BB%E7%BB%93/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Nginx学习笔记","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/yakax.gitee.io\/nginx%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0\/"},"image":["https:\/\/yakax.gitee.io\/images\/avatar.png"],"genre":"posts","keywords":"Nginx, 反向代理, 负载均衡","wordcount":8954,"url":"https:\/\/yakax.gitee.io\/nginx%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0\/","datePublished":"2020-08-17T00:00:00+00:00","dateModified":"2020-08-17T00:00:00+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"yakax","logo":"https:\/\/yakax.gitee.io\/images\/avatar.png"},"author":{"@type":"Person","name":"yakax"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class='fas fa-crosshairs fa-sm'></i></span><span id=id-1 class=typeit></span></a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>所有文章 </a><a class=menu-item href=/tags/>标签 </a><a class=menu-item href=/categories/>分类 </a><a class=menu-item href=/about/>关于 </a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i> </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
+<input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i>
+</a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i>
+</a><span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i>
+</span></span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class='fas fa-crosshairs fa-sm'></i></span><span id=id-2 class=typeit></span></a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i>
+</a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i>
+</a><span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/ title>所有文章</a><a class=menu-item href=/tags/ title>标签</a><a class=menu-item href=/categories/ title>分类</a><a class=menu-item href=/about/ title>关于</a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">Nginx学习笔记</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>yakax</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/%E8%BF%90%E7%BB%B4/><i class="far fa-folder fa-fw"></i>运维</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2020-08-17>2020-08-17</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 8954 字&nbsp;
 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 18 分钟&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>目录</span>
-<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#编译>编译</a></li><li><a href=#虚拟主机配置与热部署>虚拟主机配置与热部署</a><ul><li><a href=#基于多ip的虚拟主机>基于多Ip的虚拟主机</a></li><li><a href=#基于多端口的虚拟主机>基于多端口的虚拟主机</a></li><li><a href=#基于域名的虚拟主机>基于域名的虚拟主机</a></li><li><a href=#热部署>热部署</a></li></ul></li><li><a href=#mainevents段常用参数>main、events段常用参数</a></li><li><a href=#location学习与sub_status-模块>location学习与sub_status 模块</a><ul><li><a href=#location-匹配规则>location 匹配规则</a></li><li><a href=#sub_status-模块>sub_status 模块</a></li></ul></li><li><a href=#请求链接权限模块>请求、链接、权限模块</a><ul><li><a href=#请求与连接区别>请求与连接区别</a><ul><li><a href=#connection限制客户端并发连接数>connection限制客户端并发连接数</a><ul><li><a href=#常用指令>常用指令</a></li></ul></li></ul></li><li><a href=#request限制客户端请求平均速率>request限制客户端请求平均速率</a></li><li><a href=#限定指定ip-访问>限定指定ip 访问</a></li><li><a href=#限制特定用户访问auth_basic模块>限制特定用户访问auth_basic模块</a></li><li><a href=#给予http响应码做权限>给予HTTP响应码做权限</a></li></ul></li><li><a href=#tcp与http相关变量学习>tcp与http相关变量学习</a><ul><li><a href=#tcp相关变量>TCP相关变量</a></li><li><a href=#http-请求过程中相关变量>HTTP 请求过程中相关变量</a></li><li><a href=#处理http请求中的变量>处理http请求中的变量</a></li></ul></li><li><a href=#rewrite模块中的return指令>rewrite模块中的return指令</a><ul><li><a href=#if语句>if语句</a></li><li><a href=#autoindex>autoindex</a></li></ul></li><li><a href=#反向代理服务器>反向代理服务器</a><ul><li><a href=#upstream模块>upstream模块</a><ul><li><a href=#上游服务器server-配置参数>上游服务器server 配置参数</a></li><li><a href=#负载均衡配置示例>负载均衡配置示例</a></li><li><a href=#当上游服务器错误>当上游服务器错误</a></li><li><a href=#proxy_pass指令>proxy_pass指令</a></li><li><a href=#客户端请求代理服务器请求信息>客户端请求代理服务器请求信息</a></li><li><a href=#代理更改请求上游服务器>代理更改请求上游服务器</a></li></ul></li></ul></li><li><a href=#缓存>缓存</a><ul><li><ul><li><a href=#缓存文件-以便启动恢复>缓存文件-以便启动恢复</a></li><li><a href=#缓存key设置>缓存key设置</a></li><li><a href=#缓存状态-upstream_-cache_status>缓存状态 upstream_ cache_status</a></li><li><a href=#对于-特定key-不缓存>对于 特定key 不缓存</a></li><li><a href=#缓存大量失效解决>缓存大量失效解决</a><ul><li><a href=#限制请求>限制请求</a></li><li><a href=#启用陈旧缓存>启用陈旧缓存</a></li></ul></li><li><a href=#缓存清除操作>缓存清除操作</a></li></ul></li></ul></li></ul></nav></div></div><div class=content id=content><h2 id=编译>编译</h2><p>相关依赖</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#编译>编译</a></li><li><a href=#虚拟主机配置与热部署>虚拟主机配置与热部署</a><ul><li><a href=#基于多ip的虚拟主机>基于多Ip的虚拟主机</a></li><li><a href=#基于多端口的虚拟主机>基于多端口的虚拟主机</a></li><li><a href=#基于域名的虚拟主机>基于域名的虚拟主机</a></li><li><a href=#热部署>热部署</a></li></ul></li><li><a href=#mainevents段常用参数>main、events段常用参数</a></li><li><a href=#location学习与sub_status-模块>location学习与sub_status 模块</a><ul><li><a href=#location-匹配规则>location 匹配规则</a></li><li><a href=#sub_status-模块>sub_status 模块</a></li></ul></li><li><a href=#请求链接权限模块>请求、链接、权限模块</a><ul><li><a href=#请求与连接区别>请求与连接区别</a><ul><li><a href=#connection限制客户端并发连接数>connection限制客户端并发连接数</a><ul><li><a href=#常用指令>常用指令</a></li></ul></li></ul></li><li><a href=#request限制客户端请求平均速率>request限制客户端请求平均速率</a></li><li><a href=#限定指定ip-访问>限定指定ip 访问</a></li><li><a href=#限制特定用户访问auth_basic模块>限制特定用户访问auth_basic模块</a></li><li><a href=#给予http响应码做权限>给予HTTP响应码做权限</a></li></ul></li><li><a href=#tcp与http相关变量学习>tcp与http相关变量学习</a><ul><li><a href=#tcp相关变量>TCP相关变量</a></li><li><a href=#http-请求过程中相关变量>HTTP 请求过程中相关变量</a></li><li><a href=#处理http请求中的变量>处理http请求中的变量</a></li></ul></li><li><a href=#rewrite模块中的return指令>rewrite模块中的return指令</a><ul><li><a href=#if语句>if语句</a></li><li><a href=#autoindex>autoindex</a></li></ul></li><li><a href=#反向代理服务器>反向代理服务器</a><ul><li><a href=#upstream模块>upstream模块</a><ul><li><a href=#上游服务器server-配置参数>上游服务器server 配置参数</a></li><li><a href=#负载均衡配置示例>负载均衡配置示例</a></li><li><a href=#当上游服务器错误>当上游服务器错误</a></li><li><a href=#proxy_pass指令>proxy_pass指令</a></li><li><a href=#客户端请求代理服务器请求信息>客户端请求代理服务器请求信息</a></li><li><a href=#代理更改请求上游服务器>代理更改请求上游服务器</a></li></ul></li></ul></li><li><a href=#缓存>缓存</a><ul><li><ul><li><a href=#缓存文件-以便启动恢复>缓存文件-以便启动恢复</a></li><li><a href=#缓存key设置>缓存key设置</a></li><li><a href=#缓存状态-upstream_-cache_status>缓存状态 upstream_ cache_status</a></li><li><a href=#对于-特定key-不缓存>对于 特定key 不缓存</a></li><li><a href=#缓存大量失效解决>缓存大量失效解决</a><ul><li><a href=#限制请求>限制请求</a></li><li><a href=#启用陈旧缓存>启用陈旧缓存</a></li></ul></li><li><a href=#缓存清除操作>缓存清除操作</a></li></ul></li></ul></li></ul></nav></div></div><div class=content id=content><h2 id=编译>编译</h2><p>相关依赖</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
 </span><span class=lnt>6
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-shell data-lang=shell>yum update
-yum install wget
-wget http://nginx.org/download/nginx-1.19.1.tar.gz <span class=c1>## nginx 源码包</span>
-wget https://ftp.pcre.org/pub/pcre/pcre-8.44.tar.gz <span class=c1>## 正则会用到</span>
-wget https://zlib.net/zlib-1.2.11.tar.gz  <span class=c1>##gzip 模块</span>
-tar xf 指定文件解压
-</code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-shell data-lang=shell>./configure --help  查看编译帮助命令
-</code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>yum update
+</span></span><span class=line><span class=cl>yum install wget
+</span></span><span class=line><span class=cl>wget http://nginx.org/download/nginx-1.19.1.tar.gz <span class=c1>## nginx 源码包</span>
+</span></span><span class=line><span class=cl>wget https://ftp.pcre.org/pub/pcre/pcre-8.44.tar.gz <span class=c1>## 正则会用到</span>
+</span></span><span class=line><span class=cl>wget https://zlib.net/zlib-1.2.11.tar.gz  <span class=c1>##gzip 模块</span>
+</span></span><span class=line><span class=cl>tar xf 指定文件解压
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>./configure --help  查看编译帮助命令
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -68,61 +61,59 @@ tar xf 指定文件解压
 </span><span class=lnt>14
 </span><span class=lnt>15
 </span><span class=lnt>16
-</span><span class=lnt>17
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-shell data-lang=shell> --help                             print this message
-
-  --prefix<span class=o>=</span>PATH                      nginx总相对路径 下面都可以 默认以相对路径创建
-  --sbin-path<span class=o>=</span>PATH                   <span class=nb>set</span> nginx binary pathname
-  --modules-path<span class=o>=</span>PATH                <span class=nb>set</span> modules path
-  --conf-path<span class=o>=</span>PATH                   <span class=nb>set</span> nginx.conf pathname
-  --error-log-path<span class=o>=</span>PATH              <span class=nb>set</span> error log pathname
-  --pid-path<span class=o>=</span>PATH                    <span class=nb>set</span> nginx.pid pathname
-  --lock-path<span class=o>=</span>PATH                   <span class=nb>set</span> nginx.lock pathname
-
-  --user<span class=o>=</span>USER                        nginx配置文件生效启动用户
-  
-  --with开头都是可以单独指定需要使用的模块
-
-  --without 开头指定不需要的模块
-	还有一些指定模块路径的参数
-
-</code></pre></td></tr></table></div></div><p>我使用的配置参数</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl> --help                             print this message
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  --prefix<span class=o>=</span>PATH                      nginx总相对路径 下面都可以 默认以相对路径创建
+</span></span><span class=line><span class=cl>  --sbin-path<span class=o>=</span>PATH                   <span class=nb>set</span> nginx binary pathname
+</span></span><span class=line><span class=cl>  --modules-path<span class=o>=</span>PATH                <span class=nb>set</span> modules path
+</span></span><span class=line><span class=cl>  --conf-path<span class=o>=</span>PATH                   <span class=nb>set</span> nginx.conf pathname
+</span></span><span class=line><span class=cl>  --error-log-path<span class=o>=</span>PATH              <span class=nb>set</span> error log pathname
+</span></span><span class=line><span class=cl>  --pid-path<span class=o>=</span>PATH                    <span class=nb>set</span> nginx.pid pathname
+</span></span><span class=line><span class=cl>  --lock-path<span class=o>=</span>PATH                   <span class=nb>set</span> nginx.lock pathname
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  --user<span class=o>=</span>USER                        nginx配置文件生效启动用户
+</span></span><span class=line><span class=cl>  
+</span></span><span class=line><span class=cl>  --with开头都是可以单独指定需要使用的模块
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  --without 开头指定不需要的模块
+</span></span><span class=line><span class=cl>	还有一些指定模块路径的参数
+</span></span></code></pre></td></tr></table></div></div><p>我使用的配置参数</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
 </span><span class=lnt>6
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>./configure  --prefix=/usr/local/nginx \
---with-pcre=/usr/local/nginx_rely/rely/pcre-8.44 \
---with-zlib=/usr/local/nginx_rely/rely/zlib-1.2.11  \
---with-http_ssl_module  \
---with-http_image_filter_module \
---with-http_stub_status_module
-</code></pre></td></tr></table></div></div><p>期间根据环境可能需要安装下面三个东西</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>yum -y install gcc gcc-c++ openssl openssl-devel gd gd-devel
-</code></pre></td></tr></table></div></div><p>出现这样 差不多就检测成功了</p><p><img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809201537.png style=zoom:50%></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>./configure  --prefix=/usr/local/nginx \
+</span></span><span class=line><span class=cl>--with-pcre=/usr/local/nginx_rely/rely/pcre-8.44 \
+</span></span><span class=line><span class=cl>--with-zlib=/usr/local/nginx_rely/rely/zlib-1.2.11  \
+</span></span><span class=line><span class=cl>--with-http_ssl_module  \
+</span></span><span class=line><span class=cl>--with-http_image_filter_module \
+</span></span><span class=line><span class=cl>--with-http_stub_status_module
+</span></span></code></pre></td></tr></table></div></div><p>期间根据环境可能需要安装下面三个东西</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>yum -y install gcc gcc-c++ openssl openssl-devel gd gd-devel
+</span></span></code></pre></td></tr></table></div></div><p>出现这样 差不多就检测成功了</p><img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809201537.png style=zoom:50%><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>make 编译 生成Makefile
-make install
-</code></pre></td></tr></table></div></div><p>去安装目录启动</p><p><a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809202041.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809202041.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809202041.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809202041.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809202041.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809202041.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809202041.png></a></p><p>设置软连接</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>ln -s /usr/local/nginx/sbin/nginx /usr/bin/nginx
-nginx -h 查看具体命令
-注意：请在运行 nginx 时，使用绝对路径。因为热部署USR2是通过绝对路径寻找
-</code></pre></td></tr></table></div></div><h2 id=虚拟主机配置与热部署>虚拟主机配置与热部署</h2><p>由于 nginx运行时 一个master 和多个 worker进程以线程的方式运行</p><p><a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809212450.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809212450.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809212450.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809212450.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809212450.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809212450.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809212450.png></a></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>make 编译 生成Makefile
+</span></span><span class=line><span class=cl>make install
+</span></span></code></pre></td></tr></table></div></div><p>去安装目录启动</p><p><a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809202041.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809202041.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809202041.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809202041.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809202041.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809202041.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809202041.png></a></p><p>设置软连接</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>worker_processes 就代表worker进程数，我设置的是根据cpu核数。
-user 代表配置文件启动生效用户 也可以加上用户组
-worker_connections worker进程连接数 
-</code></pre></td></tr></table></div></div><blockquote><p><a href=http://nginx.org/en/docs/>http://nginx.org/en/docs/</a> nginx 配置文件文档</p></blockquote><h3 id=基于多ip的虚拟主机>基于多Ip的虚拟主机</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>ln -s /usr/local/nginx/sbin/nginx /usr/bin/nginx
+</span></span><span class=line><span class=cl>nginx -h 查看具体命令
+</span></span><span class=line><span class=cl>注意：请在运行 nginx 时，使用绝对路径。因为热部署USR2是通过绝对路径寻找
+</span></span></code></pre></td></tr></table></div></div><h2 id=虚拟主机配置与热部署>虚拟主机配置与热部署</h2><p>由于 nginx运行时 一个master 和多个 worker进程以线程的方式运行</p><p><a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809212450.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809212450.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809212450.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809212450.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809212450.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809212450.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200809212450.png></a></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-nginx data-lang=nginx><span class=k>location</span> <span class=s>/</span>  <span class=c1>##说明映射的是本地nginx安装路径
-</span><span class=c1></span><span class=s>root</span> <span class=c1>## 路径下的文件夹
-</span><span class=c1></span><span class=s>index</span> <span class=c1>## 文件夹下的首页
-</span></code></pre></td></tr></table></div></div><p>前提主机是多网卡：不同ip对应不同路径 端口监听默认80</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>worker_processes 就代表worker进程数，我设置的是根据cpu核数。
+</span></span><span class=line><span class=cl>user 代表配置文件启动生效用户 也可以加上用户组
+</span></span><span class=line><span class=cl>worker_connections worker进程连接数 
+</span></span></code></pre></td></tr></table></div></div><blockquote><p><a href=http://nginx.org/en/docs/ target=_blank rel="noopener noreffer">http://nginx.org/en/docs/</a> nginx 配置文件文档</p></blockquote><h3 id=基于多ip的虚拟主机>基于多Ip的虚拟主机</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=line><span class=cl><span class=k>location</span> <span class=s>/</span>  <span class=c1>##说明映射的是本地nginx安装路径
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=s>root</span> <span class=c1>## 路径下的文件夹
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=s>index</span> <span class=c1>## 文件夹下的首页
+</span></span></span></code></pre></td></tr></table></div></div><p>前提主机是多网卡：不同ip对应不同路径 端口监听默认80</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -140,25 +131,25 @@ worker_connections worker进程连接数
 </span><span class=lnt>16
 </span><span class=lnt>17
 </span><span class=lnt>18
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-nginx data-lang=nginx><span class=k>server</span> <span class=p>{</span>
-        <span class=kn>listen</span>       <span class=mi>192</span><span class=s>.168.1.110</span><span class=p>;</span> 
-        <span class=kn>server_name</span>  <span class=s>localhost</span><span class=p>;</span>
-
-        <span class=kn>location</span> <span class=s>/</span> <span class=p>{</span>
-            <span class=kn>root</span>   <span class=s>server1/html</span><span class=p>;</span>
-            <span class=kn>index</span>  <span class=s>index.html</span> <span class=s>index.htm</span><span class=p>;</span>
-        <span class=p>}</span>
-   <span class=p>}</span>
- <span class=k>server</span> <span class=p>{</span>
-        <span class=kn>listen</span>       <span class=mi>192</span><span class=s>.168.1.111</span><span class=p>;</span> 
-        <span class=kn>server_name</span>  <span class=s>localhost</span><span class=p>;</span>
-
-        <span class=kn>location</span> <span class=s>/</span> <span class=p>{</span>
-            <span class=kn>root</span>   <span class=s>server2/html</span><span class=p>;</span>
-            <span class=kn>index</span>  <span class=s>index.html</span> <span class=s>index.htm</span><span class=p>;</span>
-        <span class=p>}</span>
-   <span class=p>}</span>
-</code></pre></td></tr></table></div></div><h3 id=基于多端口的虚拟主机>基于多端口的虚拟主机</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=line><span class=cl><span class=k>server</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=kn>listen</span>       <span class=mi>192</span><span class=s>.168.1.110</span><span class=p>;</span> 
+</span></span><span class=line><span class=cl>        <span class=kn>server_name</span>  <span class=s>localhost</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=kn>location</span> <span class=s>/</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=kn>root</span>   <span class=s>server1/html</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=kn>index</span>  <span class=s>index.html</span> <span class=s>index.htm</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>   <span class=p>}</span>
+</span></span><span class=line><span class=cl> <span class=k>server</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=kn>listen</span>       <span class=mi>192</span><span class=s>.168.1.111</span><span class=p>;</span> 
+</span></span><span class=line><span class=cl>        <span class=kn>server_name</span>  <span class=s>localhost</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=kn>location</span> <span class=s>/</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=kn>root</span>   <span class=s>server2/html</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=kn>index</span>  <span class=s>index.html</span> <span class=s>index.htm</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>   <span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=基于多端口的虚拟主机>基于多端口的虚拟主机</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
@@ -167,16 +158,16 @@ worker_connections worker进程连接数
 </span><span class=lnt>7
 </span><span class=lnt>8
 </span><span class=lnt>9
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-nginx data-lang=nginx> <span class=k>server</span> <span class=p>{</span>
-        <span class=kn>listen</span>       <span class=mi>9011</span><span class=p>;</span> 
-        <span class=kn>server_name</span>  <span class=s>localhost</span><span class=p>;</span>
-
-        <span class=kn>location</span> <span class=s>/</span> <span class=p>{</span>
-            <span class=kn>root</span>   <span class=s>server3/html</span><span class=p>;</span>
-            <span class=kn>index</span>  <span class=s>index.html</span> <span class=s>index.htm</span><span class=p>;</span>
-        <span class=p>}</span>
-   <span class=p>}</span>
-</code></pre></td></tr></table></div></div><h3 id=基于域名的虚拟主机>基于域名的虚拟主机</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=line><span class=cl> <span class=k>server</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=kn>listen</span>       <span class=mi>9011</span><span class=p>;</span> 
+</span></span><span class=line><span class=cl>        <span class=kn>server_name</span>  <span class=s>localhost</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=kn>location</span> <span class=s>/</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=kn>root</span>   <span class=s>server3/html</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=kn>index</span>  <span class=s>index.html</span> <span class=s>index.htm</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>   <span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=基于域名的虚拟主机>基于域名的虚拟主机</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
@@ -185,20 +176,22 @@ worker_connections worker进程连接数
 </span><span class=lnt>7
 </span><span class=lnt>8
 </span><span class=lnt>9
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-nginx data-lang=nginx> <span class=k>server</span> <span class=p>{</span>
-        <span class=kn>listen</span>       <span class=mi>80</span><span class=p>;</span> 
-        <span class=kn>server_name</span>  <span class=s>域名</span><span class=p>;</span> <span class=kn>//匹配优先级</span> <span class=s>精确&gt;左侧通配符&gt;右侧通配符&gt;正则</span>
-
-        <span class=s>location</span> <span class=s>/</span> <span class=p>{</span>
-            <span class=kn>root</span>   <span class=s>server4/html</span><span class=p>;</span>
-            <span class=kn>index</span>  <span class=s>index.html</span> <span class=s>index.htm</span><span class=p>;</span>
-        <span class=p>}</span>
-   <span class=p>}</span>
-</code></pre></td></tr></table></div></div><h3 id=热部署>热部署</h3><p>当从老版本替换为新版本的 nginx 的时候，如果不热部署的话，会需要取消 nginx 服务并重启服务才能替换成功，这样的话会使正在访问的用户在断开连接，所以为了在不影响用户的体验下进行版本升级，就需要<strong>通过信号量</strong>热部署来升级版本。</p><p><strong>注意一点：新的nginx编译后的 logs、sbin、conf这些目录名字不能变</strong></p><p>先备份nginx二进制文件 并用新的二进制nginx文件覆盖
-<strong>cp nginx nginx.bak</strong></p><p><img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200810114446.png style=zoom:50%></p><p><img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/1.png style=zoom:50%></p><p>启动新的nginx 这里说明一下 nginx 启动时必须以绝对路径启动，不然SIGUSR2无法找到nginx
-<strong>kill -s SIGUSR2 21598</strong></p><p><img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200810121822.png style=zoom:50%></p><p><img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200810122043.png style=zoom:50%></p><p>现在 新旧进程 都并存，并且在logs下存在了一个旧进程的master 进程pid
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=line><span class=cl> <span class=k>server</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=kn>listen</span>       <span class=mi>80</span><span class=p>;</span> 
+</span></span><span class=line><span class=cl>        <span class=kn>server_name</span>  <span class=s>域名</span><span class=p>;</span> <span class=kn>//匹配优先级</span> <span class=s>精确&gt;左侧通配符&gt;右侧通配符&gt;正则</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=s>location</span> <span class=s>/</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=kn>root</span>   <span class=s>server4/html</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=kn>index</span>  <span class=s>index.html</span> <span class=s>index.htm</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>   <span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=热部署>热部署</h3><p>当从老版本替换为新版本的 nginx 的时候，如果不热部署的话，会需要取消 nginx 服务并重启服务才能替换成功，这样的话会使正在访问的用户在断开连接，所以为了在不影响用户的体验下进行版本升级，就需要<strong>通过信号量</strong>热部署来升级版本。</p><p><strong>注意一点：新的nginx编译后的 logs、sbin、conf这些目录名字不能变</strong></p><p>先备份nginx二进制文件 并用新的二进制nginx文件覆盖
+<strong>cp nginx nginx.bak</strong></p><img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200810114446.png style=zoom:50%>
+<img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/1.png style=zoom:50%><p>启动新的nginx 这里说明一下 nginx 启动时必须以绝对路径启动，不然SIGUSR2无法找到nginx
+<strong>kill -s SIGUSR2 21598</strong></p><img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200810121822.png style=zoom:50%>
+<img src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200810122043.png style=zoom:50%><p>现在 新旧进程 都并存，并且在logs下存在了一个旧进程的master 进程pid
 这时 可以优雅退出worker进程，具体用户超时时间连接参数 worker shutdown timeout time 在配置文件可以配置
-<strong>kill -s SIGWINCH 21598</strong></p><p><a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200810122613.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200810122613.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200810122613.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200810122613.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200810122613.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200810122613.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200810122613.png></a></p><p>此时<strong>旧master</strong> 还存在的情况下可以开始验证<strong>新worker</strong>进程的nginx 是否满足需求 如果满足需求可以正式让就master退出了</p><p><font color=blue><strong>kill -s SIGQUIT 21598</strong></font> 至此平滑升级就可以了;如果新版有不满足需求，未通过测试 在老版本的master未退出时可以<strong>回滚</strong></p><p><strong>kill -s SIGHUP 21598</strong> 此时新旧进程也是并存的</p><p><strong>kill -s SIGQUIT 21603</strong> 退出新master进程</p><h2 id=mainevents段常用参数>main、events段常用参数</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+<strong>kill -s SIGWINCH 21598</strong></p><p><a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200810122613.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200810122613.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200810122613.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200810122613.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200810122613.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200810122613.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/nginx/TIM%E6%88%AA%E5%9B%BE20200810122613.png></a></p><p>此时<strong>旧master</strong> 还存在的情况下可以开始验证<strong>新worker</strong>进程的nginx 是否满足需求 如果满足需求可以正式让就master退出了</p><p><font color=blue><strong>kill -s SIGQUIT 21598</strong></font> 至此平滑升级就可以了;如果新版有不满足需求，未通过测试 在老版本的master未退出时可以<strong>回滚</strong></p><p><strong>kill -s SIGHUP 21598</strong> 此时新旧进程也是并存的</p><p><strong>kill -s SIGQUIT 21603</strong> 退出新master进程</p><h2 id=mainevents段常用参数>main、events段常用参数</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -261,72 +254,70 @@ worker_connections worker进程连接数
 </span><span class=lnt>61
 </span><span class=lnt>62
 </span><span class=lnt>63
-</span><span class=lnt>64
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-markdown data-lang=markdown><span class=gh># main段核心参数：
-</span><span class=gh></span><span class=gu>### user USERNAME [GROUP]
-</span><span class=gu></span>	解释：指定运行nginx的worker子进程的属主和属组，其中属组可以不指定
-	示例：
-		user nginx nginx;
-
-<span class=gu>### pid DIR
-</span><span class=gu></span>	解释：指定运行nginx的master主进程的pid文件存放路径
-	示例：
-		pid /usr/local/nginx/logs/nginx.pid;
-
-<span class=gu>### worker_rlimit_nofile number
-</span><span class=gu></span>	解释：指定worker子进程可以打开的最大文件句柄数
-	示例：
-		worker_rlimit_nofile 20480; 
-		备注：linux 最大打开65535个句柄 一般每个worker*cpu核心数=总数-10000
-
-<span class=gu>### worker_rlimit_core size
-</span><span class=gu></span>	解释：指定worker子进程异常终止后的core文件，用于记录分析问题
-	示例：
-		worker rlimit core 50M;
-		working_directory /usr/local/nginx/tmp; 
-		备注：当前worker所属用户需要有这个文件夹的写权限
-
-<span class=gu>### worker_processes number|auto
-</span><span class=gu></span>	解释：指定nginx启动的worker子进程数量
-	示例：
-	worker processes 4; worker_processes auto;
-
-<span class=gu>### worker_cpul_affinity cpumask1 cpumask2
-</span><span class=gu></span>	解释：将每个worker子进程与我们的CPU物理核心绑定
-	示例：
-	worker_cpu_affinity 0001 0010 0100 1000; <span class=ni>#4个物理核心</span>，4个worker子进程
-
-	worker cpu affinity 
-	00000001 00000010 00000100 00001000 00010000 00100000 01000000 10000000;
-	<span class=ni>#8物理核心</span>，8个worker子进程
-
-	worker_cpu_affinity 01 10 01 10; <span class=ni>#2个物理核心</span>，4个子进程
-    备注：将每个worker子进程与特定CPU物理核心绑定，优势在于：避免同一个worker子进程
-	在不同的CPU核心上切换，缓存失效，降低性能；其并不能真正的避免进程切换,
-	主要还是cpu时间片切换开销大，又由于是多核，并不能充分使用cpu缓存，所以让nginx的worker进程绑定上固定的核心cpu 来切换。
-
-<span class=gu>### worker_priority number
-</span><span class=gu></span>	解释：指定worker子进程的nice值，以调整运行nginx的worker子进程的优先级，通常设定为负值，以优先调用nginx
-	示例：
-	worker_priority -10;
-	备注：Linux默认进程的优先级值是120,值越小越优先；nice设定范围为-20到+19 如-20+100
-
-<span class=gu>### worker_shutdown_timeout time
-</span><span class=gu></span>	解释：指定worker子进程优雅退出时的超时时间(热部署时,nginx 切换pid进程时发送信号量关闭旧链接请求的强制条件)
-	示例：
-	worker_shutdown_timeout 5s;
-
-<span class=gu>### timer_resolution time
-</span><span class=gu></span>	解释：worker子进程内部使用的计时器精度，调整时间间隔越大，系统调用越少，有利于性能提升；反之，系统调用越多，性能下降，主要看系统对时间精度要求  
-	示例：
-	worker_resolution 100ms;
-
-<span class=gu>### daemon on|off
-</span><span class=gu></span>	解释：设定nginx的运行方式，前台还是后台，前台用户调试，后台用于生产
-	示例：
-	daemon off; 前台  默认on
-
-</code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-markdown data-lang=markdown><span class=line><span class=cl><span class=gh># main段核心参数：
+</span></span></span><span class=line><span class=cl><span class=gh></span><span class=gu>### user USERNAME [GROUP]
+</span></span></span><span class=line><span class=cl><span class=gu></span>	解释：指定运行nginx的worker子进程的属主和属组，其中属组可以不指定
+</span></span><span class=line><span class=cl>	示例：
+</span></span><span class=line><span class=cl>		user nginx nginx;
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=gu>### pid DIR
+</span></span></span><span class=line><span class=cl><span class=gu></span>	解释：指定运行nginx的master主进程的pid文件存放路径
+</span></span><span class=line><span class=cl>	示例：
+</span></span><span class=line><span class=cl>		pid /usr/local/nginx/logs/nginx.pid;
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=gu>### worker_rlimit_nofile number
+</span></span></span><span class=line><span class=cl><span class=gu></span>	解释：指定worker子进程可以打开的最大文件句柄数
+</span></span><span class=line><span class=cl>	示例：
+</span></span><span class=line><span class=cl>		worker_rlimit_nofile 20480; 
+</span></span><span class=line><span class=cl>		备注：linux 最大打开65535个句柄 一般每个worker*cpu核心数=总数-10000
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=gu>### worker_rlimit_core size
+</span></span></span><span class=line><span class=cl><span class=gu></span>	解释：指定worker子进程异常终止后的core文件，用于记录分析问题
+</span></span><span class=line><span class=cl>	示例：
+</span></span><span class=line><span class=cl>		worker rlimit core 50M;
+</span></span><span class=line><span class=cl>		working_directory /usr/local/nginx/tmp; 
+</span></span><span class=line><span class=cl>		备注：当前worker所属用户需要有这个文件夹的写权限
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=gu>### worker_processes number|auto
+</span></span></span><span class=line><span class=cl><span class=gu></span>	解释：指定nginx启动的worker子进程数量
+</span></span><span class=line><span class=cl>	示例：
+</span></span><span class=line><span class=cl>	worker processes 4; worker_processes auto;
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=gu>### worker_cpul_affinity cpumask1 cpumask2
+</span></span></span><span class=line><span class=cl><span class=gu></span>	解释：将每个worker子进程与我们的CPU物理核心绑定
+</span></span><span class=line><span class=cl>	示例：
+</span></span><span class=line><span class=cl>	worker_cpu_affinity 0001 0010 0100 1000; <span class=ni>#4个物理核心</span>，4个worker子进程
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	worker cpu affinity 
+</span></span><span class=line><span class=cl>	00000001 00000010 00000100 00001000 00010000 00100000 01000000 10000000;
+</span></span><span class=line><span class=cl>	<span class=ni>#8物理核心</span>，8个worker子进程
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	worker_cpu_affinity 01 10 01 10; <span class=ni>#2个物理核心</span>，4个子进程
+</span></span><span class=line><span class=cl>    备注：将每个worker子进程与特定CPU物理核心绑定，优势在于：避免同一个worker子进程
+</span></span><span class=line><span class=cl>	在不同的CPU核心上切换，缓存失效，降低性能；其并不能真正的避免进程切换,
+</span></span><span class=line><span class=cl>	主要还是cpu时间片切换开销大，又由于是多核，并不能充分使用cpu缓存，所以让nginx的worker进程绑定上固定的核心cpu 来切换。
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=gu>### worker_priority number
+</span></span></span><span class=line><span class=cl><span class=gu></span>	解释：指定worker子进程的nice值，以调整运行nginx的worker子进程的优先级，通常设定为负值，以优先调用nginx
+</span></span><span class=line><span class=cl>	示例：
+</span></span><span class=line><span class=cl>	worker_priority -10;
+</span></span><span class=line><span class=cl>	备注：Linux默认进程的优先级值是120,值越小越优先；nice设定范围为-20到+19 如-20+100
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=gu>### worker_shutdown_timeout time
+</span></span></span><span class=line><span class=cl><span class=gu></span>	解释：指定worker子进程优雅退出时的超时时间(热部署时,nginx 切换pid进程时发送信号量关闭旧链接请求的强制条件)
+</span></span><span class=line><span class=cl>	示例：
+</span></span><span class=line><span class=cl>	worker_shutdown_timeout 5s;
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=gu>### timer_resolution time
+</span></span></span><span class=line><span class=cl><span class=gu></span>	解释：worker子进程内部使用的计时器精度，调整时间间隔越大，系统调用越少，有利于性能提升；反之，系统调用越多，性能下降，主要看系统对时间精度要求  
+</span></span><span class=line><span class=cl>	示例：
+</span></span><span class=line><span class=cl>	worker_resolution 100ms;
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=gu>### daemon on|off
+</span></span></span><span class=line><span class=cl><span class=gu></span>	解释：设定nginx的运行方式，前台还是后台，前台用户调试，后台用于生产
+</span></span><span class=line><span class=cl>	示例：
+</span></span><span class=line><span class=cl>	daemon off; 前台  默认on
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -350,31 +341,31 @@ worker_connections worker进程连接数
 </span><span class=lnt>22
 </span><span class=lnt>23
 </span><span class=lnt>24
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-markdown data-lang=markdown><span class=gh># events段核心参数
-</span><span class=gh></span><span class=gu>### use 
-</span><span class=gu></span>	解释:nginx使用何种事件驱动模型
-	method可选值：select、poll、kqueue、epoll、/dev/poll、eventpor
-	默认配置：无 推荐配置：不指定，让nginx自己选择
-
-<span class=gu>### worker_connections 
-</span><span class=gu></span>	解释：worker子进程能够处理的最大并发连接数
-	默认配置：worker_connections 1024 推荐配置：worker_connections 65535/worker_processes|65535
-
-<span class=gu>### accept_mutex 
-</span><span class=gu></span>	解释:是否打开负载均衡互斥锁 （就是在worker子进程都加了个互斥锁，新请求进来只给其中一个处理）
-	可选值：on、off
-	默认配置：accept_mutex off 推荐配置：accept_mutext on
-
-<span class=gu>### accept_mutex_delay 200ms
-</span><span class=gu></span>	解释：新连接分配给worker子进程的超时时间  当accept_mutex参数打开才有意义
-
-<span class=gu>### lock file 
-</span><span class=gu></span>	解释：负载均衡互斥锁文件存放路径
-	默认配置：lock_file logs/nginx.lock 推荐配置：lock_file logs/nginx.lock
-
-<span class=gu>### muti_accept on|off
-</span><span class=gu></span>	解释:子进程一次性可以接收的新连接个数 默认off
-</code></pre></td></tr></table></div></div><h2 id=location学习与sub_status-模块>location学习与sub_status 模块</h2><p>root与alias区别**</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-markdown data-lang=markdown><span class=line><span class=cl><span class=gh># events段核心参数
+</span></span></span><span class=line><span class=cl><span class=gh></span><span class=gu>### use 
+</span></span></span><span class=line><span class=cl><span class=gu></span>	解释:nginx使用何种事件驱动模型
+</span></span><span class=line><span class=cl>	method可选值：select、poll、kqueue、epoll、/dev/poll、eventpor
+</span></span><span class=line><span class=cl>	默认配置：无 推荐配置：不指定，让nginx自己选择
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=gu>### worker_connections 
+</span></span></span><span class=line><span class=cl><span class=gu></span>	解释：worker子进程能够处理的最大并发连接数
+</span></span><span class=line><span class=cl>	默认配置：worker_connections 1024 推荐配置：worker_connections 65535/worker_processes|65535
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=gu>### accept_mutex 
+</span></span></span><span class=line><span class=cl><span class=gu></span>	解释:是否打开负载均衡互斥锁 （就是在worker子进程都加了个互斥锁，新请求进来只给其中一个处理）
+</span></span><span class=line><span class=cl>	可选值：on、off
+</span></span><span class=line><span class=cl>	默认配置：accept_mutex off 推荐配置：accept_mutext on
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=gu>### accept_mutex_delay 200ms
+</span></span></span><span class=line><span class=cl><span class=gu></span>	解释：新连接分配给worker子进程的超时时间  当accept_mutex参数打开才有意义
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=gu>### lock file 
+</span></span></span><span class=line><span class=cl><span class=gu></span>	解释：负载均衡互斥锁文件存放路径
+</span></span><span class=line><span class=cl>	默认配置：lock_file logs/nginx.lock 推荐配置：lock_file logs/nginx.lock
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=gu>### muti_accept on|off
+</span></span></span><span class=line><span class=cl><span class=gu></span>	解释:子进程一次性可以接收的新连接个数 默认off
+</span></span></code></pre></td></tr></table></div></div><h2 id=location学习与sub_status-模块>location学习与sub_status 模块</h2><p>root与alias区别**</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -392,79 +383,79 @@ worker_connections worker进程连接数
 </span><span class=lnt>16
 </span><span class=lnt>17
 </span><span class=lnt>18
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-json data-lang=json><span class=err>/usr/local/nginx</span>  <span class=err>这个路径是nginx主路径</span>
-<span class=err>server_name</span> <span class=err>匹对路径地址</span>
-<span class=err>location</span> <span class=err>后面是匹对监听端口后的路径地址</span>
-<span class=err>location</span> <span class=err>/image</span> <span class=p>{</span>
-		<span class=err>root</span> <span class=err>/usr/local/nginx/image</span>
-<span class=p>}</span>
-<span class=err>客户端请求www.test.com/image/</span><span class=mi>1</span><span class=err>.jpg,</span>
-<span class=err>则对应磁盘映射路径/usr/local/nginx/image/image/</span><span class=mi>1</span><span class=err>.jpg</span>
-<span class=err>location</span> <span class=err>/image</span> <span class=p>{</span>
-		<span class=err>root</span> <span class=err>image</span> <span class=err>相对地址</span>
-<span class=p>}</span>
-<span class=err>则对应磁盘映射路径/usr/local/nginx/image/image/</span><span class=mi>1</span><span class=err>.jpg</span>
-
-<span class=err>location</span> <span class=err>/picture</span><span class=p>{</span>
-		<span class=err>alias</span> <span class=err>/opt/nginx/html/picture;</span> 
-<span class=p>}</span>
-<span class=err>客户端请求www.test.com/picture/</span><span class=mi>1</span><span class=err>.jpg,则对应磁盘映射</span>
-<span class=err>则对应磁盘映射路径/opt/nginx/html/picture/</span><span class=mi>1</span><span class=err>.jpg</span>
-</code></pre></td></tr></table></div></div><p><strong>alias只能放在 location中</strong></p><p><strong>root能用在 http server location if中 类似全局参数一样</strong></p><h3 id=location-匹配规则>location 匹配规则</h3><table><thead><tr><th>规则</th><th>含义 (优先级从高到低)</th><th>示例</th></tr></thead><tbody><tr><td>=</td><td>精确匹配</td><td>location = /images/ {&mldr;}</td></tr><tr><td>^~</td><td>匹配到即停止搜索</td><td>location ^~ /images/ {&mldr;}</td></tr><tr><td>~</td><td>正则匹配 区分大小写</td><td>location ~ . (jpg l gif)$ { &mldr; }</td></tr><tr><td>~*</td><td>正则匹配 不区分大小写</td><td>loaction ~*.(jpg l gif)$ {&mldr;} 这个用得少</td></tr><tr><td></td><td>不带任何符号</td><td>location / {..}</td></tr></tbody></table><p>结尾反斜线区别</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=line><span class=cl><span class=err>/usr/local/nginx</span>  <span class=err>这个路径是nginx主路径</span>
+</span></span><span class=line><span class=cl><span class=err>server_name</span> <span class=err>匹对路径地址</span>
+</span></span><span class=line><span class=cl><span class=err>location</span> <span class=err>后面是匹对监听端口后的路径地址</span>
+</span></span><span class=line><span class=cl><span class=err>location</span> <span class=err>/image</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=err>root</span> <span class=err>/usr/local/nginx/image</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=err>客户端请求www.test.com/image/</span><span class=mi>1</span><span class=err>.jpg,</span>
+</span></span><span class=line><span class=cl><span class=err>则对应磁盘映射路径/usr/local/nginx/image/image/</span><span class=mi>1</span><span class=err>.jpg</span>
+</span></span><span class=line><span class=cl><span class=err>location</span> <span class=err>/image</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=err>root</span> <span class=err>image</span> <span class=err>相对地址</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=err>则对应磁盘映射路径/usr/local/nginx/image/image/</span><span class=mi>1</span><span class=err>.jpg</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=err>location</span> <span class=err>/picture</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=err>alias</span> <span class=err>/opt/nginx/html/picture;</span> 
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=err>客户端请求www.test.com/picture/</span><span class=mi>1</span><span class=err>.jpg,则对应磁盘映射</span>
+</span></span><span class=line><span class=cl><span class=err>则对应磁盘映射路径/opt/nginx/html/picture/</span><span class=mi>1</span><span class=err>.jpg</span>
+</span></span></code></pre></td></tr></table></div></div><p><strong>alias只能放在 location中</strong></p><p><strong>root能用在 http server location if中 类似全局参数一样</strong></p><h3 id=location-匹配规则>location 匹配规则</h3><table><thead><tr><th>规则</th><th>含义 (优先级从高到低)</th><th>示例</th></tr></thead><tbody><tr><td>=</td><td>精确匹配</td><td>location = /images/ {&mldr;}</td></tr><tr><td>^~</td><td>匹配到即停止搜索</td><td>location ^~ /images/ {&mldr;}</td></tr><tr><td>~</td><td>正则匹配 区分大小写</td><td>location ~ . (jpg l gif)$ { &mldr; }</td></tr><tr><td>~*</td><td>正则匹配 不区分大小写</td><td>loaction ~*.(jpg l gif)$ {&mldr;} 这个用得少</td></tr><tr><td></td><td>不带任何符号</td><td>location / {..}</td></tr></tbody></table><p>结尾反斜线区别</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>/test 与 /test/
-/test 先找目录  找不到 会尝试找test文件
-/test/ 只会当做文件目录
-</code></pre></td></tr></table></div></div><h3 id=sub_status-模块>sub_status 模块</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span><span class=lnt>4
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>location /uri{
-		stub_status; 
-}
-也可以写在server层级
-</code></pre></td></tr></table></div></div><table><thead><tr><th>状态项</th><th>含义</th></tr></thead><tbody><tr><td>Active Connections</td><td>活跃的连接数量</td></tr><tr><td>accepts</td><td>接受的客户端连接总数量</td></tr><tr><td>handled</td><td>处理的客户端连接总数量</td></tr><tr><td>requests</td><td>客户端总的请求数量</td></tr><tr><td>Reading</td><td>读取客户端的连接数</td></tr><tr><td>Writing</td><td>响应数据到客户端的连接数</td></tr><tr><td>Waiting</td><td>空闲客户端请求连接数量</td></tr></tbody></table><h2 id=请求链接权限模块>请求、链接、权限模块</h2><h3 id=请求与连接区别>请求与连接区别</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>connection是连接:即常说的tcp连接，三次握手，状态机
-request是请求:例如http请求，无状态的协议
-request是必须建立在connection之上
-</code></pre></td></tr></table></div></div><h4 id=connection限制客户端并发连接数>connection限制客户端并发连接数</h4><p>Nginx默认是有这个模块，可以通过<code>--without-http_limit_conn_module</code> 禁用</p><p>由于限制客户端需要每个worker子进程对客户端有标识，所以需要用到共享内存。</p><h5 id=常用指令>常用指令</h5><ul><li><p>limit_conn_zone</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>/test 与 /test/
+</span></span><span class=line><span class=cl>/test 先找目录  找不到 会尝试找test文件
+</span></span><span class=line><span class=cl>/test/ 只会当做文件目录
+</span></span></code></pre></td></tr></table></div></div><h3 id=sub_status-模块>sub_status 模块</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>上下文 http
-写法 limit_conn_zone $binary_remote_addr zone=addr:10m
-通常1m共享内存空间大小都能维护3万多并发连接 10m已经很大了 addr是名称
-binary_remote_addr 相比 remote_addr 空间使用更少 前者4 后面7-8字节
-</code></pre></td></tr></table></div></div></li><li><p>limit_conn_status</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>location /uri{
+</span></span><span class=line><span class=cl>		stub_status; 
+</span></span><span class=line><span class=cl>}
+</span></span><span class=line><span class=cl>也可以写在server层级
+</span></span></code></pre></td></tr></table></div></div><table><thead><tr><th>状态项</th><th>含义</th></tr></thead><tbody><tr><td>Active Connections</td><td>活跃的连接数量</td></tr><tr><td>accepts</td><td>接受的客户端连接总数量</td></tr><tr><td>handled</td><td>处理的客户端连接总数量</td></tr><tr><td>requests</td><td>客户端总的请求数量</td></tr><tr><td>Reading</td><td>读取客户端的连接数</td></tr><tr><td>Writing</td><td>响应数据到客户端的连接数</td></tr><tr><td>Waiting</td><td>空闲客户端请求连接数量</td></tr></tbody></table><h2 id=请求链接权限模块>请求、链接、权限模块</h2><h3 id=请求与连接区别>请求与连接区别</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>上下文：http、server、location
-limit_conn_status code 
-默认状态码 limit_conn_status 503  超过连接数后返回的状态码
-</code></pre></td></tr></table></div></div></li><li><p>limit_conn_log_level</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>connection是连接:即常说的tcp连接，三次握手，状态机
+</span></span><span class=line><span class=cl>request是请求:例如http请求，无状态的协议
+</span></span><span class=line><span class=cl>request是必须建立在connection之上
+</span></span></code></pre></td></tr></table></div></div><h4 id=connection限制客户端并发连接数>connection限制客户端并发连接数</h4><p>Nginx默认是有这个模块，可以通过<code>--without-http_limit_conn_module</code> 禁用</p><p>由于限制客户端需要每个worker子进程对客户端有标识，所以需要用到共享内存。</p><h5 id=常用指令>常用指令</h5><ul><li><p>limit_conn_zone</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>上下文：http、server、location
-limit_conn_ log_level info|notice|warn|error
-默认error 当限速行为发生时会产生日志
-</code></pre></td></tr></table></div></div></li><li><p>limit_conn</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>limit_conn 上面的名称 限速多少个客户端并发连接
-</code></pre></td></tr></table></div></div><p>限制的只是并发连接才会出现。</p></li></ul><h3 id=request限制客户端请求平均速率>request限制客户端请求平均速率</h3><p><strong>写法跟conn一样</strong></p><p>Nginx默认是有这个模块，可以通过<code>--without-http_limit_req_module</code> 禁用</p><p>由于限制客户端需要每个worker子进程对客户端有标识，所以需要用到共享内存。</p><p>使用 限流算法是leaky_bucket算法，漏桶算法，使流量平滑进入</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>上下文 http
+</span></span><span class=line><span class=cl>写法 limit_conn_zone $binary_remote_addr zone=addr:10m
+</span></span><span class=line><span class=cl>通常1m共享内存空间大小都能维护3万多并发连接 10m已经很大了 addr是名称
+</span></span><span class=line><span class=cl>binary_remote_addr 相比 remote_addr 空间使用更少 前者4 后面7-8字节
+</span></span></code></pre></td></tr></table></div></div></li><li><p>limit_conn_status</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>上下文：http、server、location
+</span></span><span class=line><span class=cl>limit_conn_status code 
+</span></span><span class=line><span class=cl>默认状态码 limit_conn_status 503  超过连接数后返回的状态码
+</span></span></code></pre></td></tr></table></div></div></li><li><p>limit_conn_log_level</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>上下文：http、server、location
+</span></span><span class=line><span class=cl>limit_conn_ log_level info|notice|warn|error
+</span></span><span class=line><span class=cl>默认error 当限速行为发生时会产生日志
+</span></span></code></pre></td></tr></table></div></div></li><li><p>limit_conn</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>limit_conn 上面的名称 限速多少个客户端并发连接
+</span></span></code></pre></td></tr></table></div></div><p>限制的只是并发连接才会出现。</p></li></ul><h3 id=request限制客户端请求平均速率>request限制客户端请求平均速率</h3><p><strong>写法跟conn一样</strong></p><p>Nginx默认是有这个模块，可以通过<code>--without-http_limit_req_module</code> 禁用</p><p>由于限制客户端需要每个worker子进程对客户端有标识，所以需要用到共享内存。</p><p>使用 限流算法是leaky_bucket算法，漏桶算法，使流量平滑进入</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
 </span><span class=lnt>6
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>limit_req_zone $binary_remote_addr zone=addr:10m rate=2r/m
-一分钟处理两个请求
-limit_req_log_level 限速日志级别
-limit_conn_status 状态码
-limit_req zone=addr burst=7 nodelay;
-设置了 rate 可以不设置burst=7 nodelay 连续请求
-</code></pre></td></tr></table></div></div><h3 id=限定指定ip-访问>限定指定ip 访问</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>limit_req_zone $binary_remote_addr zone=addr:10m rate=2r/m
+</span></span><span class=line><span class=cl>一分钟处理两个请求
+</span></span><span class=line><span class=cl>limit_req_log_level 限速日志级别
+</span></span><span class=line><span class=cl>limit_conn_status 状态码
+</span></span><span class=line><span class=cl>limit_req zone=addr burst=7 nodelay;
+</span></span><span class=line><span class=cl>设置了 rate 可以不设置burst=7 nodelay 连续请求
+</span></span></code></pre></td></tr></table></div></div><h3 id=限定指定ip-访问>限定指定ip 访问</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -475,38 +466,38 @@ limit_req zone=addr burst=7 nodelay;
 </span><span class=lnt> 9
 </span><span class=lnt>10
 </span><span class=lnt>11
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>allow 允许
-deny 拒绝  会直接返回403 forbidden
-http、server、location、limit_except 上下文 
-可以组合编写,从上到下范围筛选 
-location/{
-	deny 192.168.1.1;
-	allow 192.168.1.0/24;
-	allow 10.1.1.0/16;
-	allow 2001:0db8::/32;
-	deny all;
-}
-</code></pre></td></tr></table></div></div><h3 id=限制特定用户访问auth_basic模块>限制特定用户访问auth_basic模块</h3><p>默认已经有了的模块：可以通过<code>--without-http_auth_basic_module</code>禁用</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>allow 允许
+</span></span><span class=line><span class=cl>deny 拒绝  会直接返回403 forbidden
+</span></span><span class=line><span class=cl>http、server、location、limit_except 上下文 
+</span></span><span class=line><span class=cl>可以组合编写,从上到下范围筛选 
+</span></span><span class=line><span class=cl>location/{
+</span></span><span class=line><span class=cl>	deny 192.168.1.1;
+</span></span><span class=line><span class=cl>	allow 192.168.1.0/24;
+</span></span><span class=line><span class=cl>	allow 10.1.1.0/16;
+</span></span><span class=line><span class=cl>	allow 2001:0db8::/32;
+</span></span><span class=line><span class=cl>	deny all;
+</span></span><span class=line><span class=cl>}
+</span></span></code></pre></td></tr></table></div></div><h3 id=限制特定用户访问auth_basic模块>限制特定用户访问auth_basic模块</h3><p>默认已经有了的模块：可以通过<code>--without-http_auth_basic_module</code>禁用</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
 </span><span class=lnt>6
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>语法：auth_basic 浏览器提示语|off;
-默认值：auth_basic off;
-上下文：http、server、location、limit_except
-
-语法：auth_basic_user_file 配置的密钥文件绝对地址;
-上下文：http、server、location、limit_except
-</code></pre></td></tr></table></div></div><p>制作用户名密码</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>语法：auth_basic 浏览器提示语|off;
+</span></span><span class=line><span class=cl>默认值：auth_basic off;
+</span></span><span class=line><span class=cl>上下文：http、server、location、limit_except
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>语法：auth_basic_user_file 配置的密钥文件绝对地址;
+</span></span><span class=line><span class=cl>上下文：http、server、location、limit_except
+</span></span></code></pre></td></tr></table></div></div><p>制作用户名密码</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>可执行程序：htpasswd
-所属软件包：httpd-tools
-生成新的密码文件：htpasswd -bc encrypt_pass jack 123456
-添加新用户密码：htpasswd -b encrypt_pass mike 123456
-</code></pre></td></tr></table></div></div><h3 id=给予http响应码做权限>给予HTTP响应码做权限</h3><p>需要增加模块<code>--with-http_auth_request_module</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-gdscript3 data-lang=gdscript3><span class=line><span class=cl><span class=err>可执行程序：</span><span class=n>htpasswd</span>
+</span></span><span class=line><span class=cl><span class=err>所属软件包：</span><span class=n>httpd</span><span class=o>-</span><span class=n>tools</span>
+</span></span><span class=line><span class=cl><span class=err>生成新的密码文件：</span><span class=n>htpasswd</span> <span class=o>-</span><span class=n>bc</span> <span class=n>encrypt_pass</span> <span class=n>jack</span> <span class=mi>123456</span>
+</span></span><span class=line><span class=cl><span class=err>添加新用户密码：</span><span class=n>htpasswd</span> <span class=o>-</span><span class=n>b</span> <span class=n>encrypt_pass</span> <span class=n>mike</span> <span class=mi>123456</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=给予http响应码做权限>给予HTTP响应码做权限</h3><p>需要增加模块<code>--with-http_auth_request_module</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -521,30 +512,28 @@ location/{
 </span><span class=lnt>13
 </span><span class=lnt>14
 </span><span class=lnt>15
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>语法：auth_request uri|off;
-默认值：auth_request off;
-上下文：http、server、location
-
-location /private/{
-	auth_request /auth;
-}
-location /auth {
-	//授权服务器，根据返回状态码做后续操作 成功状态200
-	proxy_pass http://127.0.0.1:8080/verify;
-	// 带上请求信息可以
-	proxy_pass_request_body off;
-	proxy_set_header Content-Length &#34;&#34;;
-	proxy_set_header X-Original-URI $request_uri;
-}
-</code></pre></td></tr></table></div></div><h2 id=tcp与http相关变量学习>tcp与http相关变量学习</h2><h3 id=tcp相关变量>TCP相关变量</h3><table><thead><tr><th style=text-align:left>变量名</th><th>含义</th></tr></thead><tbody><tr><td style=text-align:left>remote_addr</td><td>客户端IP地址</td></tr><tr><td style=text-align:left>remote_port</td><td>客户端端口</td></tr><tr><td style=text-align:left>server addr</td><td>服务端IP地址</td></tr><tr><td style=text-align:left>server_port</td><td>服务端端口</td></tr><tr><td style=text-align:left>server protocol</td><td>服务端协议</td></tr><tr><td style=text-align:left>binary_remote_addr</td><td>二进制格式的客户端IP地址 固定4字节</td></tr><tr><td style=text-align:left>connection</td><td>TCP连接的序号，递增</td></tr><tr><td style=text-align:left>connection_request</td><td>TCP连接当前的请求数量</td></tr><tr><td style=text-align:left>proxy_protocol_addr</td><td>若使用了proxy_protocol协议则返回协议中地址 否则返回空</td></tr><tr><td style=text-align:left>proxy_protocol_port</td><td>若使用了proxy_protocol协议则返回协议中端口 否则返回空</td></tr></tbody></table><h3 id=http-请求过程中相关变量>HTTP 请求过程中相关变量</h3><table><thead><tr><th>变量名</th><th>含义</th></tr></thead><tbody><tr><td>uri</td><td>请求的URL,不包含参数</td></tr><tr><td>request_uri</td><td>请求的URL,包含参数</td></tr><tr><td>scheme</td><td>协议名，http或https</td></tr><tr><td>request_method</td><td>请求方法</td></tr><tr><td>request_length</td><td>全部请求的长度，包括请求行、请求头、请求体</td></tr><tr><td>args</td><td>全部参数字符串</td></tr><tr><td>arg_参数名</td><td>特定参数值</td></tr><tr><td>is_args</td><td>URL中有参数，则返回？否则返回空</td></tr><tr><td>query_string</td><td>与args相同</td></tr><tr><td>remote_user</td><td>由HTTP Basic Authentication协议传入的用户名</td></tr></tbody></table><p><code>特殊变量</code></p><table><thead><tr><th>host</th><th>先看请求行，再看请求头，最后找server_name</th></tr></thead><tbody><tr><td>http_user_agent</td><td>用户浏览器</td></tr><tr><td>http_referer</td><td>从哪些链接过来的请求</td></tr><tr><td>http_via</td><td>经过一层代理服务器，添加对应代理服务器的信息</td></tr><tr><td>http_x_forwarded_for</td><td>获取用户真实IP</td></tr><tr><td>http_cookie</td><td>用户cookie</td></tr></tbody></table><h3 id=处理http请求中的变量>处理http请求中的变量</h3><table><thead><tr><th>变量名</th><th>含义</th></tr></thead><tbody><tr><td>request_time</td><td>处理请求已耗费的时间</td></tr><tr><td>request_completion</td><td>请求处理完成返回OK,否则返回空</td></tr><tr><td>server_name</td><td>匹配上请求的server_name值</td></tr><tr><td>https</td><td>若开启https,则返回on,否则返回空</td></tr><tr><td>request_filename</td><td>磁盘文件系统待访问文件的完整路径</td></tr><tr><td>document_root</td><td>由URI和root/alias规则生成的文件夹路径</td></tr><tr><td>realpath_root</td><td>将document_root中的软链接换成真实路径</td></tr><tr><td>limit_rate</td><td>返回响应时的速度上限值</td></tr></tbody></table><h2 id=rewrite模块中的return指令>rewrite模块中的return指令</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>语法：auth_request uri|off;
+</span></span><span class=line><span class=cl>默认值：auth_request off;
+</span></span><span class=line><span class=cl>上下文：http、server、location
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>location /private/{
+</span></span><span class=line><span class=cl>	auth_request /auth;
+</span></span><span class=line><span class=cl>}
+</span></span><span class=line><span class=cl>location /auth {
+</span></span><span class=line><span class=cl>	//授权服务器，根据返回状态码做后续操作 成功状态200
+</span></span><span class=line><span class=cl>	proxy_pass http://127.0.0.1:8080/verify;
+</span></span><span class=line><span class=cl>	// 带上请求信息可以
+</span></span><span class=line><span class=cl>	proxy_pass_request_body off;
+</span></span><span class=line><span class=cl>	proxy_set_header Content-Length &#34;&#34;;
+</span></span><span class=line><span class=cl>	proxy_set_header X-Original-URI $request_uri;
+</span></span><span class=line><span class=cl>}
+</span></span></code></pre></td></tr></table></div></div><h2 id=tcp与http相关变量学习>tcp与http相关变量学习</h2><h3 id=tcp相关变量>TCP相关变量</h3><table><thead><tr><th style=text-align:left>变量名</th><th>含义</th></tr></thead><tbody><tr><td style=text-align:left>remote_addr</td><td>客户端IP地址</td></tr><tr><td style=text-align:left>remote_port</td><td>客户端端口</td></tr><tr><td style=text-align:left>server addr</td><td>服务端IP地址</td></tr><tr><td style=text-align:left>server_port</td><td>服务端端口</td></tr><tr><td style=text-align:left>server protocol</td><td>服务端协议</td></tr><tr><td style=text-align:left>binary_remote_addr</td><td>二进制格式的客户端IP地址 固定4字节</td></tr><tr><td style=text-align:left>connection</td><td>TCP连接的序号，递增</td></tr><tr><td style=text-align:left>connection_request</td><td>TCP连接当前的请求数量</td></tr><tr><td style=text-align:left>proxy_protocol_addr</td><td>若使用了proxy_protocol协议则返回协议中地址 否则返回空</td></tr><tr><td style=text-align:left>proxy_protocol_port</td><td>若使用了proxy_protocol协议则返回协议中端口 否则返回空</td></tr></tbody></table><h3 id=http-请求过程中相关变量>HTTP 请求过程中相关变量</h3><table><thead><tr><th>变量名</th><th>含义</th></tr></thead><tbody><tr><td>uri</td><td>请求的URL,不包含参数</td></tr><tr><td>request_uri</td><td>请求的URL,包含参数</td></tr><tr><td>scheme</td><td>协议名，http或https</td></tr><tr><td>request_method</td><td>请求方法</td></tr><tr><td>request_length</td><td>全部请求的长度，包括请求行、请求头、请求体</td></tr><tr><td>args</td><td>全部参数字符串</td></tr><tr><td>arg_参数名</td><td>特定参数值</td></tr><tr><td>is_args</td><td>URL中有参数，则返回？否则返回空</td></tr><tr><td>query_string</td><td>与args相同</td></tr><tr><td>remote_user</td><td>由HTTP Basic Authentication协议传入的用户名</td></tr></tbody></table><p><code>特殊变量</code></p><table><thead><tr><th>host</th><th>先看请求行，再看请求头，最后找server_name</th></tr></thead><tbody><tr><td>http_user_agent</td><td>用户浏览器</td></tr><tr><td>http_referer</td><td>从哪些链接过来的请求</td></tr><tr><td>http_via</td><td>经过一层代理服务器，添加对应代理服务器的信息</td></tr><tr><td>http_x_forwarded_for</td><td>获取用户真实IP</td></tr><tr><td>http_cookie</td><td>用户cookie</td></tr></tbody></table><h3 id=处理http请求中的变量>处理http请求中的变量</h3><table><thead><tr><th>变量名</th><th>含义</th></tr></thead><tbody><tr><td>request_time</td><td>处理请求已耗费的时间</td></tr><tr><td>request_completion</td><td>请求处理完成返回OK,否则返回空</td></tr><tr><td>server_name</td><td>匹配上请求的server_name值</td></tr><tr><td>https</td><td>若开启https,则返回on,否则返回空</td></tr><tr><td>request_filename</td><td>磁盘文件系统待访问文件的完整路径</td></tr><tr><td>document_root</td><td>由URI和root/alias规则生成的文件夹路径</td></tr><tr><td>realpath_root</td><td>将document_root中的软链接换成真实路径</td></tr><tr><td>limit_rate</td><td>返回响应时的速度上限值</td></tr></tbody></table><h2 id=rewrite模块中的return指令>rewrite模块中的return指令</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
-</span><span class=lnt>4
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>### return指令
-
-`return 执行后 后续的执行是不会执行的`
-
-</code></pre></td></tr></table></div></div><p>语法：return code [text];
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>### return指令
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>`return 执行后 后续的执行是不会执行的`
+</span></span></code></pre></td></tr></table></div></div><p>语法：return code [text];
 return code URL;
 return URL;
 上下文：server、location、if
@@ -552,17 +541,15 @@ return URL;
 2XX:成功
 3XX:重定向
 4XX:客户端错误
-5XX:服务器错误</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+5XX:服务器错误</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span><span class=lnt>3
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>
-### rewrite指令
-
-</code></pre></td></tr></table></div></div><p>语法：rewrite regex replacement [flag];
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>### rewrite指令
+</span></span></code></pre></td></tr></table></div></div><p>语法：rewrite regex replacement [flag];
 上下文：server、location、if
 示例：rewrite /images/(.*.jpg)$/pic/$1;
 last：这是讲images下面.jpg的文件 都重定到pic路径去查看对应的location
-break ：这是讲images下面.jpg的文件 都重定到pic路径去查看对应的文件路径</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+break ：这是讲images下面.jpg的文件 都重定到pic路径去查看对应的文件路径</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -581,26 +568,26 @@ break ：这是讲images下面.jpg的文件 都重定到pic路径去查看对应
 </span><span class=lnt>17
 </span><span class=lnt>18
 </span><span class=lnt>19
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>
-**flag说明**
-
-- last 重写后的URL发起新请求，再此进入server段，尝试location中的匹配
-- break 直接使用重写后的URL,不再匹配其他location中语句
-- redirect 返回302临时重定向
-- permanent 返回301永久重定向
-
-示例
-
-​```nginx
-location /search {
-	rewrite ^/(.*)http://www.cctv.com permanent;
-location /images {
-	rewrite /images/(.*) /pics/$1 break;
-location /pics {
-	rewrite /pics/(.*)/photos/$1 ;
-location /photos {
-}
-</code></pre></td></tr></table></div></div><h3 id=if语句>if语句</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>**flag说明**
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>- last 重写后的URL发起新请求，再此进入server段，尝试location中的匹配
+</span></span><span class=line><span class=cl>- break 直接使用重写后的URL,不再匹配其他location中语句
+</span></span><span class=line><span class=cl>- redirect 返回302临时重定向
+</span></span><span class=line><span class=cl>- permanent 返回301永久重定向
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>示例
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>​```nginx
+</span></span><span class=line><span class=cl>location /search {
+</span></span><span class=line><span class=cl>	rewrite ^/(.*)http://www.cctv.com permanent;
+</span></span><span class=line><span class=cl>location /images {
+</span></span><span class=line><span class=cl>	rewrite /images/(.*) /pics/$1 break;
+</span></span><span class=line><span class=cl>location /pics {
+</span></span><span class=line><span class=cl>	rewrite /pics/(.*)/photos/$1 ;
+</span></span><span class=line><span class=cl>location /photos {
+</span></span><span class=line><span class=cl>}
+</span></span></code></pre></td></tr></table></div></div><h3 id=if语句>if语句</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
@@ -608,15 +595,15 @@ location /photos {
 </span><span class=lnt>6
 </span><span class=lnt>7
 </span><span class=lnt>8
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>$variable 仅为变量时，值为空或以0开头字符串都会被当做false处理 类似布尔值
-=或！= 相等或不等比较
-~或！~正则匹配或非正则匹配
-~*正则匹配，不区分大小写
--f或！-f检查文件存在或不存在
--d或！-d检查目录存在或不存在
--e或！-e检查文件、目录、符号链接等存在或不存在
--x或！-X检查文件可执行或不可执行
-</code></pre></td></tr></table></div></div><p>示例</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-gdscript3 data-lang=gdscript3><span class=line><span class=cl><span class=o>$</span><span class=n>variable</span> <span class=err>仅为变量时，值为空或以</span><span class=mi>0</span><span class=err>开头字符串都会被当做</span><span class=n>false处理</span> <span class=err>类似布尔值</span>
+</span></span><span class=line><span class=cl><span class=o>=</span><span class=err>或！</span><span class=o>=</span> <span class=err>相等或不等比较</span>
+</span></span><span class=line><span class=cl><span class=o>~</span><span class=err>或！</span><span class=o>~</span><span class=err>正则匹配或非正则匹配</span>
+</span></span><span class=line><span class=cl><span class=o>~*</span><span class=err>正则匹配，不区分大小写</span>
+</span></span><span class=line><span class=cl><span class=o>-</span><span class=n>f或</span><span class=err>！</span><span class=o>-</span><span class=n>f检查文件存在或不存在</span>
+</span></span><span class=line><span class=cl><span class=o>-</span><span class=n>d或</span><span class=err>！</span><span class=o>-</span><span class=n>d检查目录存在或不存在</span>
+</span></span><span class=line><span class=cl><span class=o>-</span><span class=n>e或</span><span class=err>！</span><span class=o>-</span><span class=n>e检查文件</span><span class=err>、目录、符号链接等存在或不存在</span>
+</span></span><span class=line><span class=cl><span class=o>-</span><span class=n>x或</span><span class=err>！</span><span class=o>-</span><span class=n>X检查文件可执行或不可执行</span>
+</span></span></code></pre></td></tr></table></div></div><p>示例</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -626,25 +613,25 @@ location /photos {
 </span><span class=lnt> 8
 </span><span class=lnt> 9
 </span><span class=lnt>10
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-nginx data-lang=nginx><span class=k>location</span> <span class=s>/search/</span> <span class=p>{</span>
-<span class=kn>if</span> <span class=s>(</span><span class=nv>$remote_addr</span> <span class=p>=</span> <span class=s>&#34;192.168.184.1&#34;</span> <span class=s>)</span> <span class=p>{</span>
-	<span class=kn>return</span> <span class=mi>200</span> <span class=s>&#34;test</span> <span class=s>if</span> <span class=s>OK</span> <span class=s>in</span> <span class=s>URL</span> <span class=s>/search/&#34;</span><span class=p>;</span>
-<span class=p>}</span>
-<span class=kn>location</span> <span class=s>/</span> <span class=p>{</span>
-	<span class=kn>if</span> <span class=s>(</span><span class=nv>$uri</span> <span class=p>=</span> <span class=s>&#34;/images</span> <span class=s>/&#34;)</span> <span class=p>{</span>
-	<span class=kn>rewrite</span> <span class=s>(.*)</span> <span class=s>/pics/</span> <span class=s>break</span><span class=p>;</span>
-<span class=p>}</span>
-	<span class=kn>return</span> <span class=mi>200</span><span class=s>&#34;test</span> <span class=s>if</span> <span class=s>failed</span>
-<span class=err>}</span>
-</code></pre></td></tr></table></div></div><h3 id=autoindex>autoindex</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=line><span class=cl><span class=k>location</span> <span class=s>/search/</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl><span class=kn>if</span> <span class=s>(</span><span class=nv>$remote_addr</span> <span class=p>=</span> <span class=s>&#34;192.168.184.1&#34;</span> <span class=s>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=kn>return</span> <span class=mi>200</span> <span class=s>&#34;test</span> <span class=s>if</span> <span class=s>OK</span> <span class=s>in</span> <span class=s>URL</span> <span class=s>/search/&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=kn>location</span> <span class=s>/</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=kn>if</span> <span class=s>(</span><span class=nv>$uri</span> <span class=p>=</span> <span class=s>&#34;/images</span> <span class=s>/&#34;)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=kn>rewrite</span> <span class=s>(.*)</span> <span class=s>/pics/</span> <span class=s>break</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=kn>return</span> <span class=mi>200</span><span class=s>&#34;test</span> <span class=s>if</span> <span class=s>failed</span>
+</span></span><span class=line><span class=cl><span class=err>}</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=autoindex>autoindex</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>autoindex on|off 打开关闭 默认off
-autoindex_exact_size on|off 文件大小是否精确到字节 默认on
-autoindex_format json|html|xml|jsonp  默认html
-autoindex_localtime 文件时间格式 默认off
-</code></pre></td></tr></table></div></div><p>示例</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>autoindex on|off 打开关闭 默认off
+</span></span><span class=line><span class=cl>autoindex_exact_size on|off 文件大小是否精确到字节 默认on
+</span></span><span class=line><span class=cl>autoindex_format json|html|xml|jsonp  默认html
+</span></span><span class=line><span class=cl>autoindex_localtime 文件时间格式 默认off
+</span></span></code></pre></td></tr></table></div></div><p>示例</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -654,31 +641,31 @@ autoindex_localtime 文件时间格式 默认off
 </span><span class=lnt> 8
 </span><span class=lnt> 9
 </span><span class=lnt>10
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-nginx data-lang=nginx><span class=k>location</span> <span class=s>/download/</span><span class=p>{</span>
-	<span class=kn>root</span> <span class=s>/opt/source</span><span class=p>;</span>
-	<span class=kn>index</span> <span class=s>a.html</span><span class=p>;</span>
-	<span class=kn>autoindex</span> <span class=no>on</span><span class=p>;</span>
-	<span class=kn>autoindex</span> <span class=s>exact</span> <span class=s>size</span> <span class=no>on</span><span class=p>;</span>
-	<span class=kn>autoindex</span> <span class=s>format</span> <span class=s>html</span><span class=p>;</span>
-	<span class=kn>autoindex_localtime</span> <span class=no>off</span><span class=p>;</span>
-<span class=p>}</span>
-<span class=k>访问</span> <span class=s>/opt/source/download/下面的文件</span>
-<span class=s>如果存在a.html直接访问这个页面</span> 
-</code></pre></td></tr></table></div></div><h2 id=反向代理服务器>反向代理服务器</h2><ul><li>反向代理服务器介于用户和真实服务器之间，提供请求和响应的中转服务</li><li>对于用户而言，访问反向代理服务器就是访问真实服务器</li><li>反向代理可以有效降低服务器的负载消耗，提升效率</li></ul><h3 id=upstream模块>upstream模块</h3><blockquote><p>定义上游服务器的连接信息，请求控制之类的基本信息。</p></blockquote><table><thead><tr><th>指令</th><th>含议</th></tr></thead><tbody><tr><td>upstream</td><td>段名，以{开始, }结束，中间定义上游服务URL</td></tr><tr><td>server</td><td>定义上游服务地址</td></tr><tr><td>zone</td><td>定义共享内存，用于跨worker子进程</td></tr><tr><td>keepalive</td><td>对上游服务启用长连接</td></tr><tr><td>keepalive_ requests</td><td>一个长连接最多请求个数</td></tr><tr><td>keepalive_timeout</td><td>空闲情形下,一个长连接的超时时长</td></tr><tr><td>hash</td><td>哈希负载均衡算法</td></tr><tr><td>ip_hash</td><td>依据IP进行哈希计算的负载均衡算法</td></tr><tr><td>least_conn</td><td>最少连接数负载均衡算法</td></tr><tr><td>least_time</td><td>最短响应时间负载均衡算法</td></tr><tr><td>random</td><td>随机负载均衡算法</td></tr></tbody></table><h4 id=上游服务器server-配置参数>上游服务器server 配置参数</h4><table><thead><tr><th>weight=number</th><th>权重值，默认为1</th></tr></thead><tbody><tr><td>max_conns= number</td><td>上游服务器的最大并发连接数</td></tr><tr><td>fail_timeout= time</td><td>服务器不可用的判定时间</td></tr><tr><td>max_fails= number</td><td>服务器不可用的检查次数</td></tr><tr><td>backup</td><td>备份服务器仅当其他服务 器都不可用时</td></tr><tr><td>down</td><td>标记服务器长期不可用,离线维护</td></tr></tbody></table><p>默认已被编译进Nginx 禁用须通过<code>--without-http_upstream_module</code></p><p><strong>配置示例</strong></p><blockquote><p>就是说在10秒内有两次请求失败 就会认为服务器不可用</p></blockquote><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=line><span class=cl><span class=k>location</span> <span class=s>/download/</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=kn>root</span> <span class=s>/opt/source</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=kn>index</span> <span class=s>a.html</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=kn>autoindex</span> <span class=no>on</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=kn>autoindex</span> <span class=s>exact</span> <span class=s>size</span> <span class=no>on</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=kn>autoindex</span> <span class=s>format</span> <span class=s>html</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=kn>autoindex_localtime</span> <span class=no>off</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=k>访问</span> <span class=s>/opt/source/download/下面的文件</span>
+</span></span><span class=line><span class=cl><span class=s>如果存在a.html直接访问这个页面</span> 
+</span></span></code></pre></td></tr></table></div></div><h2 id=反向代理服务器>反向代理服务器</h2><ul><li>反向代理服务器介于用户和真实服务器之间，提供请求和响应的中转服务</li><li>对于用户而言，访问反向代理服务器就是访问真实服务器</li><li>反向代理可以有效降低服务器的负载消耗，提升效率</li></ul><h3 id=upstream模块>upstream模块</h3><blockquote><p>定义上游服务器的连接信息，请求控制之类的基本信息。</p></blockquote><table><thead><tr><th>指令</th><th>含议</th></tr></thead><tbody><tr><td>upstream</td><td>段名，以{开始, }结束，中间定义上游服务URL</td></tr><tr><td>server</td><td>定义上游服务地址</td></tr><tr><td>zone</td><td>定义共享内存，用于跨worker子进程</td></tr><tr><td>keepalive</td><td>对上游服务启用长连接</td></tr><tr><td>keepalive_ requests</td><td>一个长连接最多请求个数</td></tr><tr><td>keepalive_timeout</td><td>空闲情形下,一个长连接的超时时长</td></tr><tr><td>hash</td><td>哈希负载均衡算法</td></tr><tr><td>ip_hash</td><td>依据IP进行哈希计算的负载均衡算法</td></tr><tr><td>least_conn</td><td>最少连接数负载均衡算法</td></tr><tr><td>least_time</td><td>最短响应时间负载均衡算法</td></tr><tr><td>random</td><td>随机负载均衡算法</td></tr></tbody></table><h4 id=上游服务器server-配置参数>上游服务器server 配置参数</h4><table><thead><tr><th>weight=number</th><th>权重值，默认为1</th></tr></thead><tbody><tr><td>max_conns= number</td><td>上游服务器的最大并发连接数</td></tr><tr><td>fail_timeout= time</td><td>服务器不可用的判定时间</td></tr><tr><td>max_fails= number</td><td>服务器不可用的检查次数</td></tr><tr><td>backup</td><td>备份服务器仅当其他服务 器都不可用时</td></tr><tr><td>down</td><td>标记服务器长期不可用,离线维护</td></tr></tbody></table><p>默认已被编译进Nginx 禁用须通过<code>--without-http_upstream_module</code></p><p><strong>配置示例</strong></p><blockquote><p>就是说在10秒内有两次请求失败 就会认为服务器不可用</p></blockquote><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
 </span><span class=lnt>6
 </span><span class=lnt>7
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-nginx data-lang=nginx><span class=k>upstream</span> <span class=s>名称</span><span class=p>{</span>
-	<span class=kn>server</span> <span class=s>代理地址</span> <span class=s>weight=3</span> <span class=s>max_conns=</span> <span class=mi>1000</span> <span class=s>fail_timeout=10s</span> <span class=s>max_fails=2</span><span class=p>;</span>
-		<span class=kn>keepalive</span> <span class=mi>32</span><span class=p>;</span> <span class=c1># 上游空闲长连接最大数量
-</span><span class=c1></span>		<span class=kn>keepalive_requests</span> <span class=mi>50</span><span class=p>;</span> <span class=c1># 单个长连接可以处理的最多http请求个数
-</span><span class=c1></span>		<span class=kn>keepalive_timeout</span> <span class=s>30s</span><span class=p>;</span> <span class=c1># 空闲长连接超过这个时间没请求就销毁
-</span><span class=c1></span><span class=p>}</span>
-<span class=k>upstream</span> <span class=s>与</span> <span class=s>server一个层级</span>
-</code></pre></td></tr></table></div></div><h4 id=负载均衡配置示例>负载均衡配置示例</h4><blockquote><p>nginx默认是轮询server</p></blockquote><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=line><span class=cl><span class=k>upstream</span> <span class=s>名称</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=kn>server</span> <span class=s>代理地址</span> <span class=s>weight=3</span> <span class=s>max_conns=</span> <span class=mi>1000</span> <span class=s>fail_timeout=10s</span> <span class=s>max_fails=2</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=kn>keepalive</span> <span class=mi>32</span><span class=p>;</span> <span class=c1># 上游空闲长连接最大数量
+</span></span></span><span class=line><span class=cl><span class=c1></span>		<span class=kn>keepalive_requests</span> <span class=mi>50</span><span class=p>;</span> <span class=c1># 单个长连接可以处理的最多http请求个数
+</span></span></span><span class=line><span class=cl><span class=c1></span>		<span class=kn>keepalive_timeout</span> <span class=s>30s</span><span class=p>;</span> <span class=c1># 空闲长连接超过这个时间没请求就销毁
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=k>upstream</span> <span class=s>与</span> <span class=s>server一个层级</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=负载均衡配置示例>负载均衡配置示例</h4><blockquote><p>nginx默认是轮询server</p></blockquote><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -689,18 +676,18 @@ autoindex_localtime 文件时间格式 默认off
 </span><span class=lnt> 9
 </span><span class=lnt>10
 </span><span class=lnt>11
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-nginx data-lang=nginx><span class=k>upstream</span> <span class=s>名称</span><span class=p>{</span>
-	<span class=kn>server</span> <span class=s>代理地址</span><span class=p>;</span>
-    <span class=kn>server</span> <span class=s>代理地址</span><span class=p>;</span>
-    <span class=c1>#------不考虑上游服务器处理能力来负载
-</span><span class=c1></span>    <span class=kn>hash</span> <span class=nv>$变量名</span><span class=p>;</span><span class=c1># 这个就是单纯客户端配置以什么算hash值来负载 
-</span><span class=c1></span>    <span class=kn>ip_hash</span><span class=p>;</span> <span class=c1>#单纯以ip算hash值
-</span><span class=c1></span>    <span class=c1>#------考虑上游服务器能力 怎么维护服务器的信息,是多个worker子进程通过共享内存
-</span><span class=c1></span>    <span class=kn>zone</span> <span class=s>内存名称</span> <span class=s>10M</span><span class=p>;</span> <span class=c1># 通过共享内存维护上游服务器信息
-</span><span class=c1></span>    <span class=kn>least_conn</span><span class=p>;</span> <span class=c1>#挑选服务器处理连接数最少的，如果都一样 退化轮询；
-</span><span class=c1></span>    <span class=kn>least_time</span><span class=p>;</span> <span class=c1>#最短响应时间
-</span><span class=c1></span><span class=p>}</span>
-</code></pre></td></tr></table></div></div><h4 id=当上游服务器错误>当上游服务器错误</h4><blockquote><p>当 upstream上游服务器出错后请求转发到 proxy_next_upstream</p></blockquote><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=line><span class=cl><span class=k>upstream</span> <span class=s>名称</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=kn>server</span> <span class=s>代理地址</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=kn>server</span> <span class=s>代理地址</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=c1>#------不考虑上游服务器处理能力来负载
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=kn>hash</span> <span class=nv>$变量名</span><span class=p>;</span><span class=c1># 这个就是单纯客户端配置以什么算hash值来负载 
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=kn>ip_hash</span><span class=p>;</span> <span class=c1>#单纯以ip算hash值
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=c1>#------考虑上游服务器能力 怎么维护服务器的信息,是多个worker子进程通过共享内存
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=kn>zone</span> <span class=s>内存名称</span> <span class=s>10M</span><span class=p>;</span> <span class=c1># 通过共享内存维护上游服务器信息
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=kn>least_conn</span><span class=p>;</span> <span class=c1>#挑选服务器处理连接数最少的，如果都一样 退化轮询；
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=kn>least_time</span><span class=p>;</span> <span class=c1>#最短响应时间
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=当上游服务器错误>当上游服务器错误</h4><blockquote><p>当 upstream上游服务器出错后请求转发到 proxy_next_upstream</p></blockquote><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -714,25 +701,25 @@ autoindex_localtime 文件时间格式 默认off
 </span><span class=lnt>12
 </span><span class=lnt>13
 </span><span class=lnt>14
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-nginx data-lang=nginx><span class=k>语法:</span>
-<span class=s>proxy_next_upstream</span> <span class=s>error|</span> <span class=s>timeout|</span>
-<span class=s>invalid_header|http_500|</span> <span class=s>http_502|http_503|http_504|http_403|</span> <span class=s>http_404|</span> <span class=s>http_429|no_idempotent|off</span>
-<span class=c1># no_idempotent: 对非幂等请求失败是否需要转发 加上就会重试转发
-</span><span class=c1></span><span class=s>默认值:</span> <span class=s>proxy_next_upstream</span> <span class=s>error</span> <span class=s>timeout</span> <span class=p>;</span>
-<span class=k>上下文:http、server、</span> <span class=s>location</span>
-
-<span class=s>需要配置</span> <span class=s>proxy_next_upstream_timeout</span> <span class=s>等待时间</span>  <span class=s>proxy_next_upstream_tries</span> <span class=s>重试转发次数</span> 
-<span class=s>两个参数</span> <span class=s>默认都是0</span>
-
-<span class=s>proxy_intercept_errors</span> <span class=no>on</span><span class=s>|off</span> <span class=c1>#上游返回响应码大于300 是直接响应还是按照error_page处理
-</span><span class=c1></span><span class=s>默认on打开会使用error_page</span> <span class=s>关闭会直接返回上游信息</span>
-<span class=s>需要增加配置</span> <span class=s>error_page</span> <span class=mi>503</span> <span class=s>/503.html</span>  
-<span class=s>也可以error_page</span> <span class=mi>503</span> <span class=p>=</span><span class=mi>200</span> <span class=s>/503.html</span> <span class=s>这样用户看到的就是200状态码</span>
-</code></pre></td></tr></table></div></div><h4 id=proxy_pass指令>proxy_pass指令</h4><p>默认已被编译进Nginx 禁用须通过<code>--without-http_proxy_module</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=line><span class=cl><span class=k>语法:</span>
+</span></span><span class=line><span class=cl><span class=s>proxy_next_upstream</span> <span class=s>error|</span> <span class=s>timeout|</span>
+</span></span><span class=line><span class=cl><span class=s>invalid_header|http_500|</span> <span class=s>http_502|http_503|http_504|http_403|</span> <span class=s>http_404|</span> <span class=s>http_429|no_idempotent|off</span>
+</span></span><span class=line><span class=cl><span class=c1># no_idempotent: 对非幂等请求失败是否需要转发 加上就会重试转发
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=s>默认值:</span> <span class=s>proxy_next_upstream</span> <span class=s>error</span> <span class=s>timeout</span> <span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>上下文:http、server、</span> <span class=s>location</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=s>需要配置</span> <span class=s>proxy_next_upstream_timeout</span> <span class=s>等待时间</span>  <span class=s>proxy_next_upstream_tries</span> <span class=s>重试转发次数</span> 
+</span></span><span class=line><span class=cl><span class=s>两个参数</span> <span class=s>默认都是0</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=s>proxy_intercept_errors</span> <span class=no>on</span><span class=s>|off</span> <span class=c1>#上游返回响应码大于300 是直接响应还是按照error_page处理
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=s>默认on打开会使用error_page</span> <span class=s>关闭会直接返回上游信息</span>
+</span></span><span class=line><span class=cl><span class=s>需要增加配置</span> <span class=s>error_page</span> <span class=mi>503</span> <span class=s>/503.html</span>  
+</span></span><span class=line><span class=cl><span class=s>也可以error_page</span> <span class=mi>503</span> <span class=p>=</span><span class=mi>200</span> <span class=s>/503.html</span> <span class=s>这样用户看到的就是200状态码</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=proxy_pass指令>proxy_pass指令</h4><p>默认已被编译进Nginx 禁用须通过<code>--without-http_proxy_module</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>语法: proxy_ pass URL  url必须http或者https开头
-上下文: location、 if、limit_except
-</code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>语法: proxy_ pass URL  url必须http或者https开头
+</span></span><span class=line><span class=cl>上下文: location、 if、limit_except
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -747,22 +734,22 @@ autoindex_localtime 文件时间格式 默认off
 </span><span class=lnt>13
 </span><span class=lnt>14
 </span><span class=lnt>15
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-nginx data-lang=nginx><span class=k>upsteam</span> <span class=s>back_end</span> <span class=p>{</span>
-	<span class=kn>server</span> <span class=n>192.168.184.20</span><span class=p>:</span><span class=mi>8080</span> <span class=s>weight=2</span> <span class=s>max_conns=1000</span> <span class=s>fail_timeout=10s</span> <span class=s>max_fails=3</span><span class=p>;</span>
-		<span class=kn>keepalive</span> <span class=mi>32</span><span class=p>;</span>
-		<span class=kn>keepalive</span> <span class=s>requests</span> <span class=mi>80</span><span class=p>;</span>
-		<span class=kn>keepalive</span> <span class=s>timeout</span> <span class=s>20s</span><span class=p>;</span>
-<span class=p>}</span>
-<span class=k>server{</span>
-    <span class=s>listen</span> <span class=mi>80</span><span class=p>;</span>
-	<span class=k>server_name</span> <span class=s>proxy.kutian.edu</span><span class=p>;</span>
-	<span class=k>location</span> <span class=s>/proxy/</span> <span class=p>{</span>
-	<span class=kn>proxy_pass</span> <span class=s>http://back_end/proxy</span><span class=p>;</span>
-<span class=p>}</span>
-<span class=c1>## proxy_pass http://back_end/proxy/ 
-</span><span class=c1>## 尾部带反斜线nginx会更改url删除location后面地址 
-</span><span class=c1>## 不带反斜线会原封不动请求到上游服务器
-</span></code></pre></td></tr></table></div></div><h4 id=客户端请求代理服务器请求信息>客户端请求代理服务器请求信息</h4><blockquote><p>客户端超过这些规则 会返回413</p></blockquote><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=line><span class=cl><span class=k>upsteam</span> <span class=s>back_end</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=kn>server</span> <span class=n>192.168.184.20</span><span class=p>:</span><span class=mi>8080</span> <span class=s>weight=2</span> <span class=s>max_conns=1000</span> <span class=s>fail_timeout=10s</span> <span class=s>max_fails=3</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=kn>keepalive</span> <span class=mi>32</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=kn>keepalive</span> <span class=s>requests</span> <span class=mi>80</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=kn>keepalive</span> <span class=s>timeout</span> <span class=s>20s</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=k>server{</span>
+</span></span><span class=line><span class=cl>    <span class=s>listen</span> <span class=mi>80</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=k>server_name</span> <span class=s>proxy.kutian.edu</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=k>location</span> <span class=s>/proxy/</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=kn>proxy_pass</span> <span class=s>http://back_end/proxy</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=c1>## proxy_pass http://back_end/proxy/ 
+</span></span></span><span class=line><span class=cl><span class=c1>## 尾部带反斜线nginx会更改url删除location后面地址 
+</span></span></span><span class=line><span class=cl><span class=c1>## 不带反斜线会原封不动请求到上游服务器
+</span></span></span></code></pre></td></tr></table></div></div><h4 id=客户端请求代理服务器请求信息>客户端请求代理服务器请求信息</h4><blockquote><p>客户端超过这些规则 会返回413</p></blockquote><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -772,17 +759,17 @@ autoindex_localtime 文件时间格式 默认off
 </span><span class=lnt> 8
 </span><span class=lnt> 9
 </span><span class=lnt>10
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-nginx data-lang=nginx><span class=k>location</span> <span class=s>/proxy/</span> <span class=p>{</span>
-	<span class=kn>proxy_pass</span> <span class=s>http://back_end/proxy</span><span class=p>;</span> <span class=c1>#上游服务器
-</span><span class=c1></span>    <span class=kn>proxy_request_buffering</span> <span class=no>on</span><span class=p>;</span> <span class=c1># 打开缓冲默认打开。请求接收完在转发：nginx处理比较快，上有服务器处理比较低 利用缓存来提升吞吐量
-</span><span class=c1></span>	<span class=kn>client_max_body_size</span> <span class=mi>250k</span><span class=p>;</span> <span class=c1>#最大body大小 
-</span><span class=c1></span>	<span class=kn>client_body_buffer_size</span> <span class=mi>100k</span><span class=p>;</span><span class=c1>#客户端缓冲大小
-</span><span class=c1></span>	<span class=kn>client_body_temp_path</span> <span class=s>test_body_path</span><span class=p>;</span><span class=c1>#当大于缓冲大小 小于body大小 会把请求持久化到磁盘的位置
-</span><span class=c1></span>	<span class=kn>client_body_in_file_only</span> <span class=no>on</span><span class=p>;</span> <span class=c1>#不管请求体多大 都会把请求持久化到磁盘 默认off处理完成会删除
-</span><span class=c1></span>	<span class=kn>client_body_in_single_buffer</span> <span class=no>on</span><span class=p>;</span><span class=c1>#连续存储磁盘空间 默认off不连续
-</span><span class=c1></span>	<span class=kn>client_body_timeout</span> <span class=mi>30</span><span class=p>;</span> <span class=c1>#链接超时时间
-</span><span class=c1></span><span class=p>}</span>
-</code></pre></td></tr></table></div></div><h4 id=代理更改请求上游服务器>代理更改请求上游服务器</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=line><span class=cl><span class=k>location</span> <span class=s>/proxy/</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=kn>proxy_pass</span> <span class=s>http://back_end/proxy</span><span class=p>;</span> <span class=c1>#上游服务器
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=kn>proxy_request_buffering</span> <span class=no>on</span><span class=p>;</span> <span class=c1># 打开缓冲默认打开。请求接收完在转发：nginx处理比较快，上有服务器处理比较低 利用缓存来提升吞吐量
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=kn>client_max_body_size</span> <span class=mi>250k</span><span class=p>;</span> <span class=c1>#最大body大小 
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=kn>client_body_buffer_size</span> <span class=mi>100k</span><span class=p>;</span><span class=c1>#客户端缓冲大小
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=kn>client_body_temp_path</span> <span class=s>test_body_path</span><span class=p>;</span><span class=c1>#当大于缓冲大小 小于body大小 会把请求持久化到磁盘的位置
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=kn>client_body_in_file_only</span> <span class=no>on</span><span class=p>;</span> <span class=c1>#不管请求体多大 都会把请求持久化到磁盘 默认off处理完成会删除
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=kn>client_body_in_single_buffer</span> <span class=no>on</span><span class=p>;</span><span class=c1>#连续存储磁盘空间 默认off不连续
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=kn>client_body_timeout</span> <span class=mi>30</span><span class=p>;</span> <span class=c1>#链接超时时间
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=代理更改请求上游服务器>代理更改请求上游服务器</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -798,67 +785,65 @@ autoindex_localtime 文件时间格式 默认off
 </span><span class=lnt>14
 </span><span class=lnt>15
 </span><span class=lnt>16
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-nginx data-lang=nginx><span class=k>location</span> <span class=s>/proxy/</span> <span class=p>{</span>
-	<span class=kn>proxy_pass</span> <span class=s>http://back_end/proxy</span><span class=p>;</span> <span class=c1>#上游服务器
-</span><span class=c1></span>	<span class=kn>proxy_method</span> <span class=s>PUT</span><span class=p>;</span> <span class=c1>#请求方式修改
-</span><span class=c1></span>	<span class=kn>proxy_http_version</span> <span class=mi>1</span><span class=s>.1</span><span class=p>;</span><span class=c1># http版本  要支持长连接 必须是1.1 并且要与上游服务器使用长连接还需要设置header
-</span><span class=c1></span>	<span class=kn>proxy_pass_request_headers</span> <span class=no>off</span><span class=p>;</span> <span class=c1>#默认打开 全部转发上游服务器 
-</span><span class=c1></span>    <span class=kn>proxy_pass_request_body</span> <span class=no>off</span><span class=p>;</span> <span class=c1>#默认打开 
-</span><span class=c1></span>	<span class=kn>proxy_set_body</span> <span class=s>&#34;body信息&#34;</span><span class=p>;</span> <span class=c1>#  上面关闭不影响
-</span><span class=c1></span>    <span class=kn>proxy_set_header</span> <span class=s>test</span> <span class=s>&#34;header参数信息&#34;</span><span class=p>;</span> <span class=c1># 向头部插入信息 上面关闭不影响
-</span><span class=c1></span><span class=p>}</span>
-<span class=k>注意</span> <span class=s>proxy_set_header</span> <span class=s>默认重定义两个</span> <span class=s>Header</span> <span class=s>头字段，</span>
-<span class=s>proxy_set_header</span> <span class=s>Host</span> <span class=nv>$proxy_host</span><span class=p>;</span>
-<span class=k>proxy_set_header</span> <span class=s>Connection</span> <span class=s>close</span><span class=p>;</span>
-
-<span class=k>Host</span> <span class=s>初始值</span> <span class=nv>$proxy_host，这是因为</span> <span class=s>HTTP/1.1</span> <span class=s>必须包含</span> <span class=s>Host</span> <span class=s>字段以指定主机；至于</span> <span class=nv>$proxy_host</span> <span class=s>跟</span> <span class=nv>$host</span> <span class=s>的区别，前者是</span> <span class=s>backend</span> <span class=s>即后端的主机名，后者是</span> <span class=s>frontend</span> <span class=s>即自身的主机名。该字段要不要改成</span> <span class=nv>$host</span> <span class=s>或</span> <span class=nv>$http_host，视后端会不会校验域名和端口而定</span>
-
-<span class=s>Connection</span> <span class=s>初始值</span> <span class=s>close，也是因为在</span> <span class=s>HTTP/1.1</span> <span class=s>中所有连接都是长连接</span> <span class=s>(keep-alive)，除非声明</span> <span class=s>close</span> <span class=s>表示不需要，而后端的</span> <span class=s>Web</span> <span class=s>应用程序</span> <span class=s>(HTTP/1.0</span> <span class=s>或更古早的)</span> <span class=s>未必支持连接复用，所以统统设成</span> <span class=s>close</span> <span class=s>以免出错。跟后端通讯真需要用到</span> <span class=s>keep-alive，先配置一组</span> <span class=s>upstream</span> <span class=s>(上游服务器)，回头再清空</span> <span class=s>Connection</span> <span class=s>字段即可。即</span> <span class=s>proxy_set_header</span> <span class=s>Connection</span> <span class=s>&#34;&#34;</span><span class=p>;</span>
-</code></pre></td></tr></table></div></div><p><strong>连接指令</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=line><span class=cl><span class=k>location</span> <span class=s>/proxy/</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=kn>proxy_pass</span> <span class=s>http://back_end/proxy</span><span class=p>;</span> <span class=c1>#上游服务器
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=kn>proxy_method</span> <span class=s>PUT</span><span class=p>;</span> <span class=c1>#请求方式修改
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=kn>proxy_http_version</span> <span class=mi>1</span><span class=s>.1</span><span class=p>;</span><span class=c1># http版本  要支持长连接 必须是1.1 并且要与上游服务器使用长连接还需要设置header
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=kn>proxy_pass_request_headers</span> <span class=no>off</span><span class=p>;</span> <span class=c1>#默认打开 全部转发上游服务器 
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=kn>proxy_pass_request_body</span> <span class=no>off</span><span class=p>;</span> <span class=c1>#默认打开 
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=kn>proxy_set_body</span> <span class=s>&#34;body信息&#34;</span><span class=p>;</span> <span class=c1>#  上面关闭不影响
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=kn>proxy_set_header</span> <span class=s>test</span> <span class=s>&#34;header参数信息&#34;</span><span class=p>;</span> <span class=c1># 向头部插入信息 上面关闭不影响
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=k>注意</span> <span class=s>proxy_set_header</span> <span class=s>默认重定义两个</span> <span class=s>Header</span> <span class=s>头字段，</span>
+</span></span><span class=line><span class=cl><span class=s>proxy_set_header</span> <span class=s>Host</span> <span class=nv>$proxy_host</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>proxy_set_header</span> <span class=s>Connection</span> <span class=s>close</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>Host</span> <span class=s>初始值</span> <span class=nv>$proxy_host，这是因为</span> <span class=s>HTTP/1.1</span> <span class=s>必须包含</span> <span class=s>Host</span> <span class=s>字段以指定主机；至于</span> <span class=nv>$proxy_host</span> <span class=s>跟</span> <span class=nv>$host</span> <span class=s>的区别，前者是</span> <span class=s>backend</span> <span class=s>即后端的主机名，后者是</span> <span class=s>frontend</span> <span class=s>即自身的主机名。该字段要不要改成</span> <span class=nv>$host</span> <span class=s>或</span> <span class=nv>$http_host，视后端会不会校验域名和端口而定</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=s>Connection</span> <span class=s>初始值</span> <span class=s>close，也是因为在</span> <span class=s>HTTP/1.1</span> <span class=s>中所有连接都是长连接</span> <span class=s>(keep-alive)，除非声明</span> <span class=s>close</span> <span class=s>表示不需要，而后端的</span> <span class=s>Web</span> <span class=s>应用程序</span> <span class=s>(HTTP/1.0</span> <span class=s>或更古早的)</span> <span class=s>未必支持连接复用，所以统统设成</span> <span class=s>close</span> <span class=s>以免出错。跟后端通讯真需要用到</span> <span class=s>keep-alive，先配置一组</span> <span class=s>upstream</span> <span class=s>(上游服务器)，回头再清空</span> <span class=s>Connection</span> <span class=s>字段即可。即</span> <span class=s>proxy_set_header</span> <span class=s>Connection</span> <span class=s>&#34;&#34;</span><span class=p>;</span>
+</span></span></code></pre></td></tr></table></div></div><p><strong>连接指令</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-nginx data-lang=nginx><span class=k>proxy_connect_timeout</span> <span class=s>60s</span><span class=p>;</span> <span class=c1># 连接超时时间，比如3次握手   适用于http、server、location
-</span><span class=c1></span><span class=k>proxy_socket_keepalive</span> <span class=no>on</span><span class=s>|off</span><span class=p>;</span><span class=c1>#默认off;通过socket 替换长连接 适用于http、server、location
-</span><span class=c1></span><span class=k>proxy_send_timeout</span> <span class=s>time</span><span class=p>;</span><span class=c1>#默认值60s; 发送超时时间的超时时间 适用于http、server、location
-</span><span class=c1></span><span class=k>proxy_ignore_client_bort</span> <span class=no>on</span><span class=s>|off</span><span class=p>;</span> <span class=c1>#是否忽略客户端请求退出，on表示如果客户端断开连接，nginx到上游服务器也会断开连接；off表示如果客户端断开连接，nginx到上游服务器会到请求响应结束后再断开 默认关闭
-</span></code></pre></td></tr></table></div></div><h2 id=缓存>缓存</h2><h4 id=缓存文件-以便启动恢复>缓存文件-以便启动恢复</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=line><span class=cl><span class=k>proxy_connect_timeout</span> <span class=s>60s</span><span class=p>;</span> <span class=c1># 连接超时时间，比如3次握手   适用于http、server、location
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=k>proxy_socket_keepalive</span> <span class=no>on</span><span class=s>|off</span><span class=p>;</span><span class=c1>#默认off;通过socket 替换长连接 适用于http、server、location
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=k>proxy_send_timeout</span> <span class=s>time</span><span class=p>;</span><span class=c1>#默认值60s; 发送超时时间的超时时间 适用于http、server、location
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=k>proxy_ignore_client_bort</span> <span class=no>on</span><span class=s>|off</span><span class=p>;</span> <span class=c1>#是否忽略客户端请求退出，on表示如果客户端断开连接，nginx到上游服务器也会断开连接；off表示如果客户端断开连接，nginx到上游服务器会到请求响应结束后再断开 默认关闭
+</span></span></span></code></pre></td></tr></table></div></div><h2 id=缓存>缓存</h2><h4 id=缓存文件-以便启动恢复>缓存文件-以便启动恢复</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-nginx data-lang=nginx><span class=k>语法：proxy_cache_path</span> <span class=s>path</span> <span class=s>keys_zone=name:size</span> <span class=c1>#文件路径与缓存名称大小
-</span><span class=c1></span><span class=s>默认值：proxy_cache_path</span> <span class=no>off</span><span class=p>;</span>
-<span class=k>上下文：http</span>
-</code></pre></td></tr></table></div></div><table><thead><tr><th>可选参数</th><th>含义</th></tr></thead><tbody><tr><td>level</td><td>path的目录层级</td></tr><tr><td>use_ temp_path</td><td>off直接使用path路径; on使用proxy_temp_path路径</td></tr><tr><td>inactive</td><td>在指定时间内没有被访问缓存会被清理;默认10分钟</td></tr><tr><td>max_size</td><td>设定最大的缓存文件大小,超过将由CM清理</td></tr><tr><td>manager_files</td><td>CM清理一次缓存文件，最大清理文件数;默认100</td></tr><tr><td>manager_sleep</td><td>CM清理一次后进程的休眠时间;默认200毫秒</td></tr><tr><td>manager_threshold</td><td>CM清理一 次最长耗时;默认50毫秒</td></tr><tr><td>loader_files</td><td>CL载入文件到共享内存，每批最多文件数;默认100</td></tr><tr><td>loader_sleep</td><td>CL加载缓存文件到内存后,进程休眠时间;默认200毫秒</td></tr><tr><td>loader_threshold</td><td>CL每次载入文件到共享内存的最大耗时;默认50毫秒</td></tr></tbody></table><blockquote><p>CM:处理进程</p></blockquote><h4 id=缓存key设置>缓存key设置</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span><span class=lnt>4
-</span><span class=lnt>5
-</span><span class=lnt>6
-</span><span class=lnt>7
-</span><span class=lnt>8
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-nginx data-lang=nginx><span class=k>语法：proxy_cache_key</span> <span class=s>string</span><span class=p>;</span>
-<span class=k>默认值：proxy_cache_key</span> <span class=nv>$scheme</span> <span class=nv>$proxy_host$request_uri</span> <span class=p>;</span> <span class=c1># http://host/uri
-</span><span class=c1></span><span class=k>上下文：http、server、location</span>
-
-<span class=s>语法:proxy_cache_valid</span> <span class=s>[code]time</span><span class=p>;</span> <span class=c1># 对指定状态码进行缓存
-</span><span class=c1></span><span class=k>上下文:</span> <span class=s>http、</span> <span class=s>server、location</span>
-<span class=s>默认配置示例:</span> <span class=s>proxy_cache_valid</span> <span class=mi>60m</span><span class=p>;</span> <span class=c1>#只对200、301、 302响应码缓存
-</span><span class=c1></span>
-</code></pre></td></tr></table></div></div><h4 id=缓存状态-upstream_-cache_status>缓存状态 upstream_ cache_status</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=line><span class=cl><span class=k>语法：proxy_cache_path</span> <span class=s>path</span> <span class=s>keys_zone=name:size</span> <span class=c1>#文件路径与缓存名称大小
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=s>默认值：proxy_cache_path</span> <span class=no>off</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>上下文：http</span>
+</span></span></code></pre></td></tr></table></div></div><table><thead><tr><th>可选参数</th><th>含义</th></tr></thead><tbody><tr><td>level</td><td>path的目录层级</td></tr><tr><td>use_ temp_path</td><td>off直接使用path路径; on使用proxy_temp_path路径</td></tr><tr><td>inactive</td><td>在指定时间内没有被访问缓存会被清理;默认10分钟</td></tr><tr><td>max_size</td><td>设定最大的缓存文件大小,超过将由CM清理</td></tr><tr><td>manager_files</td><td>CM清理一次缓存文件，最大清理文件数;默认100</td></tr><tr><td>manager_sleep</td><td>CM清理一次后进程的休眠时间;默认200毫秒</td></tr><tr><td>manager_threshold</td><td>CM清理一 次最长耗时;默认50毫秒</td></tr><tr><td>loader_files</td><td>CL载入文件到共享内存，每批最多文件数;默认100</td></tr><tr><td>loader_sleep</td><td>CL加载缓存文件到内存后,进程休眠时间;默认200毫秒</td></tr><tr><td>loader_threshold</td><td>CL每次载入文件到共享内存的最大耗时;默认50毫秒</td></tr></tbody></table><blockquote><p>CM:处理进程</p></blockquote><h4 id=缓存key设置>缓存key设置</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
 </span><span class=lnt>6
 </span><span class=lnt>7
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>MISS :未命中缓存
-HIT :命中缓存
-EXPIRED :缓存过期
-STALE:命中了陈|旧缓存;
-REVALIDDATED : Nginx验证陈旧缓存依然有效
-UPDATING :内容陈旧，但正在更新
-BYPASS :响应从原始服务器获取
-</code></pre></td></tr></table></div></div><p>配置示例</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=line><span class=cl><span class=k>语法：proxy_cache_key</span> <span class=s>string</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>默认值：proxy_cache_key</span> <span class=nv>$scheme</span> <span class=nv>$proxy_host$request_uri</span> <span class=p>;</span> <span class=c1># http://host/uri
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=k>上下文：http、server、location</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=s>语法:proxy_cache_valid</span> <span class=s>[code]time</span><span class=p>;</span> <span class=c1># 对指定状态码进行缓存
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=k>上下文:</span> <span class=s>http、</span> <span class=s>server、location</span>
+</span></span><span class=line><span class=cl><span class=s>默认配置示例:</span> <span class=s>proxy_cache_valid</span> <span class=mi>60m</span><span class=p>;</span> <span class=c1>#只对200、301、 302响应码缓存
+</span></span></span></code></pre></td></tr></table></div></div><h4 id=缓存状态-upstream_-cache_status>缓存状态 upstream_ cache_status</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>MISS :未命中缓存
+</span></span><span class=line><span class=cl>HIT :命中缓存
+</span></span><span class=line><span class=cl>EXPIRED :缓存过期
+</span></span><span class=line><span class=cl>STALE:命中了陈|旧缓存;
+</span></span><span class=line><span class=cl>REVALIDDATED : Nginx验证陈旧缓存依然有效
+</span></span><span class=line><span class=cl>UPDATING :内容陈旧，但正在更新
+</span></span><span class=line><span class=cl>BYPASS :响应从原始服务器获取
+</span></span></code></pre></td></tr></table></div></div><p>配置示例</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -875,24 +860,24 @@ BYPASS :响应从原始服务器获取
 </span><span class=lnt>15
 </span><span class=lnt>16
 </span><span class=lnt>17
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-nginx data-lang=nginx><span class=k>proxy_cache_path</span> <span class=s>/opt/nginx/cache_temp</span> <span class=s>levels=2:2</span> <span class=s>keys_zone=cache_zone:30m</span> <span class=s>max_size=32g</span> <span class=s>inactive=60m</span> <span class=s>use_temp_path=off</span><span class=p>;</span>
-<span class=k>upstream</span> <span class=s>cache_server</span> <span class=p>{</span>
-	<span class=kn>server</span> <span class=n>192.168.184.20</span><span class=p>:</span><span class=mi>1010</span><span class=p>;</span>
-	<span class=kn>server</span> <span class=mi>192</span><span class=s>.168.184.20:</span> <span class=mi>1011</span><span class=p>;</span>
-<span class=p>}</span>
-<span class=k>server</span> <span class=p>{</span>
-	<span class=kn>listen</span> <span class=mi>80</span><span class=p>;</span>
-	<span class=kn>server_name</span> <span class=s>cache.kutian.edu</span><span class=p>;</span>
-    <span class=kn>location</span> <span class=s>/</span> <span class=p>{</span>
-	<span class=kn>proxy_cache</span> <span class=s>cache_zone</span> <span class=p>;</span>
-	<span class=kn>proxy_cache_valid</span> <span class=mi>200</span> <span class=mi>5m</span><span class=p>;</span>
-    <span class=kn>proxy_cache_key</span> <span class=nv>$scheme$proxy_host$request_uri</span><span class=p>;</span>
-	<span class=kn>add_header</span> <span class=s>Nginx-Cache-Status</span> <span class=s>&#34;</span><span class=nv>$upstream_cache_status&#34;</span><span class=p>;</span> <span class=c1># 显示缓存状态
-</span><span class=c1></span>	<span class=kn>proxy_pass</span> <span class=s>http://cache_server</span><span class=p>;</span>
-	<span class=p>}</span>
-<span class=p>}</span>
-<span class=c1># 上游服务器可以在响应时修改header X-Accel-Expires 定义缓存时间。失效 状态会变为 EXPIRED
-</span></code></pre></td></tr></table></div></div><h4 id=对于-特定key-不缓存>对于 特定key 不缓存</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=line><span class=cl><span class=k>proxy_cache_path</span> <span class=s>/opt/nginx/cache_temp</span> <span class=s>levels=2:2</span> <span class=s>keys_zone=cache_zone:30m</span> <span class=s>max_size=32g</span> <span class=s>inactive=60m</span> <span class=s>use_temp_path=off</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>upstream</span> <span class=s>cache_server</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=kn>server</span> <span class=n>192.168.184.20</span><span class=p>:</span><span class=mi>1010</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=kn>server</span> <span class=mi>192</span><span class=s>.168.184.20:</span> <span class=mi>1011</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=k>server</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=kn>listen</span> <span class=mi>80</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=kn>server_name</span> <span class=s>cache.kutian.edu</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=kn>location</span> <span class=s>/</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=kn>proxy_cache</span> <span class=s>cache_zone</span> <span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=kn>proxy_cache_valid</span> <span class=mi>200</span> <span class=mi>5m</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=kn>proxy_cache_key</span> <span class=nv>$scheme$proxy_host$request_uri</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=kn>add_header</span> <span class=s>Nginx-Cache-Status</span> <span class=s>&#34;</span><span class=nv>$upstream_cache_status&#34;</span><span class=p>;</span> <span class=c1># 显示缓存状态
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=kn>proxy_pass</span> <span class=s>http://cache_server</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=c1># 上游服务器可以在响应时修改header X-Accel-Expires 定义缓存时间。失效 状态会变为 EXPIRED
+</span></span></span></code></pre></td></tr></table></div></div><h4 id=对于-特定key-不缓存>对于 特定key 不缓存</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -903,38 +888,39 @@ BYPASS :响应从原始服务器获取
 </span><span class=lnt> 9
 </span><span class=lnt>10
 </span><span class=lnt>11
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-nginx data-lang=nginx><span class=k>proxy_no_cache</span>
-	<span class=c1>#表明用户访问login和search两个url的时候，变量$nocache 设置值
-</span><span class=c1></span>    <span class=s>if</span> <span class=s>(</span><span class=nv>$request_uri</span> <span class=p>~</span> <span class=sr>^/(login|search))</span><span class=p>{</span>
-        <span class=kn>set</span> <span class=nv>$nocache</span> <span class=mi>1</span><span class=p>;</span>
-    <span class=p>}</span>
-        <span class=k>location</span> <span class=s>/</span> <span class=p>{</span>
-         <span class=c1>#当变量$nocache 有值，不缓存。
-</span><span class=c1></span>         <span class=kn>proxy_no_cache</span> <span class=nv>$nocache</span><span class=p>;</span>
-    <span class=p>}</span>
-<span class=k>proxy_cache_bypass</span> 
-<span class=c1>#该指令的每个参数都指定了一个条件，只有请求满足其中的任何一个条件，并且参数的值不是0，则Nginx会把请求转发到后端的服务而不会使用缓存。
-</span></code></pre></td></tr></table></div></div><h4 id=缓存大量失效解决>缓存大量失效解决</h4><h5 id=限制请求>限制请求</h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=line><span class=cl><span class=k>proxy_no_cache</span>
+</span></span><span class=line><span class=cl>	<span class=c1>#表明用户访问login和search两个url的时候，变量$nocache 设置值
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=s>if</span> <span class=s>(</span><span class=nv>$request_uri</span> <span class=p>~</span> <span class=sr>^/(login|search))</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=kn>set</span> <span class=nv>$nocache</span> <span class=mi>1</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=k>location</span> <span class=s>/</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>         <span class=c1>#当变量$nocache 有值，不缓存。
+</span></span></span><span class=line><span class=cl><span class=c1></span>         <span class=kn>proxy_no_cache</span> <span class=nv>$nocache</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=k>proxy_cache_bypass</span> 
+</span></span><span class=line><span class=cl><span class=c1>#该指令的每个参数都指定了一个条件，只有请求满足其中的任何一个条件，并且参数的值不是0，则Nginx会把请求转发到后端的服务而不会使用缓存。
+</span></span></span></code></pre></td></tr></table></div></div><h4 id=缓存大量失效解决>缓存大量失效解决</h4><h5 id=限制请求>限制请求</h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-nginx data-lang=nginx><span class=k>proxy_cache_lock</span> <span class=no>on</span><span class=s>|off</span> <span class=s>默认off</span>  <span class=c1>#限制相同路径同时请求 单个请求返回响应，后续相同路径才能再次请求
-</span><span class=c1></span><span class=s>proxy_cache_lock_timeout</span> <span class=s>time</span>  <span class=s>默认5s</span>  <span class=c1># 超时时间后 剩余请求同时请求
-</span><span class=c1></span><span class=s>proxy_cache_lock_age</span> <span class=s>time</span>  <span class=s>默认5s</span> <span class=c1>#限制超时未返回 一个一个请求
-</span></code></pre></td></tr></table></div></div><h5 id=启用陈旧缓存>启用陈旧缓存</h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=line><span class=cl><span class=k>proxy_cache_lock</span> <span class=no>on</span><span class=s>|off</span> <span class=s>默认off</span>  <span class=c1>#限制相同路径同时请求 单个请求返回响应，后续相同路径才能再次请求
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=s>proxy_cache_lock_timeout</span> <span class=s>time</span>  <span class=s>默认5s</span>  <span class=c1># 超时时间后 剩余请求同时请求
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=s>proxy_cache_lock_age</span> <span class=s>time</span>  <span class=s>默认5s</span> <span class=c1>#限制超时未返回 一个一个请求
+</span></span></span></code></pre></td></tr></table></div></div><h5 id=启用陈旧缓存>启用陈旧缓存</h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-nginx data-lang=nginx><span class=k>proxy_cache_use_stale</span> <span class=s>error|timeout|invalid_header|updating|http_500|http_502|http_503|http_504|http_403|http_404|off</span>
-<span class=s>默认值:</span> <span class=s>proxy_cache_use_stale</span> <span class=no>off</span> <span class=p>;</span>
-<span class=k>proxy_cache_background_update</span> <span class=no>on</span><span class=s>|off</span> <span class=s>默认off</span>  <span class=c1># 由nginx请求更新缓存，让客户端先用旧缓存
-</span></code></pre></td></tr></table></div></div><table><thead><tr><th>可选参数</th><th>含义</th></tr></thead><tbody><tr><td>error</td><td>与上游建立连接、发送请求、读取响应头出错时</td></tr><tr><td>timeout</td><td>与上游建立连接、发送请求、读取响应头超时时</td></tr><tr><td>invalid_header</td><td>无效头部时</td></tr><tr><td>updating</td><td>缓存过期,正在更新时</td></tr><tr><td>http_状态码</td><td></td></tr></tbody></table><h4 id=缓存清除操作>缓存清除操作</h4><blockquote><p>第三方nginx缓存清除模块。使用可以加&ndash;add-module ngx_cache_purge文件路径编译新版</p></blockquote><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=line><span class=cl><span class=k>proxy_cache_use_stale</span> <span class=s>error|timeout|invalid_header|updating|http_500|http_502|http_503|http_504|http_403|http_404|off</span>
+</span></span><span class=line><span class=cl><span class=s>默认值:</span> <span class=s>proxy_cache_use_stale</span> <span class=no>off</span> <span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>proxy_cache_background_update</span> <span class=no>on</span><span class=s>|off</span> <span class=s>默认off</span>  <span class=c1># 由nginx请求更新缓存，让客户端先用旧缓存
+</span></span></span></code></pre></td></tr></table></div></div><table><thead><tr><th>可选参数</th><th>含义</th></tr></thead><tbody><tr><td>error</td><td>与上游建立连接、发送请求、读取响应头出错时</td></tr><tr><td>timeout</td><td>与上游建立连接、发送请求、读取响应头超时时</td></tr><tr><td>invalid_header</td><td>无效头部时</td></tr><tr><td>updating</td><td>缓存过期,正在更新时</td></tr><tr><td>http_状态码</td><td></td></tr></tbody></table><h4 id=缓存清除操作>缓存清除操作</h4><blockquote><p>第三方nginx缓存清除模块。使用可以加&ndash;add-module ngx_cache_purge文件路径编译新版</p></blockquote><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
-</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-nginx data-lang=nginx><span class=k>location</span> <span class=p>~</span> <span class=sr>/cache_purge(/.*)</span> <span class=p>{</span>
-	<span class=kn>proxy_cache_purge</span> <span class=s>cache_zone</span> <span class=nv>$host$1</span><span class=p>;</span>
-<span class=p>}</span>
-<span class=c1># cache_zone 对应缓存 keys_zone 这个的名称
-</span><span class=c1># $host$1; 对应缓存key
-</span></code></pre></td></tr></table></div></div></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2020-08-17</span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/nginx/>Nginx</a>,&nbsp;<a href=/tags/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/>反向代理</a>,&nbsp;<a href=/tags/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/>负载均衡</a></section><section><span><a href=javascript:void(0); onclick=window.history.back();>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/%E6%80%BB%E7%BB%93redis%E9%97%AE%E9%A2%98/ class=prev rel=prev title=总结Redis问题><i class="fas fa-angle-left fa-fw"></i>总结Redis问题</a>
-<a href=/jvm%E8%B0%83%E4%BC%98%E5%AD%A6%E4%B9%A0%E4%B9%8B%E6%97%85-8p-cms%E6%A1%88%E4%BE%8B%E4%BC%98%E5%8C%96%E5%88%86%E6%9E%90%E8%AE%B0%E5%BD%95%E4%B8%8E%E4%BC%98%E5%8C%96%E6%80%BB%E7%BB%93/ class=next rel=next title=JVM调优学习之旅-(8)P+CMS案例优化分析记录与优化总结>JVM调优学习之旅-(8)P+CMS案例优化分析记录与优化总结<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments></div></article></div></main><script src=https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css><script src=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js></script><footer class=footer><div class=footer-container><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2018 - 2023</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>yakax</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i></a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/typeit@7.0.4/dist/typeit.min.js></script><script type=text/javascript>window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{},"data":{"id-1":"yakax.blog","id-2":"yakax.blog"},"lightGallery":{"actualSize":false,"exThumbImage":"data-thumbnail","hideBarsDelay":2000,"selector":".lightgallery","speed":400,"thumbContHeight":80,"thumbWidth":80,"thumbnail":true},"search":{"algoliaAppID":"3MT6GW9D7W","algoliaIndex":"blog","algoliaSearchKey":"41ebe3571ca584723e8648600bbf45ce","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":150,"type":"algolia"},"typeit":{"cursorChar":"_","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":200}};</script><script type=text/javascript src=/js/theme.min.js></script></body></html>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=line><span class=cl><span class=k>location</span> <span class=p>~</span> <span class=sr>/cache_purge(/.*)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=kn>proxy_cache_purge</span> <span class=s>cache_zone</span> <span class=nv>$host$1</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=c1># cache_zone 对应缓存 keys_zone 这个的名称
+</span></span></span><span class=line><span class=cl><span class=c1># $host$1; 对应缓存key
+</span></span></span></code></pre></td></tr></table></div></div></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2020-08-17</span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/nginx/>Nginx</a>,&nbsp;<a href=/tags/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/>反向代理</a>,&nbsp;<a href=/tags/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/>负载均衡</a></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/%E6%80%BB%E7%BB%93redis%E9%97%AE%E9%A2%98/ class=prev rel=prev title=总结Redis问题><i class="fas fa-angle-left fa-fw"></i>总结Redis问题</a>
+<a href=/jvm%E8%B0%83%E4%BC%98%E5%AD%A6%E4%B9%A0%E4%B9%8B%E6%97%85-8p-cms%E6%A1%88%E4%BE%8B%E4%BC%98%E5%8C%96%E5%88%86%E6%9E%90%E8%AE%B0%E5%BD%95%E4%B8%8E%E4%BC%98%E5%8C%96%E6%80%BB%E7%BB%93/ class=next rel=next title=JVM调优学习之旅-(8)P+CMS案例优化分析记录与优化总结>JVM调优学习之旅-(8)P+CMS案例优化分析记录与优化总结<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments></div></article></div></main><script src=https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css><script src=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js></script><footer class=footer><div class=footer-container><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2018 - 2024</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>yakax</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/typeit@7.0.4/dist/typeit.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:10},comment:{},data:{"id-1":"yakax.blog","id-2":"yakax.blog"},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"3MT6GW9D7W",algoliaIndex:"blog",algoliaSearchKey:"41ebe3571ca584723e8648600bbf45ce",highlightTag:"em",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:150,type:"algolia"},typeit:{cursorChar:"_",cursorSpeed:1e3,data:{"id-1":["id-1"],"id-2":["id-2"]},duration:-1,speed:200}}</script><script type=text/javascript src=/js/theme.min.js></script></body></html>

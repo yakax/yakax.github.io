@@ -2,7 +2,7 @@
 <p>相关依赖</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -10,13 +10,13 @@
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell">yum update
-yum install wget
-wget http://nginx.org/download/nginx-1.19.1.tar.gz <span class="c1">## nginx 源码包</span>
-wget https://ftp.pcre.org/pub/pcre/pcre-8.44.tar.gz <span class="c1">## 正则会用到</span>
-wget https://zlib.net/zlib-1.2.11.tar.gz  <span class="c1">##gzip 模块</span>
-tar xf 指定文件解压
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">yum update
+</span></span><span class="line"><span class="cl">yum install wget
+</span></span><span class="line"><span class="cl">wget http://nginx.org/download/nginx-1.19.1.tar.gz <span class="c1">## nginx 源码包</span>
+</span></span><span class="line"><span class="cl">wget https://ftp.pcre.org/pub/pcre/pcre-8.44.tar.gz <span class="c1">## 正则会用到</span>
+</span></span><span class="line"><span class="cl">wget https://zlib.net/zlib-1.2.11.tar.gz  <span class="c1">##gzip 模块</span>
+</span></span><span class="line"><span class="cl">tar xf 指定文件解压
+</span></span></code></pre></td></tr></table>
 </div>
 </div>]]></description></item><item><title>Vagrant基本命令</title><link>https://yakax.gitee.io/vagrant%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4/</link><pubDate>Mon, 06 Jan 2020 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/vagrant%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4/</guid><description>&lt;p>&lt;a href="https://app.vagrantup.com/boxes/search" target="_blank" rel="noopener noreffer">镜像地址&lt;/a>&lt;/p></description></item><item><title>使用frp进行内网穿透</title><link>https://yakax.gitee.io/%E4%BD%BF%E7%94%A8frp%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/</link><pubDate>Mon, 06 Jan 2020 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/%E4%BD%BF%E7%94%A8frp%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/</guid><description><![CDATA[<blockquote>
 <p>从公网ip访问自己的机器-以前一直用的花生壳、NATAPP之类的;要么付费要么随机变化域名要么速度慢。frp可以解决这一类问题。</p>

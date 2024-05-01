@@ -1,6 +1,6 @@
 # 自启动docker并安装自启动镜像MySQL8
 
-**因为在10月15号换了新工作，入职了半月左右，这半月时间一直在搞前端的ts和angular，再加上在忙着自考，后端的代码一直没有碰，正好这周在家时间就圆一下我的好奇心去搞一搞docker，顺便把我ss的服务器利用一下做一个MySQL在上面，后期会上点项目上去；**
+**因为在10月15号换了新工作，入职了半月左右，这半月时间一直在搞前端的ts和angular，再加上在忙着自考，后端的代码一直没有碰，正好这周在家时间就圆一下我的好奇心去搞一搞docker，顺便把我的服务器利用一下做一个MySQL在上面，后期会上点项目上去；**
 
 #### 以后服务器就安装一个Docker就行了
 1. 本次采用的是Centos7.5版本的Linux系统，镜像是[阿里云](https://opsx.alibaba.com/)下载的DVD版本；（因为Docker需要内核3版本以上的Linux）；
@@ -41,7 +41,7 @@ sudo yum-config-manager \
     http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
 # 配置缓存
 sudo yum makecache fast
-# 安装最新稳定版本的docker
+# 安装最新稳定版本的 docker
 sudo yum install -y docker-ce
 # 配置镜像加速器 阿里云自己的
 # 启动docker引擎并设置开机启动

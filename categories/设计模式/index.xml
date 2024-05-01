@@ -69,10 +69,70 @@
 型对象的特点，效率高（<font color=red>避免了重新执行构造过程步骤,而且实例的创建开销比较大或者需要输入较多参数</font>）。</p>
 <h4 id="浅克隆">浅克隆</h4>
 <h5 id="说明">说明</h5>
-<p>浅复制仅仅复制所克隆的对象，而不复制它所引用的对象。 Object类提供的方法clone只是拷贝本对象，其对象内部的数组、引用对象等都不拷贝，还是指向原生对象的内部元素地址</p>]]></description></item><item><title>七大设计原则</title><link>https://yakax.gitee.io/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B8%83%E5%A4%A7%E5%8E%9F%E5%88%99/</link><pubDate>Thu, 10 Jan 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B8%83%E5%A4%A7%E5%8E%9F%E5%88%99/</guid><description><![CDATA[<h4 id="单一职责原则single-responsibility-principle简称srp-">单一职责原则（Single Responsibility Principle，简称SRP ）</h4>
-<ul>
-<li><strong>核心思想</strong>：应该有且仅有一个原因引起类的变更</li>
-<li><strong>问题描述</strong>：假如有类Class1完成职责T1，T2，当职责T1或T2有变更需要修改时，有可能影响到该类的另外一个职责正常工作。</li>
-<li><strong>好处</strong>：类的复杂度降低、可读性提高、可维护性提高、扩展性提高、降低了变更引起的风险</li>
-<li><strong>需注意</strong>：单一职责原则提出了一个编写程序的标准，用“职责”或“变化原因”来衡量接口或类设计得是否优良，但是“职责”和“变化原因”都是不可以度量的，因项目和环境而异。</li>
-</ul>]]></description></item></channel></rss>
+<p>浅复制仅仅复制所克隆的对象，而不复制它所引用的对象。 Object类提供的方法clone只是拷贝本对象，其对象内部的数组、引用对象等都不拷贝，还是指向原生对象的内部元素地址</p>]]></description></item><item><title>抽象工厂模式</title><link>https://yakax.gitee.io/%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/</link><pubDate>Thu, 10 Jan 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/</guid><description><![CDATA[<blockquote>
+<p>因为抽象工厂模式在spring中用的比较多，例如spring的心脏BeanFactory就是利用抽象工厂模式来管理bean的。最主要的就是把具体功能抽象出来</p>
+</blockquote>
+<h4 id="上代码">上代码</h4>
+<p>先建立产品的接口方法类</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">/**
+</span></span><span class="line"><span class="cl"> * 定义一个牛奶的接口
+</span></span><span class="line"><span class="cl"> */
+</span></span><span class="line"><span class="cl">public interface Milk {
+</span></span><span class="line"><span class="cl">    String getName();
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>产品实现功能</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">/**
+</span></span><span class="line"><span class="cl"> * 伊利产品
+</span></span><span class="line"><span class="cl"> */
+</span></span><span class="line"><span class="cl">public class Erie implements Milk {
+</span></span><span class="line"><span class="cl">    @Override
+</span></span><span class="line"><span class="cl">    public String getName() {
+</span></span><span class="line"><span class="cl">        return &#34;伊利&#34;;
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">/**
+</span></span><span class="line"><span class="cl"> * 蒙牛产品
+</span></span><span class="line"><span class="cl"> */
+</span></span><span class="line"><span class="cl">public class Mengniu implements Milk {
+</span></span><span class="line"><span class="cl">    @Override
+</span></span><span class="line"><span class="cl">    public String getName() {
+</span></span><span class="line"><span class="cl">        return &#34;蒙牛&#34;;
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div>]]></description></item></channel></rss>

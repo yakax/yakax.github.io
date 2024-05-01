@@ -2,7 +2,7 @@
 <p><font color=red>1-0.9=0.1是天经地义的，但在计算机的世界里，0.1恰恰是无法精确表示的一个小数，只有2的幂次倍小数才能够精确表示，如：0.5、0.25、0.125等。由于0.1是近似表达，在各种情形中的计算存在数位的取舍精度不一样，所以1-0.9未必等于0.9-0.8，所以浮点数之间的等值判断，基本数据类型不能用==来比较，包装数据类型不能用equals来判断。包装类型运算也是调用的浮点类型的计算</font></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -45,53 +45,51 @@
 </span><span class="lnt">41
 </span><span class="lnt">42
 </span><span class="lnt">43
-</span><span class="lnt">44
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">public class FloatPrimitiveTest {
-    public static void main(String[] args) {
-        float a = 1.0f - 0.9f;
-        float b = 0.9f - 0.8f;
-        if (a == b) {
-            System.out.println(&#34;true&#34;);
-        } else {
-            System.out.println(&#34;false&#34;);
-        }
-    }
-}
-输出------------false
-
-
-public class FloatWrapperTest {
-    public static void main(String[] args) {
-        Float a = Float.valueOf(1.0f - 0.9f);
-        Float b = Float.valueOf(0.9f - 0.8f);
-        if (a.equals(b)) {
-            System.out.println(&#34;true&#34;);
-        } else {
-            System.out.println(&#34;false&#34;);
-        }
-    }
-}
-输出--------false
-正例--------------------------------
-(1) 指定一个误差范围，两个浮点数的差值在此范围之内，则认为是相等的。
- float a = 1.0f - 0.9f;
- float b = 0.9f - 0.8f;
- float diff = 1e-6f;
- if (Math.abs(a - b) &lt; diff) {
-     System.out.println(&#34;true&#34;);
- }
-(2) 使用 BigDecimal 来定义值，再进行浮点数的运算操作。
- BigDecimal a = new BigDecimal(&#34;1.0&#34;);
- BigDecimal b = new BigDecimal(&#34;0.9&#34;);
- BigDecimal c = new BigDecimal(&#34;0.8&#34;);
- BigDecimal x = a.subtract(b);
- BigDecimal y = b.subtract(c);
- if (x.equals(y)) {
-     System.out.println(&#34;true&#34;);
- }
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">public class FloatPrimitiveTest {
+</span></span><span class="line"><span class="cl">    public static void main(String[] args) {
+</span></span><span class="line"><span class="cl">        float a = 1.0f - 0.9f;
+</span></span><span class="line"><span class="cl">        float b = 0.9f - 0.8f;
+</span></span><span class="line"><span class="cl">        if (a == b) {
+</span></span><span class="line"><span class="cl">            System.out.println(&#34;true&#34;);
+</span></span><span class="line"><span class="cl">        } else {
+</span></span><span class="line"><span class="cl">            System.out.println(&#34;false&#34;);
+</span></span><span class="line"><span class="cl">        }
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">输出------------false
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">public class FloatWrapperTest {
+</span></span><span class="line"><span class="cl">    public static void main(String[] args) {
+</span></span><span class="line"><span class="cl">        Float a = Float.valueOf(1.0f - 0.9f);
+</span></span><span class="line"><span class="cl">        Float b = Float.valueOf(0.9f - 0.8f);
+</span></span><span class="line"><span class="cl">        if (a.equals(b)) {
+</span></span><span class="line"><span class="cl">            System.out.println(&#34;true&#34;);
+</span></span><span class="line"><span class="cl">        } else {
+</span></span><span class="line"><span class="cl">            System.out.println(&#34;false&#34;);
+</span></span><span class="line"><span class="cl">        }
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">输出--------false
+</span></span><span class="line"><span class="cl">正例--------------------------------
+</span></span><span class="line"><span class="cl">(1) 指定一个误差范围，两个浮点数的差值在此范围之内，则认为是相等的。
+</span></span><span class="line"><span class="cl"> float a = 1.0f - 0.9f;
+</span></span><span class="line"><span class="cl"> float b = 0.9f - 0.8f;
+</span></span><span class="line"><span class="cl"> float diff = 1e-6f;
+</span></span><span class="line"><span class="cl"> if (Math.abs(a - b) &lt; diff) {
+</span></span><span class="line"><span class="cl">     System.out.println(&#34;true&#34;);
+</span></span><span class="line"><span class="cl"> }
+</span></span><span class="line"><span class="cl">(2) 使用 BigDecimal 来定义值，再进行浮点数的运算操作。
+</span></span><span class="line"><span class="cl"> BigDecimal a = new BigDecimal(&#34;1.0&#34;);
+</span></span><span class="line"><span class="cl"> BigDecimal b = new BigDecimal(&#34;0.9&#34;);
+</span></span><span class="line"><span class="cl"> BigDecimal c = new BigDecimal(&#34;0.8&#34;);
+</span></span><span class="line"><span class="cl"> BigDecimal x = a.subtract(b);
+</span></span><span class="line"><span class="cl"> BigDecimal y = b.subtract(c);
+</span></span><span class="line"><span class="cl"> if (x.equals(y)) {
+</span></span><span class="line"><span class="cl">     System.out.println(&#34;true&#34;);
+</span></span><span class="line"><span class="cl"> }
+</span></span></code></pre></td></tr></table>
 </div>
 </div>]]></description></item></channel></rss>

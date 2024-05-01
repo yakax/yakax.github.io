@@ -4,7 +4,7 @@
 <h4 id="普通单例模式-饿汉式">普通单例模式-饿汉式</h4>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -14,14 +14,14 @@
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">public class Singleton {
-    private static Singleton singleton = new Singleton();
-    private Singleton() {
-    }
-    public static Singleton getInstance() {
-        return singleton;
-    }
-}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">public class Singleton {
+</span></span><span class="line"><span class="cl">    private static Singleton singleton = new Singleton();
+</span></span><span class="line"><span class="cl">    private Singleton() {
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">    public static Singleton getInstance() {
+</span></span><span class="line"><span class="cl">        return singleton;
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>饿汉式单例，就是一个私有的构造方法加一个私有的静态当前类实例对象和一个公有的静态获取实例方法组成由于类实例对象为静态变量，所以在加载类的时候我们就会创建类的实例对象，这样的话比较消耗内存，浪费性能。</p>]]></description></item></channel></rss>

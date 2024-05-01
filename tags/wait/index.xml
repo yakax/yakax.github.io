@@ -1,4 +1,4 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>wait - 标签 - yakax</title><link>https://yakax.gitee.io/tags/wait/</link><description>wait - 标签 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 25 Jun 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.gitee.io/tags/wait/" rel="self" type="application/rss+xml"/><item><title>并发编程学习(2)synchronized与锁的唤醒</title><link>https://yakax.gitee.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A02synchronized%E4%B8%8E%E9%94%81%E7%9A%84%E5%94%A4%E9%86%92/</link><pubDate>Tue, 25 Jun 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A02synchronized%E4%B8%8E%E9%94%81%E7%9A%84%E5%94%A4%E9%86%92/</guid><description><![CDATA[<h3 id="synchronized-的基本认识">synchronized 的基本认识</h3>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Wait - 标签 - yakax</title><link>https://yakax.gitee.io/tags/wait/</link><description>Wait - 标签 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 25 Jun 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.gitee.io/tags/wait/" rel="self" type="application/rss+xml"/><item><title>并发编程学习(2)synchronized与锁的唤醒</title><link>https://yakax.gitee.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A02synchronized%E4%B8%8E%E9%94%81%E7%9A%84%E5%94%A4%E9%86%92/</link><pubDate>Tue, 25 Jun 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A02synchronized%E4%B8%8E%E9%94%81%E7%9A%84%E5%94%A4%E9%86%92/</guid><description><![CDATA[<h3 id="synchronized-的基本认识">synchronized 的基本认识</h3>
 <p>在多线程并发编程中 synchronized 一直是元老级角色，很多人都会称呼它为重量级锁。但是，随着 Java SE 1.6 对synchronized 进行了各种优化之后，有些情况下它就并不那么重，Java SE 1.6 中为了减少获得锁和释放锁带来的性能消耗而引入的偏向锁和轻量级锁。</p>
 <h3 id="synchronized-的基本语法">synchronized 的基本语法</h3>
 <p>synchronized 有三种方式来加锁，分别是</p>
@@ -9,7 +9,7 @@
 </ol>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -42,37 +42,37 @@
 </span><span class="lnt">31
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">public class SyncDemo {
-    Object lock = new Object();
-
-    public synchronized void demo1() {
-
-    }
-
-    public void demo2() {
-        // TODO
-        synchronized (this) {
-
-        }
-        // TODO
-    }
-
-    public synchronized static void demo3() {
-
-    }
-
-    public void demo4() {
-        synchronized (SyncDemo.class) {
-
-        }
-    }
-
-    public void demo5() {
-        synchronized (lock) {
-
-        }
-    }
-}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">public class SyncDemo {
+</span></span><span class="line"><span class="cl">    Object lock = new Object();
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    public synchronized void demo1() {
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    public void demo2() {
+</span></span><span class="line"><span class="cl">        // TODO
+</span></span><span class="line"><span class="cl">        synchronized (this) {
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        }
+</span></span><span class="line"><span class="cl">        // TODO
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    public synchronized static void demo3() {
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    public void demo4() {
+</span></span><span class="line"><span class="cl">        synchronized (SyncDemo.class) {
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        }
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    public void demo5() {
+</span></span><span class="line"><span class="cl">        synchronized (lock) {
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        }
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>不同的修饰类型，代表锁的控制粒度</p>]]></description></item></channel></rss>
