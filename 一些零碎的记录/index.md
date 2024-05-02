@@ -51,11 +51,11 @@ https://www.syntevo.com/cn/smartgit/register-non-commercial/
 邮箱随便输入 然后 进入jrbel 勾选离线work online
 ```
 
-[更改IDEA配置](https://yakax.gitee.io/idea%E4%B8%80%E5%AE%9A%E8%A6%81%E6%94%B9%E7%9A%84%E5%87%A0%E6%9D%A1%E9%85%8D%E7%BD%AE/)
+[更改IDEA配置](https://yakax.github.io/idea%E4%B8%80%E5%AE%9A%E8%A6%81%E6%94%B9%E7%9A%84%E5%87%A0%E6%9D%A1%E9%85%8D%E7%BD%AE/)
 
 #### Navicat安装
 
-[破解文档](https://yakax.gitee.io/%E7%A0%B4%E8%A7%A3%E6%9C%80%E6%96%B0%E7%89%88navicat/)
+[破解文档](https://yakax.github.io/%E7%A0%B4%E8%A7%A3%E6%9C%80%E6%96%B0%E7%89%88navicat/)
 
 #### Oracle VM VirtualBox和vagrant 安装
 

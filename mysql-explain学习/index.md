@@ -168,7 +168,7 @@
 
 - index_merge
 
-  [索引合并](https://yakax.gitee.io/mysql-索引-索引合并学习/)
+  [索引合并](https://yakax.github.io/mysql-索引-索引合并学习/)
 
 - unique_subquery
 
