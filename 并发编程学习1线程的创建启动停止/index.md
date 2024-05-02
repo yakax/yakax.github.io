@@ -5,7 +5,7 @@
 
 ![](https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/1/2.png)
 
-<font color=red>**有了进程以后，可以让操作系统从宏观层面实现多应用并发。而并发的实现是通过 CPU 时间片不端切换执行的。对于单核 CPU 来说，在任意一个时刻只会有一个进程在被CPU 调度**</font>
+<font color=red>**有了进程以后，可以让操作系统从宏观层面实现多应用并发。而并发的实现是通过 CPU 时间片不端切换执行的。对于单核 CPU 来说，在任意一个时刻只会有一个进程在被CPU 调度杨凯**</font>
 
 <!--more-->
 
