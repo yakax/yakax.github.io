@@ -7,4 +7,5 @@
 <h4 id="不可重复读-与可重复读">不可重复读 与可重复读</h4>
 <p>事务A修改了值并且提交了事务    B读取到   然后B在执行事务期间 C又修改了值并且提交了。这时B读取到的值又变了。 这就时不可重复读问题。 可重复读就相反 并且读取到的值是相同的。</p>
 <h4 id="幻读">幻读</h4>
-<p>其实就是在事务执行期间第二次查询相比第一次查询出现了之前没出现过的数据。</p>]]></description></item><item><title>Spring事务的隔离级别</title><link>https://yakax.github.io/%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/</link><pubDate>Tue, 13 Nov 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/</guid><description>&lt;p>&lt;strong>spring有5种隔离机制设置 其中数据库有四种隔离级别，而spring 多的那种就是默认设置数据库隔离设置，下面主要讲讲这些隔离机制的区别&lt;/strong>&lt;/p></description></item></channel></rss>
+<p>其实就是在事务执行期间第二次查询相比第一次查询出现了之前没出现过的数据。</p>]]></description></item><item><title>Spring事务的隔离级别</title><link>https://yakax.github.io/%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/</link><pubDate>Tue, 13 Nov 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/</guid><description><![CDATA[<p><strong>spring有5种隔离机制设置 其中数据库有四种隔离级别，而spring 多的那种就是默认设置数据库隔离设置，下面主要讲讲这些隔离机制的区别</strong></p>
+<p></p>]]></description></item></channel></rss>

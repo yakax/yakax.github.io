@@ -1,7 +1,4 @@
-<!doctype html><html lang=zh-CN><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=X-UA-Compatible content="IE=edge, chrome=1"><title>Java开发手册-(转自阿里云栖社区) - yakax</title><meta name=Description content><meta property="og:url" content="https://yakax.github.io/java%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C-%E8%BD%AC%E8%87%AA%E9%98%BF%E9%87%8C%E4%BA%91%E6%A0%96%E7%A4%BE%E5%8C%BA/">
-<meta property="og:site_name" content="yakax"><meta property="og:title" content="Java开发手册-(转自阿里云栖社区)"><meta property="og:description" content='Java开发手册下载链接
-1-0.9=0.1是天经地义的，但在计算机的世界里，0.1恰恰是无法精确表示的一个小数，只有2的幂次倍小数才能够精确表示，如：0.5、0.25、0.125等。由于0.1是近似表达，在各种情形中的计算存在数位的取舍精度不一样，所以1-0.9未必等于0.9-0.8，所以浮点数之间的等值判断，基本数据类型不能用==来比较，包装数据类型不能用equals来判断。包装类型运算也是调用的浮点类型的计算
-1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 public class FloatPrimitiveTest { public static void main(String[] args) { float a = 1.0f - 0.9f; float b = 0.9f - 0.8f; if (a == b) { System.out.println("true"); } else { System.out.println("false"); } } } 输出------------false public class FloatWrapperTest { public static void main(String[] args) { Float a = Float.valueOf(1.0f - 0.9f); Float b = Float.valueOf(0.9f - 0.8f); if (a.equals(b)) { System.out.println("true"); } else { System.out.println("false"); } } } 输出--------false 正例-------------------------------- (1) 指定一个误差范围，两个浮点数的差值在此范围之内，则认为是相等的。 float a = 1.0f - 0.9f; float b = 0.9f - 0.8f; float diff = 1e-6f; if (Math.abs(a - b) < diff) { System.out.println("true"); } (2) 使用 BigDecimal 来定义值，再进行浮点数的运算操作。 BigDecimal a = new BigDecimal("1.0"); BigDecimal b = new BigDecimal("0.9"); BigDecimal c = new BigDecimal("0.8"); BigDecimal x = a.subtract(b); BigDecimal y = b.subtract(c); if (x.equals(y)) { System.out.println("true"); } '><meta property="og:locale" content="zh-CN"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2019-07-03T00:00:00+00:00"><meta property="article:modified_time" content="2019-07-03T00:00:00+00:00"><meta property="article:tag" content="基础"><meta property="og:image" content="https://yakax.github.io/images/1.png"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://yakax.github.io/images/1.png"><meta name=twitter:title content="Java开发手册-(转自阿里云栖社区)"><meta name=twitter:description content='Java开发手册下载链接
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>Java开发手册-(转自阿里云栖社区) - yakax</title><meta name=Description content><meta property="og:title" content="Java开发手册-(转自阿里云栖社区)"><meta property="og:description" content="Java开发手册下载链接
 1-0.9=0.1是天经地义的，但在计算机的世界里，0.1恰恰是无法精确表示的一个小数，只有2的幂次倍小数才能够精确表示，如：0.5、0.25、0.125等。由于0.1是近似表达，在各种情形中的计算存在数位的取舍精度不一样，所以1-0.9未必等于0.9-0.8，所以浮点数之间的等值判断，基本数据类型不能用==来比较，包装数据类型不能用equals来判断。包装类型运算也是调用的浮点类型的计算
 
 
@@ -48,6 +45,7 @@
 41
 42
 43
+44
 
 
 public class FloatPrimitiveTest {
@@ -55,9 +53,9 @@ public class FloatPrimitiveTest {
         float a = 1.0f - 0.9f;
         float b = 0.9f - 0.8f;
         if (a == b) {
-            System.out.println("true");
+            System.out.println(&#34;true&#34;);
         } else {
-            System.out.println("false");
+            System.out.println(&#34;false&#34;);
         }
     }
 }
@@ -69,9 +67,9 @@ public class FloatWrapperTest {
         Float a = Float.valueOf(1.0f - 0.9f);
         Float b = Float.valueOf(0.9f - 0.8f);
         if (a.equals(b)) {
-            System.out.println("true");
+            System.out.println(&#34;true&#34;);
         } else {
-            System.out.println("false");
+            System.out.println(&#34;false&#34;);
         }
     }
 }
@@ -82,31 +80,115 @@ public class FloatWrapperTest {
  float b = 0.9f - 0.8f;
  float diff = 1e-6f;
  if (Math.abs(a - b) < diff) {
-     System.out.println("true");
+     System.out.println(&#34;true&#34;);
  }
 (2) 使用 BigDecimal 来定义值，再进行浮点数的运算操作。
- BigDecimal a = new BigDecimal("1.0");
- BigDecimal b = new BigDecimal("0.9");
- BigDecimal c = new BigDecimal("0.8");
+ BigDecimal a = new BigDecimal(&#34;1.0&#34;);
+ BigDecimal b = new BigDecimal(&#34;0.9&#34;);
+ BigDecimal c = new BigDecimal(&#34;0.8&#34;);
  BigDecimal x = a.subtract(b);
  BigDecimal y = b.subtract(c);
  if (x.equals(y)) {
-     System.out.println("true");
+     System.out.println(&#34;true&#34;);
+ }"><meta property="og:type" content="article"><meta property="og:url" content="https://yakax.github.io/java%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C-%E8%BD%AC%E8%87%AA%E9%98%BF%E9%87%8C%E4%BA%91%E6%A0%96%E7%A4%BE%E5%8C%BA/"><meta property="og:image" content="https://yakax.github.io/images/1.png"><meta property="article:published_time" content="2019-07-03T00:00:00+00:00"><meta property="article:modified_time" content="2019-07-03T00:00:00+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://yakax.github.io/images/1.png"><meta name=twitter:title content="Java开发手册-(转自阿里云栖社区)"><meta name=twitter:description content="Java开发手册下载链接
+1-0.9=0.1是天经地义的，但在计算机的世界里，0.1恰恰是无法精确表示的一个小数，只有2的幂次倍小数才能够精确表示，如：0.5、0.25、0.125等。由于0.1是近似表达，在各种情形中的计算存在数位的取舍精度不一样，所以1-0.9未必等于0.9-0.8，所以浮点数之间的等值判断，基本数据类型不能用==来比较，包装数据类型不能用equals来判断。包装类型运算也是调用的浮点类型的计算
+
+
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+
+
+public class FloatPrimitiveTest {
+    public static void main(String[] args) {
+        float a = 1.0f - 0.9f;
+        float b = 0.9f - 0.8f;
+        if (a == b) {
+            System.out.println(&#34;true&#34;);
+        } else {
+            System.out.println(&#34;false&#34;);
+        }
+    }
+}
+输出------------false
+
+
+public class FloatWrapperTest {
+    public static void main(String[] args) {
+        Float a = Float.valueOf(1.0f - 0.9f);
+        Float b = Float.valueOf(0.9f - 0.8f);
+        if (a.equals(b)) {
+            System.out.println(&#34;true&#34;);
+        } else {
+            System.out.println(&#34;false&#34;);
+        }
+    }
+}
+输出--------false
+正例--------------------------------
+(1) 指定一个误差范围，两个浮点数的差值在此范围之内，则认为是相等的。
+ float a = 1.0f - 0.9f;
+ float b = 0.9f - 0.8f;
+ float diff = 1e-6f;
+ if (Math.abs(a - b) < diff) {
+     System.out.println(&#34;true&#34;);
  }
-
-
-'><meta name=application-name content="yakax"><meta name=apple-mobile-web-app-title content="yakax"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><script>(function(e,t,n,s,o,i,a){e.DaoVoiceObject=o,e[o]=e[o]||function(){(e[o].q=e[o].q||[]).push(arguments)},e[o].l=1*new Date,i=t.createElement(n),a=t.getElementsByTagName(n)[0],i.async=1,i.src=s,i.charset="utf-8",a.parentNode.insertBefore(i,a)})(window,document,"script",("https:"==document.location.protocol?"https:":"http:")+"//widget.daovoice.io/widget/af744044.js","daovoice"),daovoice("init",{app_id:"af744044"}),daovoice("update")</script><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://yakax.github.io/java%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C-%E8%BD%AC%E8%87%AA%E9%98%BF%E9%87%8C%E4%BA%91%E6%A0%96%E7%A4%BE%E5%8C%BA/><link rel=prev href=https://yakax.github.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A04lock/><link rel=next href=https://yakax.github.io/docker%E5%88%86%E5%B8%83%E5%BC%8F%E9%83%A8%E7%BD%B2zookeeper%E9%9B%86%E7%BE%A4/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Java开发手册-(转自阿里云栖社区)","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/yakax.github.io\/java%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C-%E8%BD%AC%E8%87%AA%E9%98%BF%E9%87%8C%E4%BA%91%E6%A0%96%E7%A4%BE%E5%8C%BA\/"},"image":["https:\/\/yakax.github.io\/images\/avatar.png"],"genre":"posts","keywords":"基础","wordcount":1132,"url":"https:\/\/yakax.github.io\/java%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C-%E8%BD%AC%E8%87%AA%E9%98%BF%E9%87%8C%E4%BA%91%E6%A0%96%E7%A4%BE%E5%8C%BA\/","datePublished":"2019-07-03T00:00:00+00:00","dateModified":"2019-07-03T00:00:00+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"yakax","logo":"https:\/\/yakax.github.io\/images\/avatar.png"},"author":{"@type":"Person","name":"yakax"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class='fas fa-crosshairs fa-sm'></i></span><span id=id-1 class=typeit></span></a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>所有文章 </a><a class=menu-item href=/tags/>标签 </a><a class=menu-item href=/categories/>分类 </a><a class=menu-item href=/about/>关于 </a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i> </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
-<input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i>
-</a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i>
-</a><span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i>
-</span></span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class='fas fa-crosshairs fa-sm'></i></span><span id=id-2 class=typeit></span></a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i>
-</a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i>
-</a><span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/ title>所有文章</a><a class=menu-item href=/tags/ title>标签</a><a class=menu-item href=/categories/ title>分类</a><a class=menu-item href=/about/ title>关于</a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
-<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">Java开发手册-(转自阿里云栖社区)</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>yakax</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/%E9%9D%A2%E8%AF%95/><i class="far fa-folder fa-fw"></i>面试</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2019-07-03>2019-07-03</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1132 字&nbsp;
+(2) 使用 BigDecimal 来定义值，再进行浮点数的运算操作。
+ BigDecimal a = new BigDecimal(&#34;1.0&#34;);
+ BigDecimal b = new BigDecimal(&#34;0.9&#34;);
+ BigDecimal c = new BigDecimal(&#34;0.8&#34;);
+ BigDecimal x = a.subtract(b);
+ BigDecimal y = b.subtract(c);
+ if (x.equals(y)) {
+     System.out.println(&#34;true&#34;);
+ }"><meta name=application-name content="yakax"><meta name=apple-mobile-web-app-title content="yakax"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:'==document.location.protocol?'https:':'http:')+"//widget.daovoice.io/widget/af744044.js","daovoice")
+daovoice('init',{app_id:"af744044"});daovoice('update');</script><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://yakax.github.io/java%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C-%E8%BD%AC%E8%87%AA%E9%98%BF%E9%87%8C%E4%BA%91%E6%A0%96%E7%A4%BE%E5%8C%BA/><link rel=prev href=https://yakax.github.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A04lock/><link rel=next href=https://yakax.github.io/docker%E5%88%86%E5%B8%83%E5%BC%8F%E9%83%A8%E7%BD%B2zookeeper%E9%9B%86%E7%BE%A4/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Java开发手册-(转自阿里云栖社区)","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/yakax.github.io\/java%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C-%E8%BD%AC%E8%87%AA%E9%98%BF%E9%87%8C%E4%BA%91%E6%A0%96%E7%A4%BE%E5%8C%BA\/"},"image":["https:\/\/yakax.github.io\/images\/avatar.png"],"genre":"posts","keywords":"基础","wordcount":1133,"url":"https:\/\/yakax.github.io\/java%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C-%E8%BD%AC%E8%87%AA%E9%98%BF%E9%87%8C%E4%BA%91%E6%A0%96%E7%A4%BE%E5%8C%BA\/","datePublished":"2019-07-03T00:00:00+00:00","dateModified":"2019-07-03T00:00:00+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"yakax","logo":"https:\/\/yakax.github.io\/images\/avatar.png"},"author":{"@type":"Person","name":"yakax"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':('auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark'))&&document.body.setAttribute('theme','dark');</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class="fas fa-crosshairs fa-sm"></i></span><span id=id-1 class=typeit></span></a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>所有文章 </a><a class=menu-item href=/tags/>标签 </a><a class=menu-item href=/categories/>分类 </a><a class=menu-item href=/about/>关于 </a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i></a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop><input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span></span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class="fas fa-crosshairs fa-sm"></i></span><span id=id-2 class=typeit></span></a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/>所有文章</a><a class=menu-item href=/tags/>标签</a><a class=menu-item href=/categories/>分类</a><a class=menu-item href=/about/>关于</a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">Java开发手册-(转自阿里云栖社区)</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>yakax</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/%E9%9D%A2%E8%AF%95/><i class="far fa-folder fa-fw"></i>面试</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2019-07-03>2019-07-03</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1133 字&nbsp;
 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 3 分钟&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>目录</span>
-<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents></nav></div></div><div class=content id=content><p><a href=https://github.com/alibaba/p3c target=_blank rel="noopener noreffer">Java开发手册下载链接</a></p><p><font color=red>1-0.9=0.1是天经地义的，但在计算机的世界里，0.1恰恰是无法精确表示的一个小数，只有2的幂次倍小数才能够精确表示，如：0.5、0.25、0.125等。由于0.1是近似表达，在各种情形中的计算存在数位的取舍精度不一样，所以1-0.9未必等于0.9-0.8，所以浮点数之间的等值判断，基本数据类型不能用==来比较，包装数据类型不能用equals来判断。包装类型运算也是调用的浮点类型的计算</font></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents></nav></div></div><div class=content id=content><p><a href=https://github.com/alibaba/p3c target=_blank rel="noopener noreffer">Java开发手册下载链接</a></p><p><font color=red>1-0.9=0.1是天经地义的，但在计算机的世界里，0.1恰恰是无法精确表示的一个小数，只有2的幂次倍小数才能够精确表示，如：0.5、0.25、0.125等。由于0.1是近似表达，在各种情形中的计算存在数位的取舍精度不一样，所以1-0.9未必等于0.9-0.8，所以浮点数之间的等值判断，基本数据类型不能用==来比较，包装数据类型不能用equals来判断。包装类型运算也是调用的浮点类型的计算</font></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -149,50 +231,52 @@ public class FloatWrapperTest {
 </span><span class=lnt>41
 </span><span class=lnt>42
 </span><span class=lnt>43
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>public class FloatPrimitiveTest {
-</span></span><span class=line><span class=cl>    public static void main(String[] args) {
-</span></span><span class=line><span class=cl>        float a = 1.0f - 0.9f;
-</span></span><span class=line><span class=cl>        float b = 0.9f - 0.8f;
-</span></span><span class=line><span class=cl>        if (a == b) {
-</span></span><span class=line><span class=cl>            System.out.println(&#34;true&#34;);
-</span></span><span class=line><span class=cl>        } else {
-</span></span><span class=line><span class=cl>            System.out.println(&#34;false&#34;);
-</span></span><span class=line><span class=cl>        }
-</span></span><span class=line><span class=cl>    }
-</span></span><span class=line><span class=cl>}
-</span></span><span class=line><span class=cl>输出------------false
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>public class FloatWrapperTest {
-</span></span><span class=line><span class=cl>    public static void main(String[] args) {
-</span></span><span class=line><span class=cl>        Float a = Float.valueOf(1.0f - 0.9f);
-</span></span><span class=line><span class=cl>        Float b = Float.valueOf(0.9f - 0.8f);
-</span></span><span class=line><span class=cl>        if (a.equals(b)) {
-</span></span><span class=line><span class=cl>            System.out.println(&#34;true&#34;);
-</span></span><span class=line><span class=cl>        } else {
-</span></span><span class=line><span class=cl>            System.out.println(&#34;false&#34;);
-</span></span><span class=line><span class=cl>        }
-</span></span><span class=line><span class=cl>    }
-</span></span><span class=line><span class=cl>}
-</span></span><span class=line><span class=cl>输出--------false
-</span></span><span class=line><span class=cl>正例--------------------------------
-</span></span><span class=line><span class=cl>(1) 指定一个误差范围，两个浮点数的差值在此范围之内，则认为是相等的。
-</span></span><span class=line><span class=cl> float a = 1.0f - 0.9f;
-</span></span><span class=line><span class=cl> float b = 0.9f - 0.8f;
-</span></span><span class=line><span class=cl> float diff = 1e-6f;
-</span></span><span class=line><span class=cl> if (Math.abs(a - b) &lt; diff) {
-</span></span><span class=line><span class=cl>     System.out.println(&#34;true&#34;);
-</span></span><span class=line><span class=cl> }
-</span></span><span class=line><span class=cl>(2) 使用 BigDecimal 来定义值，再进行浮点数的运算操作。
-</span></span><span class=line><span class=cl> BigDecimal a = new BigDecimal(&#34;1.0&#34;);
-</span></span><span class=line><span class=cl> BigDecimal b = new BigDecimal(&#34;0.9&#34;);
-</span></span><span class=line><span class=cl> BigDecimal c = new BigDecimal(&#34;0.8&#34;);
-</span></span><span class=line><span class=cl> BigDecimal x = a.subtract(b);
-</span></span><span class=line><span class=cl> BigDecimal y = b.subtract(c);
-</span></span><span class=line><span class=cl> if (x.equals(y)) {
-</span></span><span class=line><span class=cl>     System.out.println(&#34;true&#34;);
-</span></span><span class=line><span class=cl> }
-</span></span></code></pre></td></tr></table></div></div><p><strong>当 switch 括号内的变量类型为 String 并且此变量为外部参数时，必须先进行 null判断。</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt>44
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>public class FloatPrimitiveTest {
+    public static void main(String[] args) {
+        float a = 1.0f - 0.9f;
+        float b = 0.9f - 0.8f;
+        if (a == b) {
+            System.out.println(&#34;true&#34;);
+        } else {
+            System.out.println(&#34;false&#34;);
+        }
+    }
+}
+输出------------false
+
+
+public class FloatWrapperTest {
+    public static void main(String[] args) {
+        Float a = Float.valueOf(1.0f - 0.9f);
+        Float b = Float.valueOf(0.9f - 0.8f);
+        if (a.equals(b)) {
+            System.out.println(&#34;true&#34;);
+        } else {
+            System.out.println(&#34;false&#34;);
+        }
+    }
+}
+输出--------false
+正例--------------------------------
+(1) 指定一个误差范围，两个浮点数的差值在此范围之内，则认为是相等的。
+ float a = 1.0f - 0.9f;
+ float b = 0.9f - 0.8f;
+ float diff = 1e-6f;
+ if (Math.abs(a - b) &lt; diff) {
+     System.out.println(&#34;true&#34;);
+ }
+(2) 使用 BigDecimal 来定义值，再进行浮点数的运算操作。
+ BigDecimal a = new BigDecimal(&#34;1.0&#34;);
+ BigDecimal b = new BigDecimal(&#34;0.9&#34;);
+ BigDecimal c = new BigDecimal(&#34;0.8&#34;);
+ BigDecimal x = a.subtract(b);
+ BigDecimal y = b.subtract(c);
+ if (x.equals(y)) {
+     System.out.println(&#34;true&#34;);
+ }
+
+</code></pre></td></tr></table></div></div><p><strong>当 switch 括号内的变量类型为 String 并且此变量为外部参数时，必须先进行 null判断。</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -205,30 +289,30 @@ public class FloatWrapperTest {
 </span><span class=lnt>11
 </span><span class=lnt>12
 </span><span class=lnt>13
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>public class SwitchTest {
-</span></span><span class=line><span class=cl>    public static void main(String[] args) {
-</span></span><span class=line><span class=cl>        String param = null;
-</span></span><span class=line><span class=cl>        switch (param) {
-</span></span><span class=line><span class=cl>            case &#34;null&#34;:
-</span></span><span class=line><span class=cl>                System.out.println(&#34;null&#34;);
-</span></span><span class=line><span class=cl>                break;
-</span></span><span class=line><span class=cl>            default:
-</span></span><span class=line><span class=cl>                System.out.println(&#34;default&#34;);
-</span></span><span class=line><span class=cl>        }
-</span></span><span class=line><span class=cl>    }
-</span></span><span class=line><span class=cl>}
-</span></span><span class=line><span class=cl>抛出NPE异常
-</span></span></code></pre></td></tr></table></div></div><p><strong>为了防止精度损失，禁止使用构造方法 BigDecimal(double)的方式把 double 值转化为 BigDecimal 对象。</strong>
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>public class SwitchTest {
+    public static void main(String[] args) {
+        String param = null;
+        switch (param) {
+            case &#34;null&#34;:
+                System.out.println(&#34;null&#34;);
+                break;
+            default:
+                System.out.println(&#34;default&#34;);
+        }
+    }
+}
+抛出NPE异常
+</code></pre></td></tr></table></div></div><p><strong>为了防止精度损失，禁止使用构造方法 BigDecimal(double)的方式把 double 值转化为 BigDecimal 对象。</strong>
 BigDecimal(double)存在精度损失风险，在精确计算或值比较的场景中可能会导致业务逻辑异常。
 如：BigDecimal g = new BigDecimal(0.1f); 实际的存储值为：0.10000000149
-优先推荐入参为 String 的构造方法，或使用 BigDecimal 的 valueOf 方法，此方法内部其实执行了Double 的 toString，而 Double 的 toString 按 double 的实际能表达的精度对尾数进行了截断</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+优先推荐入参为 String 的构造方法，或使用 BigDecimal 的 valueOf 方法，此方法内部其实执行了Double 的 toString，而 Double 的 toString 按 double 的实际能表达的精度对尾数进行了截断</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>推荐使用的方式
-</span></span><span class=line><span class=cl>BigDecimal recommend1 = new BigDecimal(&#34;0.1&#34;);
-</span></span><span class=line><span class=cl>BigDecimal recommend2 = BigDecimal.valueOf(0.1);
-</span></span></code></pre></td></tr></table></div></div><p><strong>在使用阻塞等待获取锁的方式中，必须在 try 代码块之外，并且在加锁方法与 try 代码块之间没有任何可能抛出异常的方法调用，避免加锁成功后，在 finally 中无法解锁。</strong>
-<font color=red>如果 lock 方法在 try 代码块之内，可能由于其它方法抛出异常，导致在 finally代码块中，unlock 对未加锁的对象解锁，它会调用 AQS 的 tryRelease 方法（取决于具体实现类），抛出 IllegalMonitorStateException 异常。在 Lock 对象的 lock方法实现中可能抛出 unchecked 异常。而在使用尝试机制来获取锁的方式中，比如 tryLock()，在进入业务代码块之前，必须先判断当前线程是否持有锁。</font></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>推荐使用的方式
+BigDecimal recommend1 = new BigDecimal(&#34;0.1&#34;);
+BigDecimal recommend2 = BigDecimal.valueOf(0.1);
+</code></pre></td></tr></table></div></div><p><strong>在使用阻塞等待获取锁的方式中，必须在 try 代码块之外，并且在加锁方法与 try 代码块之间没有任何可能抛出异常的方法调用，避免加锁成功后，在 finally 中无法解锁。</strong>
+<font color=red>如果 lock 方法在 try 代码块之内，可能由于其它方法抛出异常，导致在 finally代码块中，unlock 对未加锁的对象解锁，它会调用 AQS 的 tryRelease 方法（取决于具体实现类），抛出 IllegalMonitorStateException 异常。在 Lock 对象的 lock方法实现中可能抛出 unchecked 异常。而在使用尝试机制来获取锁的方式中，比如 tryLock()，在进入业务代码块之前，必须先判断当前线程是否持有锁。</font></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -252,30 +336,29 @@ BigDecimal(double)存在精度损失风险，在精确计算或值比较的场�
 </span><span class=lnt>22
 </span><span class=lnt>23
 </span><span class=lnt>24
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>public class LockTest {
-</span></span><span class=line><span class=cl>    private final static Lock lock = new ReentrantLock();
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>    public static void main(String[] args) {
-</span></span><span class=line><span class=cl>        try {
-</span></span><span class=line><span class=cl>            lock.tryLock();
-</span></span><span class=line><span class=cl>        } catch (Exception e) {
-</span></span><span class=line><span class=cl>            e.printStackTrace();
-</span></span><span class=line><span class=cl>        } finally {
-</span></span><span class=line><span class=cl>            lock.unlock();
-</span></span><span class=line><span class=cl>        }
-</span></span><span class=line><span class=cl>    }
-</span></span><span class=line><span class=cl>}
-</span></span><span class=line><span class=cl>所以这个unlock不会抛出异常
-</span></span><span class=line><span class=cl>正确加锁写法
-</span></span><span class=line><span class=cl>Lock lock = new XxxLock();
-</span></span><span class=line><span class=cl>        // ...
-</span></span><span class=line><span class=cl>    lock.lock();
-</span></span><span class=line><span class=cl>    try {
-</span></span><span class=line><span class=cl>         doSomething();
-</span></span><span class=line><span class=cl>         doOthers();
-</span></span><span class=line><span class=cl>    } finally {
-</span></span><span class=line><span class=cl>         lock.unlock();
-</span></span><span class=line><span class=cl>   }
-</span></span></code></pre></td></tr></table></div></div></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2019-07-03</span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/%E5%9F%BA%E7%A1%80/>基础</a></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A04lock/ class=prev rel=prev title=并发编程学习(4)Lock><i class="fas fa-angle-left fa-fw"></i>并发编程学习(4)Lock</a>
-<a href=/docker%E5%88%86%E5%B8%83%E5%BC%8F%E9%83%A8%E7%BD%B2zookeeper%E9%9B%86%E7%BE%A4/ class=next rel=next title=Docker分布式部署zookeeper集群>Docker分布式部署zookeeper集群<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments></div></article></div></main><script src=https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css><script src=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js></script><footer class=footer><div class=footer-container><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2018 - 2024</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>yakax</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i>
-</a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/typeit@7.0.4/dist/typeit.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:10},comment:{},data:{"id-1":"yakax.blog","id-2":"yakax.blog"},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"3MT6GW9D7W",algoliaIndex:"blog",algoliaSearchKey:"41ebe3571ca584723e8648600bbf45ce",highlightTag:"em",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:150,type:"algolia"},typeit:{cursorChar:"_",cursorSpeed:1e3,data:{"id-1":["id-1"],"id-2":["id-2"]},duration:-1,speed:200}}</script><script type=text/javascript src=/js/theme.min.js></script></body></html>
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>public class LockTest {
+    private final static Lock lock = new ReentrantLock();
+
+    public static void main(String[] args) {
+        try {
+            lock.tryLock();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            lock.unlock();
+        }
+    }
+}
+所以这个unlock不会抛出异常
+正确加锁写法
+Lock lock = new XxxLock();
+        // ...
+    lock.lock();
+    try {
+         doSomething();
+         doOthers();
+    } finally {
+         lock.unlock();
+   }
+</code></pre></td></tr></table></div></div></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2019-07-03</span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/%E5%9F%BA%E7%A1%80/>基础</a></section><section><span><a href=javascript:void(0); onclick=window.history.back();>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A04lock/ class=prev rel=prev title=并发编程学习(4)Lock><i class="fas fa-angle-left fa-fw"></i>并发编程学习(4)Lock</a>
+<a href=/docker%E5%88%86%E5%B8%83%E5%BC%8F%E9%83%A8%E7%BD%B2zookeeper%E9%9B%86%E7%BE%A4/ class=next rel=next title=Docker分布式部署zookeeper集群>Docker分布式部署zookeeper集群<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments></div></article></div></main><script src=https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css><script src=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js></script><footer class=footer><div class=footer-container><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2018 - 2024</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>yakax</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i></a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/typeit@7.0.4/dist/typeit.min.js></script><script type=text/javascript>window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{},"data":{"id-1":"yakax.blog","id-2":"yakax.blog"},"lightGallery":{"actualSize":false,"exThumbImage":"data-thumbnail","hideBarsDelay":2000,"selector":".lightgallery","speed":400,"thumbContHeight":80,"thumbWidth":80,"thumbnail":true},"search":{"algoliaAppID":"3MT6GW9D7W","algoliaIndex":"blog","algoliaSearchKey":"41ebe3571ca584723e8648600bbf45ce","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":150,"type":"algolia"},"typeit":{"cursorChar":"_","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":200}};</script><script type=text/javascript src=/js/theme.min.js></script></body></html>

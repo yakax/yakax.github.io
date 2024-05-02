@@ -1,7 +1,7 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>JMM - 标签 - yakax</title><link>https://yakax.github.io/tags/jmm/</link><description>JMM - 标签 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 26 Jun 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.github.io/tags/jmm/" rel="self" type="application/rss+xml"/><item><title>并发编程学习(3)线程安全性分析</title><link>https://yakax.github.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A03%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%80%A7%E5%88%86%E6%9E%90/</link><pubDate>Wed, 26 Jun 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A03%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%80%A7%E5%88%86%E6%9E%90/</guid><description><![CDATA[<h3 id="初步认识-volatile">初步认识 Volatile</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -15,19 +15,19 @@
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">    public /*volatile*/ static boolean stop=false;
-</span></span><span class="line"><span class="cl">    public static void main( String[] args ) throws InterruptedException {
-</span></span><span class="line"><span class="cl">        Thread t1=new Thread(()-&gt;{
-</span></span><span class="line"><span class="cl">            int i=0;
-</span></span><span class="line"><span class="cl">            while(!stop){ 
-</span></span><span class="line"><span class="cl">                i++;
-</span></span><span class="line"><span class="cl">            }
-</span></span><span class="line"><span class="cl">        });
-</span></span><span class="line"><span class="cl">        t1.start();
-</span></span><span class="line"><span class="cl">        Thread.sleep(1000);
-</span></span><span class="line"><span class="cl">        stop=true; //true
-</span></span><span class="line"><span class="cl">    }
-</span></span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">    public /*volatile*/ static boolean stop=false;
+    public static void main( String[] args ) throws InterruptedException {
+        Thread t1=new Thread(()-&gt;{
+            int i=0;
+            while(!stop){ 
+                i++;
+            }
+        });
+        t1.start();
+        Thread.sleep(1000);
+        stop=true; //true
+    }
+</code></pre></td></tr></table>
 </div>
 </div><ul>
 <li>定义一个共享变量 stop</li>

@@ -1,0 +1,474 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>ReentrantLock + AQS源码学习 - yakax</title><meta name=Description content><meta property="og:title" content="ReentrantLock + AQS源码学习"><meta property="og:description" content="ReentrantLock 里面所使用到的基本结构
+持有锁的waitstatus 状态 来标识node线程状态"><meta property="og:type" content="article"><meta property="og:url" content="https://yakax.github.io/reentrantlock-aqs%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/"><meta property="og:image" content="https://yakax.github.io/images/1.png"><meta property="article:published_time" content="2021-01-22T00:00:00+00:00"><meta property="article:modified_time" content="2021-01-22T00:00:00+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://yakax.github.io/images/1.png"><meta name=twitter:title content="ReentrantLock + AQS源码学习"><meta name=twitter:description content="ReentrantLock 里面所使用到的基本结构
+持有锁的waitstatus 状态 来标识node线程状态"><meta name=application-name content="yakax"><meta name=apple-mobile-web-app-title content="yakax"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:'==document.location.protocol?'https:':'http:')+"//widget.daovoice.io/widget/af744044.js","daovoice")
+daovoice('init',{app_id:"af744044"});daovoice('update');</script><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://yakax.github.io/reentrantlock-aqs%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/><link rel=prev href=https://yakax.github.io/synchronousqueue%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/><link rel=next href=https://yakax.github.io/futuretask%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"ReentrantLock + AQS源码学习","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/yakax.github.io\/reentrantlock-aqs%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0\/"},"image":["https:\/\/yakax.github.io\/images\/avatar.png"],"genre":"posts","keywords":"ReentrantLock, AQS","wordcount":3254,"url":"https:\/\/yakax.github.io\/reentrantlock-aqs%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0\/","datePublished":"2021-01-22T00:00:00+00:00","dateModified":"2021-01-22T00:00:00+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"yakax","logo":"https:\/\/yakax.github.io\/images\/avatar.png"},"author":{"@type":"Person","name":"yakax"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':('auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark'))&&document.body.setAttribute('theme','dark');</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class="fas fa-crosshairs fa-sm"></i></span><span id=id-1 class=typeit></span></a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>所有文章 </a><a class=menu-item href=/tags/>标签 </a><a class=menu-item href=/categories/>分类 </a><a class=menu-item href=/about/>关于 </a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i></a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop><input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span></span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class="fas fa-crosshairs fa-sm"></i></span><span id=id-2 class=typeit></span></a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/>所有文章</a><a class=menu-item href=/tags/>标签</a><a class=menu-item href=/categories/>分类</a><a class=menu-item href=/about/>关于</a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">ReentrantLock + AQS源码学习</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>yakax</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/><i class="far fa-folder fa-fw"></i>并发编程学习</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-01-22>2021-01-22</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3254 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 7 分钟&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><ul><li><a href=#代码分析--公平锁路线>代码分析&ndash;公平锁路线</a><ul><li><a href=#加锁--lock>加锁&ndash;lock</a></li><li><a href=#尝试加锁--第一个线程加锁>尝试加锁&ndash;第一个线程加锁</a></li><li><a href=#加锁失败--添加进入aqs队列>加锁失败&ndash;添加进入AQS队列</a></li><li><a href=#挂起线程>挂起线程</a></li><li><a href=#释放锁唤醒后继节点--unlock>释放锁|唤醒后继节点&ndash;unlock</a></li><li><a href=#加锁异常退出>加锁异常退出</a></li></ul></li></ul></li></ul></nav></div></div><div class=content id=content><p>ReentrantLock 里面所使用到的基本结构</p><p>持有锁的waitstatus 状态 来标识node线程状态</p><p><a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/aqs/QQ%E6%88%AA%E5%9B%BE20200916143206.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/aqs/QQ%E6%88%AA%E5%9B%BE20200916143206.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/aqs/QQ%E6%88%AA%E5%9B%BE20200916143206.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/aqs/QQ%E6%88%AA%E5%9B%BE20200916143206.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/aqs/QQ%E6%88%AA%E5%9B%BE20200916143206.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/aqs/QQ%E6%88%AA%E5%9B%BE20200916143206.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/aqs/QQ%E6%88%AA%E5%9B%BE20200916143206.png></a></p><p>重入是通过改变Lock本身的 state值值来说明线程的重入的。并且重入只改变了属性，并没有再次加锁。</p><p>线程的中断提醒**lock.lock()**情况下是不会提醒的 <strong>但是 此线程的 “打扰标志”会被设置， 可以通过isInterrupted()查看并 作出处理</strong></p><blockquote><p>lock是无法主动停止线程的，java也不推荐主动停止线程，一般都是通过中断标记，用户自己来处理线程后续的情况。</p><p>这也就是线程在被park阻塞 后被unpark唤醒时会返回线程的中断标记，到上层来通知调用者来处理线程的中断情况。</p></blockquote><p><strong>lock.lockInterruptibly()</strong> 会有提醒 并且会抛出异常来做中断处理;</p><p>非公平与公平的区别就在于非公平锁实现<strong>调用加锁时</strong>不是直接进入队列，而是先去cas一次尝试加锁。</p><p>并且在<strong>加锁前</strong>公平锁<strong>判断了当前node前面是否还有排队的node</strong>。而非公平锁没有判断，是直接通过cas尝试加锁。</p><p><code>cas 是更改的state值，通过偏移量寻找0去尝试更改为1 只有在第一次加锁会通过state的值做操作</code>。</p><p>解锁就是唤醒下一个线程：先是改变state值 直到state=0才会执行unpark操作才会唤醒下一个线程，<strong>意味着lock与unlock需要成对出现。</strong></p><h3 id=代码分析--公平锁路线>代码分析&ndash;公平锁路线</h3><h4 id=加锁--lock>加锁&ndash;lock</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java>	<span class=kd>public</span> <span class=kd>final</span> <span class=kt>void</span> <span class=nf>acquire</span><span class=o>(</span><span class=kt>int</span> <span class=n>arg</span><span class=o>)</span> <span class=o>{</span>
+        <span class=c1>// 条件一：!tryAcquire 尝试获取锁 获取成功返回true  获取失败 返回false 
+</span><span class=c1></span>        <span class=c1>// 条件一：如果是第一个线程 连node 都不会创建就直接加锁了
+</span><span class=c1></span>        <span class=c1>// 条件二.1 尝试添加进入AQS队列
+</span><span class=c1></span>        <span class=c1>// 条件二.2 acquireQueued 挂起当前线程   唤醒后相关的逻辑..
+</span><span class=c1></span>        <span class=c1>//      acquireQueued 返回true 表示挂起过程中线程被中断唤醒过..  false 表示未被中断过..
+</span><span class=c1></span>        <span class=k>if</span> <span class=o>(!</span><span class=n>tryAcquire</span><span class=o>(</span><span class=n>arg</span><span class=o>)</span> <span class=o>&amp;&amp;</span>
+            <span class=n>acquireQueued</span><span class=o>(</span><span class=n>addWaiter</span><span class=o>(</span><span class=n>Node</span><span class=o>.</span><span class=na>EXCLUSIVE</span><span class=o>),</span> <span class=n>arg</span><span class=o>))</span>
+            <span class=n>selfInterrupt</span><span class=o>();</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table></div></div><h4 id=尝试加锁--第一个线程加锁>尝试加锁&ndash;第一个线程加锁</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java>	<span class=kd>protected</span> <span class=kd>final</span> <span class=kt>boolean</span> <span class=nf>tryAcquire</span><span class=o>(</span><span class=kt>int</span> <span class=n>acquires</span><span class=o>)</span> <span class=o>{</span>
+            <span class=kd>final</span> <span class=n>Thread</span> <span class=n>current</span> <span class=o>=</span> <span class=n>Thread</span><span class=o>.</span><span class=na>currentThread</span><span class=o>();</span>
+            <span class=kt>int</span> <span class=n>c</span> <span class=o>=</span> <span class=n>getState</span><span class=o>();</span>
+        <span class=c1>// 如果当前状态是0 可以尝试加锁
+</span><span class=c1></span>            <span class=k>if</span> <span class=o>(</span><span class=n>c</span> <span class=o>==</span> <span class=n>0</span><span class=o>)</span> <span class=o>{</span>
+                <span class=c1>// 判断是否有前置node存在  有就返回true 说明当前线程只能入队
+</span><span class=c1></span>                <span class=k>if</span> <span class=o>(!</span><span class=n>hasQueuedPredecessors</span><span class=o>()</span> <span class=o>&amp;&amp;</span>
+                    <span class=n>compareAndSetState</span><span class=o>(</span><span class=n>0</span><span class=o>,</span> <span class=n>acquires</span><span class=o>))</span> <span class=o>{</span>
+                    <span class=c1>// 如果当前线程前面没得队列 那么可以尝试加锁 并且设置当前加锁线程给自己
+</span><span class=c1></span>                    <span class=n>setExclusiveOwnerThread</span><span class=o>(</span><span class=n>current</span><span class=o>);</span>
+                    <span class=k>return</span> <span class=kc>true</span><span class=o>;</span>
+                <span class=o>}</span>
+            <span class=o>}</span><span class=k>else</span> <span class=k>if</span> <span class=o>(</span><span class=n>current</span> <span class=o>==</span> <span class=n>getExclusiveOwnerThread</span><span class=o>())</span> <span class=o>{</span>
+                <span class=c1>// 线程相等 说明重入
+</span><span class=c1></span>                <span class=kt>int</span> <span class=n>nextc</span> <span class=o>=</span> <span class=n>c</span> <span class=o>+</span> <span class=n>acquires</span><span class=o>;</span>
+                <span class=k>if</span> <span class=o>(</span><span class=n>nextc</span> <span class=o>&lt;</span> <span class=n>0</span><span class=o>)</span>
+                    <span class=k>throw</span> <span class=k>new</span> <span class=n>Error</span><span class=o>(</span><span class=s>&#34;Maximum lock count exceeded&#34;</span><span class=o>);</span>
+                <span class=n>setState</span><span class=o>(</span><span class=n>nextc</span><span class=o>);</span>
+                <span class=k>return</span> <span class=kc>true</span><span class=o>;</span>
+            <span class=o>}</span>
+            <span class=k>return</span> <span class=kc>false</span><span class=o>;</span>
+        <span class=o>}</span>
+</code></pre></td></tr></table></div></div><h4 id=加锁失败--添加进入aqs队列>加锁失败&ndash;添加进入AQS队列</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java>    <span class=kd>private</span> <span class=n>Node</span> <span class=nf>addWaiter</span><span class=o>(</span><span class=n>Node</span> <span class=n>mode</span><span class=o>)</span> <span class=o>{</span>
+        <span class=c1>// 将当前线程封装成node
+</span><span class=c1></span>        <span class=n>Node</span> <span class=n>node</span> <span class=o>=</span> <span class=k>new</span> <span class=n>Node</span><span class=o>(</span><span class=n>Thread</span><span class=o>.</span><span class=na>currentThread</span><span class=o>(),</span> <span class=n>mode</span><span class=o>);</span>
+        <span class=c1>// 尾巴结点拿出来赋值  据了解 别人这样写完全是更直观的看代码
+</span><span class=c1></span>        <span class=n>Node</span> <span class=n>pred</span> <span class=o>=</span> <span class=n>tail</span><span class=o>;</span>
+        <span class=c1>// 如果node已经存在就尝试加入尾结点后面
+</span><span class=c1></span>        <span class=k>if</span> <span class=o>(</span><span class=n>pred</span> <span class=o>!=</span> <span class=kc>null</span><span class=o>)</span> <span class=o>{</span>
+            <span class=c1>// 设置当前节点上一个节点为 之前的尾结点
+</span><span class=c1></span>            <span class=n>node</span><span class=o>.</span><span class=na>prev</span> <span class=o>=</span> <span class=n>pred</span><span class=o>;</span>
+            <span class=k>if</span> <span class=o>(</span><span class=n>compareAndSetTail</span><span class=o>(</span><span class=n>pred</span><span class=o>,</span> <span class=n>node</span><span class=o>))</span> <span class=o>{</span>
+                <span class=c1>// 加入尾结点成功 设置之前尾结点的下一个几点为当前节点
+</span><span class=c1></span>                <span class=n>pred</span><span class=o>.</span><span class=na>next</span> <span class=o>=</span> <span class=n>node</span><span class=o>;</span>
+                <span class=k>return</span> <span class=n>node</span><span class=o>;</span>
+            <span class=o>}</span>
+        <span class=o>}</span>
+        <span class=c1>// 1.当前队列是空队列  tail == null
+</span><span class=c1></span>        <span class=c1>// 2.CAS竞争入队失败..会来到这里..
+</span><span class=c1></span>        <span class=n>enq</span><span class=o>(</span><span class=n>node</span><span class=o>);</span>
+        <span class=k>return</span> <span class=n>node</span><span class=o>;</span>
+    <span class=o>}</span>
+	<span class=c1>// 自循环尝试加入队列 
+</span><span class=c1></span>	<span class=kd>private</span> <span class=n>Node</span> <span class=nf>enq</span><span class=o>(</span><span class=kd>final</span> <span class=n>Node</span> <span class=n>node</span><span class=o>)</span> <span class=o>{</span>
+        <span class=k>for</span> <span class=o>(;;)</span> <span class=o>{</span>
+            <span class=n>Node</span> <span class=n>t</span> <span class=o>=</span> <span class=n>tail</span><span class=o>;</span>
+            <span class=c1>// 如果是空 队列 初始化一个node 为头
+</span><span class=c1></span>            <span class=k>if</span> <span class=o>(</span><span class=n>t</span> <span class=o>==</span> <span class=kc>null</span><span class=o>)</span> <span class=o>{</span> <span class=c1>// Must initialize
+</span><span class=c1></span>                <span class=k>if</span> <span class=o>(</span><span class=n>compareAndSetHead</span><span class=o>(</span><span class=k>new</span> <span class=n>Node</span><span class=o>()))</span>
+                    <span class=n>tail</span> <span class=o>=</span> <span class=n>head</span><span class=o>;</span>
+            <span class=o>}</span> <span class=k>else</span> <span class=o>{</span>
+                <span class=c1>// 后面循环肯定会进入这里
+</span><span class=c1></span>                <span class=n>node</span><span class=o>.</span><span class=na>prev</span> <span class=o>=</span> <span class=n>t</span><span class=o>;</span>
+                <span class=c1>// 尝试在尾巴节点加入自己 自循环知道成功为止
+</span><span class=c1></span>                <span class=k>if</span> <span class=o>(</span><span class=n>compareAndSetTail</span><span class=o>(</span><span class=n>t</span><span class=o>,</span> <span class=n>node</span><span class=o>))</span> <span class=o>{</span>
+                    <span class=n>t</span><span class=o>.</span><span class=na>next</span> <span class=o>=</span> <span class=n>node</span><span class=o>;</span>
+                    <span class=k>return</span> <span class=n>t</span><span class=o>;</span>
+                <span class=o>}</span>
+            <span class=o>}</span>
+        <span class=o>}</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table></div></div><h4 id=挂起线程>挂起线程</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java> <span class=kd>final</span> <span class=kt>boolean</span> <span class=nf>acquireQueued</span><span class=o>(</span><span class=kd>final</span> <span class=n>Node</span> <span class=n>node</span><span class=o>,</span> <span class=kt>int</span> <span class=n>arg</span><span class=o>)</span> <span class=o>{</span>
+     <span class=c1>// 标识抢占锁是否成功
+</span><span class=c1></span>        <span class=kt>boolean</span> <span class=n>failed</span> <span class=o>=</span> <span class=kc>true</span><span class=o>;</span>
+        <span class=k>try</span> <span class=o>{</span>
+            <span class=c1>// 中断状态
+</span><span class=c1></span>            <span class=kt>boolean</span> <span class=n>interrupted</span> <span class=o>=</span> <span class=kc>false</span><span class=o>;</span>
+            <span class=k>for</span> <span class=o>(;;)</span> <span class=o>{</span> <span class=c1>// 自循环
+</span><span class=c1></span>                <span class=c1>// 拿到上一个节点
+</span><span class=c1></span>                <span class=kd>final</span> <span class=n>Node</span> <span class=n>p</span> <span class=o>=</span> <span class=n>node</span><span class=o>.</span><span class=na>predecessor</span><span class=o>();</span>
+                <span class=c1>// 如果上一个节点是头结点 说明有权利去抢占锁
+</span><span class=c1></span>                <span class=k>if</span> <span class=o>(</span><span class=n>p</span> <span class=o>==</span> <span class=n>head</span> <span class=o>&amp;&amp;</span> <span class=n>tryAcquire</span><span class=o>(</span><span class=n>arg</span><span class=o>))</span> <span class=o>{</span>
+                    <span class=c1>// 加锁成功  设置自己为头结点
+</span><span class=c1></span>                    <span class=n>setHead</span><span class=o>(</span><span class=n>node</span><span class=o>);</span>
+                    <span class=n>p</span><span class=o>.</span><span class=na>next</span> <span class=o>=</span> <span class=kc>null</span><span class=o>;</span> <span class=c1>// help GC
+</span><span class=c1></span>                    <span class=n>failed</span> <span class=o>=</span> <span class=kc>false</span><span class=o>;</span>
+                    <span class=k>return</span> <span class=n>interrupted</span><span class=o>;</span>
+                <span class=o>}</span>
+                <span class=c1>// 条件1 判断当前线程是否需要挂起
+</span><span class=c1></span>                <span class=k>if</span> <span class=o>(</span><span class=n>shouldParkAfterFailedAcquire</span><span class=o>(</span><span class=n>p</span><span class=o>,</span> <span class=n>node</span><span class=o>)</span> <span class=o>&amp;&amp;</span>
+                    <span class=n>parkAndCheckInterrupt</span><span class=o>())</span>
+                    <span class=c1>// park 的时候会通过Thread.interrupted() 这个返回当前线程中断情况
+</span><span class=c1></span>                <span class=c1>// park 阻塞当前线程 如果中断 会返回interrupted以便selfInterrupt()这个方法使用，让外部线程知道中断状态
+</span><span class=c1></span>                    <span class=n>interrupted</span> <span class=o>=</span> <span class=kc>true</span><span class=o>;</span>
+            <span class=o>}</span>
+        <span class=o>}</span> <span class=k>finally</span> <span class=o>{</span>
+            <span class=c1>// 正常不会进来的 中断异常加锁方式 抛异常 会出来lockInterruptibly()   这个加锁方式
+</span><span class=c1></span>            <span class=k>if</span> <span class=o>(</span><span class=n>failed</span><span class=o>)</span>
+                <span class=n>cancelAcquire</span><span class=o>(</span><span class=n>node</span><span class=o>);</span>
+        <span class=o>}</span>
+    <span class=o>}</span>
+<span class=c1>// 记住一点 外面是自循环 还会进来的 最终还是会执行到parkAndCheckInterrupt来park线程
+</span><span class=c1></span>	<span class=kd>private</span> <span class=kd>static</span> <span class=kt>boolean</span> <span class=nf>shouldParkAfterFailedAcquire</span><span class=o>(</span><span class=n>Node</span> <span class=n>pred</span><span class=o>,</span> <span class=n>Node</span> <span class=n>node</span><span class=o>)</span> <span class=o>{</span>
+        <span class=kt>int</span> <span class=n>ws</span> <span class=o>=</span> <span class=n>pred</span><span class=o>.</span><span class=na>waitStatus</span><span class=o>;</span>
+        <span class=c1>// 拿到上一个节点的 状态  如果是signal=-1 说明 是一个持有锁的线程或者是一个可以唤醒下一个节点的线程
+</span><span class=c1></span>        <span class=k>if</span> <span class=o>(</span><span class=n>ws</span> <span class=o>==</span> <span class=n>Node</span><span class=o>.</span><span class=na>SIGNAL</span><span class=o>)</span>
+            <span class=k>return</span> <span class=kc>true</span><span class=o>;</span>
+        <span class=k>if</span> <span class=o>(</span><span class=n>ws</span> <span class=o>&gt;</span> <span class=n>0</span><span class=o>)</span> <span class=o>{</span>
+          <span class=c1>// 找到前置节点可以唤醒下一个节点的node 让他作为当前线程的前置节点  
+</span><span class=c1></span>           <span class=c1>// 如果前置节点不是signal状态 那么当前线程将永远不会被唤醒
+</span><span class=c1></span>            <span class=k>do</span> <span class=o>{</span>
+                <span class=n>node</span><span class=o>.</span><span class=na>prev</span> <span class=o>=</span> <span class=n>pred</span> <span class=o>=</span> <span class=n>pred</span><span class=o>.</span><span class=na>prev</span><span class=o>;</span>
+            <span class=o>}</span> <span class=k>while</span> <span class=o>(</span><span class=n>pred</span><span class=o>.</span><span class=na>waitStatus</span> <span class=o>&gt;</span> <span class=n>0</span><span class=o>);</span>
+            <span class=n>pred</span><span class=o>.</span><span class=na>next</span> <span class=o>=</span> <span class=n>node</span><span class=o>;</span>
+        <span class=o>}</span> <span class=k>else</span> <span class=o>{</span>
+            <span class=c1>// 正常情况 进入这里
+</span><span class=c1></span>           <span class=c1>//当前node前置节点的状态就是 0 的这一种情况。
+</span><span class=c1></span>            <span class=c1>//将当前线程node的前置node，状态强制设置为 SIGNAl，表示前置节点释放锁之后需要 喊醒我.. 
+</span><span class=c1></span>            <span class=c1>// 这个 需要在释放锁成功后逻辑 看得出来
+</span><span class=c1></span>            <span class=n>compareAndSetWaitStatus</span><span class=o>(</span><span class=n>pred</span><span class=o>,</span> <span class=n>ws</span><span class=o>,</span> <span class=n>Node</span><span class=o>.</span><span class=na>SIGNAL</span><span class=o>);</span>
+        <span class=o>}</span>
+        <span class=k>return</span> <span class=kc>false</span><span class=o>;</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table></div></div><h4 id=释放锁唤醒后继节点--unlock>释放锁|唤醒后继节点&ndash;unlock</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java>    <span class=kd>public</span> <span class=kd>final</span> <span class=kt>boolean</span> <span class=nf>release</span><span class=o>(</span><span class=kt>int</span> <span class=n>arg</span><span class=o>)</span> <span class=o>{</span>
+        <span class=c1>//尝试释放锁，tryRelease 返回true 表示当前线程已经完全释放锁
+</span><span class=c1></span>        <span class=c1>//返回false，说明当前线程尚未完全释放锁.. 解锁需要成对出现
+</span><span class=c1></span>        <span class=k>if</span> <span class=o>(</span><span class=n>tryRelease</span><span class=o>(</span><span class=n>arg</span><span class=o>))</span> <span class=o>{</span>
+            <span class=c1>//头结点
+</span><span class=c1></span>            <span class=n>Node</span> <span class=n>h</span> <span class=o>=</span> <span class=n>head</span><span class=o>;</span>
+            
+            <span class=c1>//条件一:成立，说明队列中的head节点已经初始化过了，ReentrantLock 在使用期间 发生过 多线程竞争了...
+</span><span class=c1></span>            <span class=c1>// 只有在第二个线程进来时就会有head  
+</span><span class=c1></span>            <span class=c1>//条件二：条件成立，说明当前head后面一定插入过node节点。节点去唤醒 
+</span><span class=c1></span>            <span class=c1>// waitStatus 其他状态 后继节点在park前会改变前节点的值为-1 或者有其他状态
+</span><span class=c1></span>            <span class=k>if</span> <span class=o>(</span><span class=n>h</span> <span class=o>!=</span> <span class=kc>null</span> <span class=o>&amp;&amp;</span> <span class=n>h</span><span class=o>.</span><span class=na>waitStatus</span> <span class=o>!=</span> <span class=n>0</span><span class=o>)</span>
+                <span class=c1>//唤醒后继节点..
+</span><span class=c1></span>                <span class=n>unparkSuccessor</span><span class=o>(</span><span class=n>h</span><span class=o>);</span>
+            <span class=k>return</span> <span class=kc>true</span><span class=o>;</span>
+        <span class=o>}</span>
+
+        <span class=k>return</span> <span class=kc>false</span><span class=o>;</span>
+    <span class=o>}</span>
+	<span class=kd>protected</span> <span class=kd>final</span> <span class=kt>boolean</span> <span class=nf>tryRelease</span><span class=o>(</span><span class=kt>int</span> <span class=n>releases</span><span class=o>)</span> <span class=o>{</span>
+        <span class=c1>// 状态-1
+</span><span class=c1></span>            <span class=kt>int</span> <span class=n>c</span> <span class=o>=</span> <span class=n>getState</span><span class=o>()</span> <span class=o>-</span> <span class=n>releases</span><span class=o>;</span>
+        <span class=c1>// 异常情况
+</span><span class=c1></span>            <span class=k>if</span> <span class=o>(</span><span class=n>Thread</span><span class=o>.</span><span class=na>currentThread</span><span class=o>()</span> <span class=o>!=</span> <span class=n>getExclusiveOwnerThread</span><span class=o>())</span>
+                <span class=k>throw</span> <span class=k>new</span> <span class=n>IllegalMonitorStateException</span><span class=o>();</span>
+            <span class=kt>boolean</span> <span class=n>free</span> <span class=o>=</span> <span class=kc>false</span><span class=o>;</span>
+            <span class=k>if</span> <span class=o>(</span><span class=n>c</span> <span class=o>==</span> <span class=n>0</span><span class=o>)</span> <span class=o>{</span>
+                <span class=n>free</span> <span class=o>=</span> <span class=kc>true</span><span class=o>;</span>
+                <span class=c1>// 释放锁成功
+</span><span class=c1></span>                <span class=n>setExclusiveOwnerThread</span><span class=o>(</span><span class=kc>null</span><span class=o>);</span>
+            <span class=o>}</span>
+        <span class=c1>// 如果是重复多次 将会返回false
+</span><span class=c1></span>            <span class=n>setState</span><span class=o>(</span><span class=n>c</span><span class=o>);</span>
+            <span class=k>return</span> <span class=n>free</span><span class=o>;</span>
+        <span class=o>}</span>
+<span class=c1>// 唤醒后继节点
+</span><span class=c1></span><span class=kd>private</span> <span class=kt>void</span> <span class=nf>unparkSuccessor</span><span class=o>(</span><span class=n>Node</span> <span class=n>node</span><span class=o>)</span> <span class=o>{</span>
+    
+        <span class=kt>int</span> <span class=n>ws</span> <span class=o>=</span> <span class=n>node</span><span class=o>.</span><span class=na>waitStatus</span><span class=o>;</span>
+    <span class=c1>// 如果是小于0 说明下一个节点已经设置过你的值 直接开始修改值 这里对应shouldParkAfterFailedAcquire 这个方法
+</span><span class=c1></span>        <span class=k>if</span> <span class=o>(</span><span class=n>ws</span> <span class=o>&lt;</span> <span class=n>0</span><span class=o>)</span>
+            <span class=n>compareAndSetWaitStatus</span><span class=o>(</span><span class=n>node</span><span class=o>,</span> <span class=n>ws</span><span class=o>,</span> <span class=n>0</span><span class=o>);</span>
+
+        <span class=n>Node</span> <span class=n>s</span> <span class=o>=</span> <span class=n>node</span><span class=o>.</span><span class=na>next</span><span class=o>;</span>
+    <span class=c1>// 当前节点就是tail节点时  s == null
+</span><span class=c1></span>    <span class=c1>// 当新节点入队时 在并发情况下 s会可能有空的情况，因为添加队列是分三步执行的addWaiter(Node mode)方法
+</span><span class=c1></span>   <span class=c1>//当s.waitStatus&gt;0 说明后继节点是取消状态,就要越过 那就要找其他节点来唤醒咯  配合cancelAcquire 异常退出时的取消状态判断
+</span><span class=c1></span>        <span class=k>if</span> <span class=o>(</span><span class=n>s</span> <span class=o>==</span> <span class=kc>null</span> <span class=o>||</span> <span class=n>s</span><span class=o>.</span><span class=na>waitStatus</span> <span class=o>&gt;</span> <span class=n>0</span><span class=o>)</span> <span class=o>{</span>
+            <span class=n>s</span> <span class=o>=</span> <span class=kc>null</span><span class=o>;</span>
+            <span class=c1>// 找到需要被唤醒的节点  从尾部开始
+</span><span class=c1></span>            <span class=k>for</span> <span class=o>(</span><span class=n>Node</span> <span class=n>t</span> <span class=o>=</span> <span class=n>tail</span><span class=o>;</span> <span class=n>t</span> <span class=o>!=</span> <span class=kc>null</span> <span class=o>&amp;&amp;</span> <span class=n>t</span> <span class=o>!=</span> <span class=n>node</span><span class=o>;</span> <span class=n>t</span> <span class=o>=</span> <span class=n>t</span><span class=o>.</span><span class=na>prev</span><span class=o>)</span>
+                <span class=k>if</span> <span class=o>(</span><span class=n>t</span><span class=o>.</span><span class=na>waitStatus</span> <span class=o>&lt;=</span> <span class=n>0</span><span class=o>)</span>
+                    <span class=n>s</span> <span class=o>=</span> <span class=n>t</span><span class=o>;</span>
+        <span class=o>}</span>
+    <span class=c1>// 如果找到 就唤醒
+</span><span class=c1></span>        <span class=k>if</span> <span class=o>(</span><span class=n>s</span> <span class=o>!=</span> <span class=kc>null</span><span class=o>)</span>
+            <span class=n>LockSupport</span><span class=o>.</span><span class=na>unpark</span><span class=o>(</span><span class=n>s</span><span class=o>.</span><span class=na>thread</span><span class=o>);</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table></div></div><h4 id=加锁异常退出>加锁异常退出</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java><span class=kd>private</span> <span class=kt>void</span> <span class=nf>cancelAcquire</span><span class=o>(</span><span class=n>Node</span> <span class=n>node</span><span class=o>)</span> <span class=o>{</span>
+        <span class=k>if</span> <span class=o>(</span><span class=n>node</span> <span class=o>==</span> <span class=kc>null</span><span class=o>)</span>
+            <span class=k>return</span><span class=o>;</span>
+    <span class=c1>//因为已经取消排队了..所以node内部关联的当前线程，置为Null就好了。。
+</span><span class=c1></span>        <span class=n>node</span><span class=o>.</span><span class=na>thread</span> <span class=o>=</span> <span class=kc>null</span><span class=o>;</span>
+        <span class=n>Node</span> <span class=n>pred</span> <span class=o>=</span> <span class=n>node</span><span class=o>.</span><span class=na>prev</span><span class=o>;</span>
+   
+    <span class=c1>// 如果前驱节点也是取消情况 找到第一个取消节点的node
+</span><span class=c1></span>        <span class=k>while</span> <span class=o>(</span><span class=n>pred</span><span class=o>.</span><span class=na>waitStatus</span> <span class=o>&gt;</span> <span class=n>0</span><span class=o>)</span>
+            <span class=n>node</span><span class=o>.</span><span class=na>prev</span> <span class=o>=</span> <span class=n>pred</span> <span class=o>=</span> <span class=n>pred</span><span class=o>.</span><span class=na>prev</span><span class=o>;</span>
+    	
+    <span class=c1>// 拿到取消节点的下一个节点
+</span><span class=c1></span>        <span class=n>Node</span> <span class=n>predNext</span> <span class=o>=</span> <span class=n>pred</span><span class=o>.</span><span class=na>next</span><span class=o>;</span>
+    <span class=c1>// 设置当前节点为取消节点
+</span><span class=c1></span>        <span class=n>node</span><span class=o>.</span><span class=na>waitStatus</span> <span class=o>=</span> <span class=n>Node</span><span class=o>.</span><span class=na>CANCELLED</span><span class=o>;</span>
+
+        <span class=cm>/**
+</span><span class=cm>         * 当前取消排队的node所在 队列的位置不同，执行的出队策略是不一样的，一共分为三种情况：
+</span><span class=cm>         * 1.当前node是队尾  tail -&gt; node
+</span><span class=cm>         * 2.当前node 不是 head.next 节点，也不是 tail
+</span><span class=cm>         * 3.当前node 是 head.next节点。
+</span><span class=cm>         */</span>
+       
+    <span class=c1>// 如果是尾结点  把队尾节点指向pred 不指向他自己了
+</span><span class=c1></span>        <span class=k>if</span> <span class=o>(</span><span class=n>node</span> <span class=o>==</span> <span class=n>tail</span> <span class=o>&amp;&amp;</span> <span class=n>compareAndSetTail</span><span class=o>(</span><span class=n>node</span><span class=o>,</span> <span class=n>pred</span><span class=o>))</span> <span class=o>{</span>
+            <span class=c1>// 然后在设置pred.nxet 指向null
+</span><span class=c1></span>            <span class=n>compareAndSetNext</span><span class=o>(</span><span class=n>pred</span><span class=o>,</span> <span class=n>predNext</span><span class=o>,</span> <span class=kc>null</span><span class=o>);</span>
+        <span class=o>}</span> <span class=k>else</span> <span class=o>{</span>
+           
+            <span class=kt>int</span> <span class=n>ws</span><span class=o>;</span>
+            <span class=c1>// 1.当前节点前驱节点不是head 那么他自己也就不是head.nxet
+</span><span class=c1></span>            <span class=c1>// 2. 前驱节点状态是 -1 或者0  或者 设置前驱节点 为-1 成功的话
+</span><span class=c1></span>            <span class=c1>// 设置成SIGNAL 状态后会唤醒后继节点 然后就会越过取消节点
+</span><span class=c1></span>            <span class=k>if</span> <span class=o>(</span><span class=n>pred</span> <span class=o>!=</span> <span class=n>head</span> <span class=o>&amp;&amp;</span>
+                <span class=o>((</span><span class=n>ws</span> <span class=o>=</span> <span class=n>pred</span><span class=o>.</span><span class=na>waitStatus</span><span class=o>)</span> <span class=o>==</span> <span class=n>Node</span><span class=o>.</span><span class=na>SIGNAL</span> <span class=o>||</span>
+                 <span class=o>(</span><span class=n>ws</span> <span class=o>&lt;=</span> <span class=n>0</span> <span class=o>&amp;&amp;</span> <span class=n>compareAndSetWaitStatus</span><span class=o>(</span><span class=n>pred</span><span class=o>,</span> <span class=n>ws</span><span class=o>,</span> <span class=n>Node</span><span class=o>.</span><span class=na>SIGNAL</span><span class=o>)))</span> <span class=o>&amp;&amp;</span>
+                <span class=n>pred</span><span class=o>.</span><span class=na>thread</span> <span class=o>!=</span> <span class=kc>null</span><span class=o>)</span> <span class=o>{</span>
+                <span class=n>Node</span> <span class=n>next</span> <span class=o>=</span> <span class=n>node</span><span class=o>.</span><span class=na>next</span><span class=o>;</span>
+                <span class=c1>// 修改前驱节点下一个指向  当前节点下一个节点存在的情况下并且状态不是取消状态
+</span><span class=c1></span>                <span class=k>if</span> <span class=o>(</span><span class=n>next</span> <span class=o>!=</span> <span class=kc>null</span> <span class=o>&amp;&amp;</span> <span class=n>next</span><span class=o>.</span><span class=na>waitStatus</span> <span class=o>&lt;=</span> <span class=n>0</span><span class=o>)</span>
+                    <span class=c1>// 设置前驱节点的下一个节点为 当前node下个节点
+</span><span class=c1></span>                    <span class=n>compareAndSetNext</span><span class=o>(</span><span class=n>pred</span><span class=o>,</span> <span class=n>predNext</span><span class=o>,</span> <span class=n>next</span><span class=o>);</span>
+            <span class=o>}</span> <span class=k>else</span> <span class=o>{</span>
+                <span class=c1>// 如果是头结点的话直接唤醒下一个节点 
+</span><span class=c1></span>                <span class=c1>// 后继节点唤醒后，会调用 shouldParkAfterFailedAcquire 会让node.next 节点越过取消状态的节点
+</span><span class=c1></span>                <span class=n>unparkSuccessor</span><span class=o>(</span><span class=n>node</span><span class=o>);</span>
+            <span class=o>}</span>
+            <span class=c1>// 自己指向自己 方便gc引用回收
+</span><span class=c1></span>            <span class=n>node</span><span class=o>.</span><span class=na>next</span> <span class=o>=</span> <span class=n>node</span><span class=o>;</span> <span class=c1>// help GC
+</span><span class=c1></span>        <span class=o>}</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table></div></div></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2021-01-22</span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/reentrantlock/>ReentrantLock</a>,&nbsp;<a href=/tags/aqs/>AQS</a></section><section><span><a href=javascript:void(0); onclick=window.history.back();>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/synchronousqueue%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/ class=prev rel=prev title=SynchronousQueue源码学习><i class="fas fa-angle-left fa-fw"></i>SynchronousQueue源码学习</a>
+<a href=/futuretask%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/ class=next rel=next title=FutureTask源码学习>FutureTask源码学习<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments></div></article></div></main><script src=https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css><script src=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js></script><footer class=footer><div class=footer-container><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2018 - 2024</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>yakax</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i></a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/typeit@7.0.4/dist/typeit.min.js></script><script type=text/javascript>window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{},"data":{"id-1":"yakax.blog","id-2":"yakax.blog"},"lightGallery":{"actualSize":false,"exThumbImage":"data-thumbnail","hideBarsDelay":2000,"selector":".lightgallery","speed":400,"thumbContHeight":80,"thumbWidth":80,"thumbnail":true},"search":{"algoliaAppID":"3MT6GW9D7W","algoliaIndex":"blog","algoliaSearchKey":"41ebe3571ca584723e8648600bbf45ce","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":150,"type":"algolia"},"typeit":{"cursorChar":"_","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":200}};</script><script type=text/javascript src=/js/theme.min.js></script></body></html>

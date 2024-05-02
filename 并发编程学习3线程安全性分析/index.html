@@ -1,5 +1,4 @@
-<!doctype html><html lang=zh-CN><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=X-UA-Compatible content="IE=edge, chrome=1"><title>并发编程学习(3)线程安全性分析 - yakax</title><meta name=Description content><meta property="og:url" content="https://yakax.github.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A03%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%80%A7%E5%88%86%E6%9E%90/">
-<meta property="og:site_name" content="yakax"><meta property="og:title" content="并发编程学习(3)线程安全性分析"><meta property="og:description" content="初步认识 Volatile 1 2 3 4 5 6 7 8 9 10 11 12 public /*volatile*/ static boolean stop=false; public static void main( String[] args ) throws InterruptedException { Thread t1=new Thread(()->{ int i=0; while(!stop){ i++; } }); t1.start(); Thread.sleep(1000); stop=true; //true } 定义一个共享变量 stop 在main线程中创建一个子线程 thread，子线程读取到 stop的值做循环结束的条件 main线程中修改stop的值为 true 当 stop没有增加volatile修饰时，子线程对于主线程的 stop=true的修改是不可见的，这样将导致子线程出现死循环 当 stop增加了volatile修饰时，子线程可以获取到主线程对于 stop=true的值，子线程while循环条件不满足退出循环 增加volatile关键字以后，main线程对于共享变量 stop值的更新，对于子线程 thread可见，这就是volatile的作用"><meta property="og:locale" content="zh-CN"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2019-06-26T00:00:00+00:00"><meta property="article:modified_time" content="2019-06-26T00:00:00+00:00"><meta property="article:tag" content="Volatile"><meta property="article:tag" content="可见性"><meta property="article:tag" content="JMM"><meta property="article:tag" content="Happen-Before"><meta property="og:image" content="https://yakax.github.io/images/1.png"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://yakax.github.io/images/1.png"><meta name=twitter:title content="并发编程学习(3)线程安全性分析"><meta name=twitter:description content="初步认识 Volatile
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>并发编程学习(3)线程安全性分析 - yakax</title><meta name=Description content><meta property="og:title" content="并发编程学习(3)线程安全性分析"><meta property="og:description" content="初步认识 Volatile
 
 
  1
@@ -37,18 +36,51 @@ main线程中修改stop的值为 true
 当 stop没有增加volatile修饰时，子线程对于主线程的 stop=true的修改是不可见的，这样将导致子线程出现死循环
 当 stop增加了volatile修饰时，子线程可以获取到主线程对于 stop=true的值，子线程while循环条件不满足退出循环
 
-增加volatile关键字以后，main线程对于共享变量 stop值的更新，对于子线程 thread可见，这就是volatile的作用"><meta name=application-name content="yakax"><meta name=apple-mobile-web-app-title content="yakax"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><script>(function(e,t,n,s,o,i,a){e.DaoVoiceObject=o,e[o]=e[o]||function(){(e[o].q=e[o].q||[]).push(arguments)},e[o].l=1*new Date,i=t.createElement(n),a=t.getElementsByTagName(n)[0],i.async=1,i.src=s,i.charset="utf-8",a.parentNode.insertBefore(i,a)})(window,document,"script",("https:"==document.location.protocol?"https:":"http:")+"//widget.daovoice.io/widget/af744044.js","daovoice"),daovoice("init",{app_id:"af744044"}),daovoice("update")</script><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://yakax.github.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A03%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%80%A7%E5%88%86%E6%9E%90/><link rel=prev href=https://yakax.github.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A02synchronized%E4%B8%8E%E9%94%81%E7%9A%84%E5%94%A4%E9%86%92/><link rel=next href=https://yakax.github.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A04lock/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"并发编程学习(3)线程安全性分析","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/yakax.github.io\/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A03%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%80%A7%E5%88%86%E6%9E%90\/"},"image":["https:\/\/yakax.github.io\/images\/avatar.png"],"genre":"posts","keywords":"volatile, 可见性, JMM, happen-before","wordcount":4026,"url":"https:\/\/yakax.github.io\/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A03%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%80%A7%E5%88%86%E6%9E%90\/","datePublished":"2019-06-26T00:00:00+00:00","dateModified":"2019-06-26T00:00:00+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"yakax","logo":"https:\/\/yakax.github.io\/images\/avatar.png"},"author":{"@type":"Person","name":"yakax"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class='fas fa-crosshairs fa-sm'></i></span><span id=id-1 class=typeit></span></a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>所有文章 </a><a class=menu-item href=/tags/>标签 </a><a class=menu-item href=/categories/>分类 </a><a class=menu-item href=/about/>关于 </a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i> </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
-<input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i>
-</a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i>
-</a><span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i>
-</span></span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class='fas fa-crosshairs fa-sm'></i></span><span id=id-2 class=typeit></span></a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i>
-</a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i>
-</a><span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/ title>所有文章</a><a class=menu-item href=/tags/ title>标签</a><a class=menu-item href=/categories/ title>分类</a><a class=menu-item href=/about/ title>关于</a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+增加volatile关键字以后，main线程对于共享变量 stop值的更新，对于子线程 thread可见，这就是volatile的作用"><meta property="og:type" content="article"><meta property="og:url" content="https://yakax.github.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A03%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%80%A7%E5%88%86%E6%9E%90/"><meta property="og:image" content="https://yakax.github.io/images/1.png"><meta property="article:published_time" content="2019-06-26T00:00:00+00:00"><meta property="article:modified_time" content="2019-06-26T00:00:00+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://yakax.github.io/images/1.png"><meta name=twitter:title content="并发编程学习(3)线程安全性分析"><meta name=twitter:description content="初步认识 Volatile
+
+
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+
+
+    public /*volatile*/ static boolean stop=false;
+    public static void main( String[] args ) throws InterruptedException {
+        Thread t1=new Thread(()->{
+            int i=0;
+            while(!stop){ 
+                i++;
+            }
+        });
+        t1.start();
+        Thread.sleep(1000);
+        stop=true; //true
+    }
+
+
+
+定义一个共享变量 stop
+在main线程中创建一个子线程 thread，子线程读取到 stop的值做循环结束的条件
+main线程中修改stop的值为 true
+当 stop没有增加volatile修饰时，子线程对于主线程的 stop=true的修改是不可见的，这样将导致子线程出现死循环
+当 stop增加了volatile修饰时，子线程可以获取到主线程对于 stop=true的值，子线程while循环条件不满足退出循环
+
+增加volatile关键字以后，main线程对于共享变量 stop值的更新，对于子线程 thread可见，这就是volatile的作用"><meta name=application-name content="yakax"><meta name=apple-mobile-web-app-title content="yakax"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:'==document.location.protocol?'https:':'http:')+"//widget.daovoice.io/widget/af744044.js","daovoice")
+daovoice('init',{app_id:"af744044"});daovoice('update');</script><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://yakax.github.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A03%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%80%A7%E5%88%86%E6%9E%90/><link rel=prev href=https://yakax.github.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A02synchronized%E4%B8%8E%E9%94%81%E7%9A%84%E5%94%A4%E9%86%92/><link rel=next href=https://yakax.github.io/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A04lock/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"并发编程学习(3)线程安全性分析","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/yakax.github.io\/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A03%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%80%A7%E5%88%86%E6%9E%90\/"},"image":["https:\/\/yakax.github.io\/images\/avatar.png"],"genre":"posts","keywords":"volatile, 可见性, JMM, happen-before","wordcount":4026,"url":"https:\/\/yakax.github.io\/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A03%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%80%A7%E5%88%86%E6%9E%90\/","datePublished":"2019-06-26T00:00:00+00:00","dateModified":"2019-06-26T00:00:00+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"yakax","logo":"https:\/\/yakax.github.io\/images\/avatar.png"},"author":{"@type":"Person","name":"yakax"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':('auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark'))&&document.body.setAttribute('theme','dark');</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class="fas fa-crosshairs fa-sm"></i></span><span id=id-1 class=typeit></span></a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>所有文章 </a><a class=menu-item href=/tags/>标签 </a><a class=menu-item href=/categories/>分类 </a><a class=menu-item href=/about/>关于 </a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i></a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop><input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span></span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class="fas fa-crosshairs fa-sm"></i></span><span id=id-2 class=typeit></span></a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/>所有文章</a><a class=menu-item href=/tags/>标签</a><a class=menu-item href=/categories/>分类</a><a class=menu-item href=/about/>关于</a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
 <i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">并发编程学习(3)线程安全性分析</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>yakax</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/><i class="far fa-folder fa-fw"></i>并发编程学习</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2019-06-26>2019-06-26</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 4026 字&nbsp;
 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 9 分钟&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>目录</span>
-<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><ul><li><a href=#初步认识-volatile>初步认识 Volatile</a></li><li><a href=#volatile-关键字是如何保证可见性的>volatile 关键字是如何保证可见性的？</a></li><li><a href=#从硬件层面了解>从硬件层面了解</a><ul><li><a href=#原子性>原子性</a><ul><li><a href=#总线锁>总线锁</a></li><li><a href=#缓存锁>缓存锁</a></li></ul></li><li><a href=#可见性>可见性</a></li><li><a href=#有序性>有序性</a></li></ul></li><li><a href=#jmm层面>JMM层面</a><ul><li><a href=#jmm-层面的内存屏障>JMM 层面的内存屏障</a></li><li><a href=#happenbefore>HappenBefore</a><ul><li><a href=#jmm-中有建立-happen-before-的规则>JMM 中有建立 happen-before 的规则</a></li></ul></li><li><a href=#jmm层面解决原子性有序性可见性>JMM层面解决原子性、有序性、可见性</a></li></ul></li></ul></li></ul></nav></div></div><div class=content id=content><h3 id=初步认识-volatile>初步认识 Volatile</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><ul><li><a href=#初步认识-volatile>初步认识 Volatile</a></li><li><a href=#volatile-关键字是如何保证可见性的>volatile 关键字是如何保证可见性的？</a></li><li><a href=#从硬件层面了解>从硬件层面了解</a><ul><li><a href=#原子性>原子性</a><ul><li><a href=#总线锁>总线锁</a></li><li><a href=#缓存锁>缓存锁</a></li></ul></li><li><a href=#可见性>可见性</a></li><li><a href=#有序性>有序性</a></li></ul></li><li><a href=#jmm层面>JMM层面</a><ul><li><a href=#jmm-层面的内存屏障>JMM 层面的内存屏障</a></li><li><a href=#happenbefore>HappenBefore</a><ul><li><a href=#jmm-中有建立-happen-before-的规则>JMM 中有建立 happen-before 的规则</a></li></ul></li><li><a href=#jmm层面解决原子性有序性可见性>JMM层面解决原子性、有序性、可见性</a></li></ul></li></ul></li></ul></nav></div></div><div class=content id=content><h3 id=初步认识-volatile>初步认识 Volatile</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -60,19 +92,19 @@ main线程中修改stop的值为 true
 </span><span class=lnt>10
 </span><span class=lnt>11
 </span><span class=lnt>12
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>    public /*volatile*/ static boolean stop=false;
-</span></span><span class=line><span class=cl>    public static void main( String[] args ) throws InterruptedException {
-</span></span><span class=line><span class=cl>        Thread t1=new Thread(()-&gt;{
-</span></span><span class=line><span class=cl>            int i=0;
-</span></span><span class=line><span class=cl>            while(!stop){ 
-</span></span><span class=line><span class=cl>                i++;
-</span></span><span class=line><span class=cl>            }
-</span></span><span class=line><span class=cl>        });
-</span></span><span class=line><span class=cl>        t1.start();
-</span></span><span class=line><span class=cl>        Thread.sleep(1000);
-</span></span><span class=line><span class=cl>        stop=true; //true
-</span></span><span class=line><span class=cl>    }
-</span></span></code></pre></td></tr></table></div></div><ul><li>定义一个共享变量 stop</li><li>在main线程中创建一个子线程 thread，子线程读取到 stop的值做循环结束的条件</li><li>main线程中修改stop的值为 true</li><li>当 stop没有增加volatile修饰时，子线程对于主线程的 stop=true的修改是不可见的，这样将导致子线程出现死循环</li><li>当 stop增加了volatile修饰时，子线程可以获取到主线程对于 stop=true的值，子线程while循环条件不满足退出循环</li></ul><p><strong>增加volatile关键字以后，main线程对于共享变量 stop值的更新，对于子线程 thread可见，这就是volatile的作用</strong></p><h3 id=volatile-关键字是如何保证可见性的>volatile 关键字是如何保证可见性的？</h3><p>我们可以使用【hsdis】这个工具，来查看前面演示的这段代码的汇编指令，然后在输出的结果中，查找下 lock 指令，会发现，在修改
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>    public /*volatile*/ static boolean stop=false;
+    public static void main( String[] args ) throws InterruptedException {
+        Thread t1=new Thread(()-&gt;{
+            int i=0;
+            while(!stop){ 
+                i++;
+            }
+        });
+        t1.start();
+        Thread.sleep(1000);
+        stop=true; //true
+    }
+</code></pre></td></tr></table></div></div><ul><li>定义一个共享变量 stop</li><li>在main线程中创建一个子线程 thread，子线程读取到 stop的值做循环结束的条件</li><li>main线程中修改stop的值为 true</li><li>当 stop没有增加volatile修饰时，子线程对于主线程的 stop=true的修改是不可见的，这样将导致子线程出现死循环</li><li>当 stop增加了volatile修饰时，子线程可以获取到主线程对于 stop=true的值，子线程while循环条件不满足退出循环</li></ul><p><strong>增加volatile关键字以后，main线程对于共享变量 stop值的更新，对于子线程 thread可见，这就是volatile的作用</strong></p><h3 id=volatile-关键字是如何保证可见性的>volatile 关键字是如何保证可见性的？</h3><p>我们可以使用【hsdis】这个工具，来查看前面演示的这段代码的汇编指令，然后在输出的结果中，查找下 lock 指令，会发现，在修改
 带有 volatile 修饰的成员变量时，会多一个lock指令。lock是一种控制指令，在多处理器环境下，lock 汇编指令可以基于总线锁或者缓存锁的机制来达到可见性的一个效果。
 <a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/1.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/1.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/1.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/1.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/1.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/1.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/1.png></a></p><h3 id=从硬件层面了解>从硬件层面了解</h3><p>在并发编程中，线程安全问题的本质其实就是 原子性、有序性、可见性；接下来主要围绕这三个问题进行展开分析其本质，彻底了解可见性的特性</p><ul><li><strong>原子性</strong> 和数据库事务中的原子性一样，满足原子性特性的操作是不可中断的，要么全部执行成功要么全部执行失败</li><li><strong>有序性</strong> 编译器和处理器为了优化程序性能而对指令序列进行重排序，也就是你编写的代码顺序和最终执行的指令顺序是不一致的，重排序可能会导致多线程程序出现内存可见性问题</li><li><strong>可见性</strong> 多个线程访问同一个共享变量时，其中一个线程对这个共享变量值的修改，其他线程能够立刻获得修改以后的值</li></ul><blockquote><p>一台计算机中最核心的组件是 CPU、内存、以及 I/O 设备。在整个计算机的发展历程中，除了 CPU、内存以及 I/O 设备不断迭代升级来提升计算机处理性能之外，还有一个非常核心的矛盾点，就是这三者在处理速度的差异。CPU 的计算速度是非常快的，内存次之、最后是 IO 设备比如磁盘。而在绝大部分的程序中，一定会存在内存访问，有些可能还会存在 I/O 设备的访问为了提升计算性能，CPU 从单核升级到了多核甚至用到了超线程技术最大化提高 CPU 的处理性能，但是仅仅提升CPU 性能还不够，如果后面两者的处理性能没有跟上，意味着整体的计算效率取决于最慢的设备。为了平衡三者的速度差异，最大化的利用 CPU 提升性能，从硬件、操作系统、编译器等方面都做出了很多的优化</p></blockquote><ul><li>CPU 增加了高速缓存</li><li>操作系统增加了进程、线程。通过 CPU 的时间片切换最大化的提升 CPU 的使用率 (在IntelPentium4开始，引入了超线程技术，也就是一个CPU核心模拟出2个线程的CPU，实现多线程并行)</li><li>编译器的指令优化，更合理的去利用好 CPU 的高速缓存然后每一种优化，都会带来相应的问题，而这些问题也是导致线程安全性问题的根源。为了了解前面提到的可见性问题的本质，我们有必要去了解这些优化的过程</li></ul><p><a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/2.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/2.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/2.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/2.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/2.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/2.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/2.png></a></p><h4 id=原子性>原子性</h4><p>多线程并行访问同一个共享资源的时候的原子性问题，如果把问题放大到分布式架构里面，这个问题的解决方法就是锁。所以在CPU层面，提供了两种锁的机制来保证原子性</p><h5 id=总线锁>总线锁</h5><p>处理器会提供一个LOCK#信号，当一个处理器在总线上输出这个信号时，其他处理器的请求会被阻塞，那么该处理器就可以独占共享内存</p><blockquote><p>总线锁有一个弊端，总线锁相当于使得多个CPU由并行执行变成了串行，使得CPU的性能严重下降，所以在P6系列以后的处理器中，引入了缓存锁。</p></blockquote><h5 id=缓存锁>缓存锁</h5><p>我们只需要保证 多个线程操作同一个被缓存的共享数据的原子性就行，所以只需要锁定被缓存的共享对象即可。所谓缓存锁是指被缓存在处理器中的共享数据，在Lock操作期间被锁定，那么当被修改的共享内存的数据回写到内存时，处理器不在总线上声明LOCK#信号，而是修改内部的内存地址，并通过 缓存一致性机制来保证操作的原子性。</p><blockquote><p>所谓缓存一致性，就是多个CPU核心中缓存的同一共享数据的数据一致性，而(MESI)使用比较广泛的缓存一致性协议。MESI协议实际上是表示缓存的四种状态
 M(Modify) 表示共享数据只缓存在当前CPU缓存中，并且是被修改状态，也就是缓存的数据和主内存中的数据不一致
@@ -83,7 +115,7 @@ I(Invalid) 表示缓存已经失效
 <strong>总的来说，内存屏障的作用可以通过防止CPU对内存的乱序访问来保证共享数据在多线程并行执行下的可见性</strong></li></ul><h4 id=有序性>有序性</h4><ol><li>编译器优化重排序，在不改变单线程程序语义的前提下，改变代码的执行顺序</li></ol><ul><li>指令集并行的重排序，对于不存在数据依赖的指令，处理器可以改变语句对应指令的执行顺序来充分利用CPU资源</li><li>内存系统的重排序，也就是前面说的CPU的内存乱序访问问题</li></ul><p>也就是说，我们编写的源代码到最终执行的指令，会经过三种重排序
 <a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/3.png><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/3.png data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/3.png, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/3.png 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/3.png 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/3.png title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/3.png></a></p><blockquote><p>有序性会带来可见性问题，所以可以通过内存屏障指令来进制特定类型的处理器重排序</p></blockquote><p><font color=red>所以 volatile这个关键字会有一个lock指令这也就是相当于内存屏障的作用从而实现可见性 因为lock会实现cpu底层的缓存锁。</font></p><h3 id=jmm层面>JMM层面</h3><p>硬件层面的原子性、有序性、可见性在不同的CPU架构和操作系统中的实现可能都不一样，而Java语言的特性是 write once,run anywhere，意味着JVM层面需要屏蔽底层的差异，因此在JVM规范中定义了<strong>JMM(内存模型)</strong>
 <font color=red><strong>可见性根本原因是就是高速缓存与重排序</strong></font></p><blockquote><p>JMM属于语言级别的抽象内存模型，可以简单理解为对硬件模型的抽象，它定义了共享内存中多线程程序读写操作的行为规范，也就是在虚拟机中将共享变量存储到内存以及从内存中取出共享变量的底层细节。 通过这些规则来规范对内存的读写操作从而保证指令的正确性，它解决了CPU多级缓存、处理器优化、指令重排序导致的内存访问问题，保证了并发场景下的可见性。 需要注意的是，JMM并没有限制执行引擎使用处理器的寄存器或者高速缓存来提升指令执行速度，也没有限制编译器对指令进行重排序，也就是说在JMM中，也会存在缓存一致性问题和指令重排序问题。只是JMM把底层的问题抽象到JVM层面，再基于CPU层面提供的内存屏障指令，以及限制编译器的重排序来解决并发问题</p></blockquote><h4 id=jmm-层面的内存屏障>JMM 层面的内存屏障</h4><p>为了保证内存可见性，Java 编译器在生成指令序列的适当位置会插入内存屏障来禁止特定类型的处理器的重排序，
-<a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/4.jpg><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/4.jpg data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/4.jpg, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/4.jpg 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/4.jpg 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/4.jpg title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/4.jpg></a></p><h4 id=happenbefore>HappenBefore</h4><p>它的意思表示的是前一个操作的结果对于后续操作是可见的，所以它是一种表达多个线程之间对于内存的可见性。所以我们可以认为在 JMM 中，如果一个操作执行的结果需要对另一个操作课件，那么这两个操作必须要存在happens-before 关系。这两个操作可以是同一个线程，也可以是不同的线程</p><h5 id=jmm-中有建立-happen-before-的规则>JMM 中有建立 happen-before 的规则</h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+<a data-fancybox=gallery href=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/4.jpg><img class=lazyload src=/svg/loading.min.svg data-src=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/4.jpg data-srcset="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/4.jpg, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/4.jpg 1.5x, https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/4.jpg 2x" data-sizes=auto alt=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/4.jpg title=https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/3/4.jpg></a></p><h4 id=happenbefore>HappenBefore</h4><p>它的意思表示的是前一个操作的结果对于后续操作是可见的，所以它是一种表达多个线程之间对于内存的可见性。所以我们可以认为在 JMM 中，如果一个操作执行的结果需要对另一个操作课件，那么这两个操作必须要存在happens-before 关系。这两个操作可以是同一个线程，也可以是不同的线程</p><h5 id=jmm-中有建立-happen-before-的规则>JMM 中有建立 happen-before 的规则</h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -97,21 +129,21 @@ I(Invalid) 表示缓存已经失效
 </span><span class=lnt>12
 </span><span class=lnt>13
 </span><span class=lnt>14
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>public class Demo {
-</span></span><span class=line><span class=cl>    int a=0;
-</span></span><span class=line><span class=cl>    volatile  boolean flag=false;
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>    public void writer(){ //线程A
-</span></span><span class=line><span class=cl>        a=1;             //1
-</span></span><span class=line><span class=cl>        flag=true;       //2
-</span></span><span class=line><span class=cl>    }
-</span></span><span class=line><span class=cl>    public void reader(){
-</span></span><span class=line><span class=cl>        if(flag){  //3
-</span></span><span class=line><span class=cl>            int x=a; //4
-</span></span><span class=line><span class=cl>        }
-</span></span><span class=line><span class=cl>    }
-</span></span><span class=line><span class=cl>}
-</span></span></code></pre></td></tr></table></div></div><ul><li>一个线程中的每个操作，happens-before 于该线程中的任意后续操作; 可以简单认为是 as-if-serial(as-if-serial语义的意思是：不管怎么重排序（编译器和处理器为了提高并行度），（单线程）程序的执行结果不会改变)。单个线程中的代码顺序不管怎么变，对于结果来说是不变的顺序规则表示 1 happenns-before 2; 3 happensbefore 4</li><li>volatile 变量规则，对于 volatile 修饰的变量的写的操作，一定 happen-before 后续对于 volatile 变量的读操作；根据 volatile 规则，2 happens before 3</li><li>传递性规则，如果 1 happens-before 2; 3happensbefore 4; 那么传递性规则表示: 1 happens-before 4;</li><li>start 规则 线程执行之前主线程改变的值一定对线程可见</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>public class Demo {
+    int a=0;
+    volatile  boolean flag=false;
+
+    public void writer(){ //线程A
+        a=1;             //1
+        flag=true;       //2
+    }
+    public void reader(){
+        if(flag){  //3
+            int x=a; //4
+        }
+    }
+}
+</code></pre></td></tr></table></div></div><ul><li>一个线程中的每个操作，happens-before 于该线程中的任意后续操作; 可以简单认为是 as-if-serial(as-if-serial语义的意思是：不管怎么重排序（编译器和处理器为了提高并行度），（单线程）程序的执行结果不会改变)。单个线程中的代码顺序不管怎么变，对于结果来说是不变的顺序规则表示 1 happenns-before 2; 3 happensbefore 4</li><li>volatile 变量规则，对于 volatile 修饰的变量的写的操作，一定 happen-before 后续对于 volatile 变量的读操作；根据 volatile 规则，2 happens before 3</li><li>传递性规则，如果 1 happens-before 2; 3happensbefore 4; 那么传递性规则表示: 1 happens-before 4;</li><li>start 规则 线程执行之前主线程改变的值一定对线程可见</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -123,46 +155,45 @@ I(Invalid) 表示缓存已经失效
 </span><span class=lnt>10
 </span><span class=lnt>11
 </span><span class=lnt>12
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>public StartDemo{
-</span></span><span class=line><span class=cl>int x=0;
-</span></span><span class=line><span class=cl>Thread t1 = new Thread(()-&gt;{
-</span></span><span class=line><span class=cl> // 主线程调用 t1.start() 之前
-</span></span><span class=line><span class=cl> // 所有对共享变量的修改，此处皆可见
-</span></span><span class=line><span class=cl> // 此例中，x==10
-</span></span><span class=line><span class=cl>});
-</span></span><span class=line><span class=cl>// 此处对共享变量 x 修改
-</span></span><span class=line><span class=cl>x = 10;
-</span></span><span class=line><span class=cl>// 主线程启动子线程
-</span></span><span class=line><span class=cl>t1.start();
-</span></span><span class=line><span class=cl>}
-</span></span></code></pre></td></tr></table></div></div><ul><li>join规则 线程t1改变的值一定对主线程可见</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>public StartDemo{
+int x=0;
+Thread t1 = new Thread(()-&gt;{
+ // 主线程调用 t1.start() 之前
+ // 所有对共享变量的修改，此处皆可见
+ // 此例中，x==10
+});
+// 此处对共享变量 x 修改
+x = 10;
+// 主线程启动子线程
+t1.start();
+}
+</code></pre></td></tr></table></div></div><ul><li>join规则 线程t1改变的值一定对主线程可见</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
 </span><span class=lnt>6
 </span><span class=lnt>7
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>int x=0;
-</span></span><span class=line><span class=cl>Thread t1=new Thread(()-&gt;{
-</span></span><span class=line><span class=cl> x=100;
-</span></span><span class=line><span class=cl> });
-</span></span><span class=line><span class=cl> t1.start();
-</span></span><span class=line><span class=cl> t1.join();
-</span></span><span class=line><span class=cl> System.out.println(x);
-</span></span></code></pre></td></tr></table></div></div><ul><li>监视器锁的规则，对一个锁的解锁，happens-before 于随后对这个锁的加锁（其实就是加锁后改变的值后续进来的线程是可以拿到的）</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>int x=0;
+Thread t1=new Thread(()-&gt;{
+ x=100;
+ });
+ t1.start();
+ t1.join();
+ System.out.println(x);
+</code></pre></td></tr></table></div></div><ul><li>监视器锁的规则，对一个锁的解锁，happens-before 于随后对这个锁的加锁（其实就是加锁后改变的值后续进来的线程是可以拿到的）</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
 </span><span class=lnt>6
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>synchronized (this) { // 此处自动加锁
-</span></span><span class=line><span class=cl>// x 是共享变量, 初始值 =10
-</span></span><span class=line><span class=cl>if (this.x &lt; 12) {
-</span></span><span class=line><span class=cl> this.x = 12;
-</span></span><span class=line><span class=cl> }
-</span></span><span class=line><span class=cl>} // 此处自动解锁
-</span></span></code></pre></td></tr></table></div></div><h4 id=jmm层面解决原子性有序性可见性>JMM层面解决原子性、有序性、可见性</h4><p>原子性：Java中提供了两个高级指令 monitorenter和 monitorexit，也就是对应的synchronized同步锁来保证原子性
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>synchronized (this) { // 此处自动加锁
+// x 是共享变量, 初始值 =10
+if (this.x &lt; 12) {
+ this.x = 12;
+ }
+} // 此处自动解锁
+</code></pre></td></tr></table></div></div><h4 id=jmm层面解决原子性有序性可见性>JMM层面解决原子性、有序性、可见性</h4><p>原子性：Java中提供了两个高级指令 monitorenter和 monitorexit，也就是对应的synchronized同步锁来保证原子性
 可见性：volatile、synchronized、final(修饰的东西初始化时就已存在并且不能更改happens-before于随后的操作)都可以解决可见性问题
-有序性：synchronized和volatile可以保证多线程之间操作的有序性，volatile会禁止指令重排序</p></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2019-06-26</span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/volatile/>Volatile</a>,&nbsp;<a href=/tags/%E5%8F%AF%E8%A7%81%E6%80%A7/>可见性</a>,&nbsp;<a href=/tags/jmm/>JMM</a>,&nbsp;<a href=/tags/happen-before/>Happen-Before</a></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A02synchronized%E4%B8%8E%E9%94%81%E7%9A%84%E5%94%A4%E9%86%92/ class=prev rel=prev title=并发编程学习(2)synchronized与锁的唤醒><i class="fas fa-angle-left fa-fw"></i>并发编程学习(2)synchronized与锁的唤醒</a>
-<a href=/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A04lock/ class=next rel=next title=并发编程学习(4)Lock>并发编程学习(4)Lock<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments></div></article></div></main><script src=https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css><script src=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js></script><footer class=footer><div class=footer-container><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2018 - 2024</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>yakax</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i>
-</a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/typeit@7.0.4/dist/typeit.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:10},comment:{},data:{"id-1":"yakax.blog","id-2":"yakax.blog"},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"3MT6GW9D7W",algoliaIndex:"blog",algoliaSearchKey:"41ebe3571ca584723e8648600bbf45ce",highlightTag:"em",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:150,type:"algolia"},typeit:{cursorChar:"_",cursorSpeed:1e3,data:{"id-1":["id-1"],"id-2":["id-2"]},duration:-1,speed:200}}</script><script type=text/javascript src=/js/theme.min.js></script></body></html>
+有序性：synchronized和volatile可以保证多线程之间操作的有序性，volatile会禁止指令重排序</p></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2019-06-26</span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/volatile/>volatile</a>,&nbsp;<a href=/tags/%E5%8F%AF%E8%A7%81%E6%80%A7/>可见性</a>,&nbsp;<a href=/tags/jmm/>JMM</a>,&nbsp;<a href=/tags/happen-before/>happen-before</a></section><section><span><a href=javascript:void(0); onclick=window.history.back();>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A02synchronized%E4%B8%8E%E9%94%81%E7%9A%84%E5%94%A4%E9%86%92/ class=prev rel=prev title=并发编程学习(2)synchronized与锁的唤醒><i class="fas fa-angle-left fa-fw"></i>并发编程学习(2)synchronized与锁的唤醒</a>
+<a href=/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A04lock/ class=next rel=next title=并发编程学习(4)Lock>并发编程学习(4)Lock<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments></div></article></div></main><script src=https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css><script src=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js></script><footer class=footer><div class=footer-container><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2018 - 2024</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>yakax</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i></a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/typeit@7.0.4/dist/typeit.min.js></script><script type=text/javascript>window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{},"data":{"id-1":"yakax.blog","id-2":"yakax.blog"},"lightGallery":{"actualSize":false,"exThumbImage":"data-thumbnail","hideBarsDelay":2000,"selector":".lightgallery","speed":400,"thumbContHeight":80,"thumbWidth":80,"thumbnail":true},"search":{"algoliaAppID":"3MT6GW9D7W","algoliaIndex":"blog","algoliaSearchKey":"41ebe3571ca584723e8648600bbf45ce","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":150,"type":"algolia"},"typeit":{"cursorChar":"_","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":200}};</script><script type=text/javascript src=/js/theme.min.js></script></body></html>

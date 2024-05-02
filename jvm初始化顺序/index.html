@@ -1,7 +1,4 @@
-<!doctype html><html lang=zh-CN><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=X-UA-Compatible content="IE=edge, chrome=1"><title>JVM初始化顺序 - yakax</title><meta name=Description content><meta property="og:url" content="https://yakax.github.io/jvm%E5%88%9D%E5%A7%8B%E5%8C%96%E9%A1%BA%E5%BA%8F/">
-<meta property="og:site_name" content="yakax"><meta property="og:title" content="JVM初始化顺序"><meta property="og:description" content=' 类的静态成员 –> 类的实例成员 –> 类的构造方法 说到这里，有一个很好的问题。比如一个类中静态变量是一个该类的实例，那么此时类的初始化顺序是什么样的呢？
-昨天在群里看到这个问题，很有趣，今天来分析一波 1 2 3 4 5 6 7 8 9 10 11 12 13 public class test { public static test t1=new test(); { System.out.println("执行1"); } static { System.out.println("执行2"); } public static void main(String[] args) { test t2=new test(); } } '><meta property="og:locale" content="zh-CN"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2018-12-07T15:04:00+00:00"><meta property="article:modified_time" content="2018-12-07T15:04:00+00:00"><meta property="article:tag" content="JVM"><meta property="og:image" content="https://yakax.github.io/images/1.png"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://yakax.github.io/images/1.png"><meta name=twitter:title content="JVM初始化顺序"><meta name=twitter:description content='
-类的静态成员 &ndash;> 类的实例成员 &ndash;> 类的构造方法
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>JVM初始化顺序 - yakax</title><meta name=Description content><meta property="og:title" content="JVM初始化顺序"><meta property="og:description" content="类的静态成员 &ndash;> 类的实例成员 &ndash;> 类的构造方法
 说到这里，有一个很好的问题。比如一个类中静态变量是一个该类的实例，那么此时类的初始化顺序是什么样的呢？
 
 昨天在群里看到这个问题，很有趣，今天来分析一波
@@ -25,31 +22,56 @@
 public class test {
     public static test  t1=new test();
     {
-        System.out.println("执行1");
+        System.out.println(&#34;执行1&#34;);
     }
     static
     {
-        System.out.println("执行2");
+        System.out.println(&#34;执行2&#34;);
     }
     public static void main(String[] args) {
         test t2=new test();
     }
-}
+}"><meta property="og:type" content="article"><meta property="og:url" content="https://yakax.github.io/jvm%E5%88%9D%E5%A7%8B%E5%8C%96%E9%A1%BA%E5%BA%8F/"><meta property="og:image" content="https://yakax.github.io/images/1.png"><meta property="article:published_time" content="2018-12-07T15:04:00+00:00"><meta property="article:modified_time" content="2018-12-07T15:04:00+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://yakax.github.io/images/1.png"><meta name=twitter:title content="JVM初始化顺序"><meta name=twitter:description content="类的静态成员 &ndash;> 类的实例成员 &ndash;> 类的构造方法
+说到这里，有一个很好的问题。比如一个类中静态变量是一个该类的实例，那么此时类的初始化顺序是什么样的呢？
+
+昨天在群里看到这个问题，很有趣，今天来分析一波
 
 
-'><meta name=application-name content="yakax"><meta name=apple-mobile-web-app-title content="yakax"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><script>(function(e,t,n,s,o,i,a){e.DaoVoiceObject=o,e[o]=e[o]||function(){(e[o].q=e[o].q||[]).push(arguments)},e[o].l=1*new Date,i=t.createElement(n),a=t.getElementsByTagName(n)[0],i.async=1,i.src=s,i.charset="utf-8",a.parentNode.insertBefore(i,a)})(window,document,"script",("https:"==document.location.protocol?"https:":"http:")+"//widget.daovoice.io/widget/af744044.js","daovoice"),daovoice("init",{app_id:"af744044"}),daovoice("update")</script><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://yakax.github.io/jvm%E5%88%9D%E5%A7%8B%E5%8C%96%E9%A1%BA%E5%BA%8F/><link rel=prev href=https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%982%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E4%BB%8B%E7%BB%8D%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%8F%8A%E8%BF%90%E8%A1%8C%E6%9C%BA%E7%90%86/><link rel=next href=https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%984innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E7%9A%84%E4%BA%8B%E5%8A%A1/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"JVM初始化顺序","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/yakax.github.io\/jvm%E5%88%9D%E5%A7%8B%E5%8C%96%E9%A1%BA%E5%BA%8F\/"},"image":["https:\/\/yakax.github.io\/images\/avatar.png"],"genre":"posts","keywords":"JVM","wordcount":1364,"url":"https:\/\/yakax.github.io\/jvm%E5%88%9D%E5%A7%8B%E5%8C%96%E9%A1%BA%E5%BA%8F\/","datePublished":"2018-12-07T15:04:00+00:00","dateModified":"2018-12-07T15:04:00+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"yakax","logo":"https:\/\/yakax.github.io\/images\/avatar.png"},"author":{"@type":"Person","name":"yakax"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class='fas fa-crosshairs fa-sm'></i></span><span id=id-1 class=typeit></span></a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>所有文章 </a><a class=menu-item href=/tags/>标签 </a><a class=menu-item href=/categories/>分类 </a><a class=menu-item href=/about/>关于 </a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i> </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
-<input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i>
-</a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i>
-</a><span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i>
-</span></span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class='fas fa-crosshairs fa-sm'></i></span><span id=id-2 class=typeit></span></a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i>
-</a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i>
-</a><span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/ title>所有文章</a><a class=menu-item href=/tags/ title>标签</a><a class=menu-item href=/categories/ title>分类</a><a class=menu-item href=/about/ title>关于</a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+
+
+public class test {
+    public static test  t1=new test();
+    {
+        System.out.println(&#34;执行1&#34;);
+    }
+    static
+    {
+        System.out.println(&#34;执行2&#34;);
+    }
+    public static void main(String[] args) {
+        test t2=new test();
+    }
+}"><meta name=application-name content="yakax"><meta name=apple-mobile-web-app-title content="yakax"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:'==document.location.protocol?'https:':'http:')+"//widget.daovoice.io/widget/af744044.js","daovoice")
+daovoice('init',{app_id:"af744044"});daovoice('update');</script><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://yakax.github.io/jvm%E5%88%9D%E5%A7%8B%E5%8C%96%E9%A1%BA%E5%BA%8F/><link rel=prev href=https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%982%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E4%BB%8B%E7%BB%8D%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%8F%8A%E8%BF%90%E8%A1%8C%E6%9C%BA%E7%90%86/><link rel=next href=https://yakax.github.io/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%984innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E7%9A%84%E4%BA%8B%E5%8A%A1/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"JVM初始化顺序","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/yakax.github.io\/jvm%E5%88%9D%E5%A7%8B%E5%8C%96%E9%A1%BA%E5%BA%8F\/"},"image":["https:\/\/yakax.github.io\/images\/avatar.png"],"genre":"posts","keywords":"JVM","wordcount":1364,"url":"https:\/\/yakax.github.io\/jvm%E5%88%9D%E5%A7%8B%E5%8C%96%E9%A1%BA%E5%BA%8F\/","datePublished":"2018-12-07T15:04:00+00:00","dateModified":"2018-12-07T15:04:00+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"yakax","logo":"https:\/\/yakax.github.io\/images\/avatar.png"},"author":{"@type":"Person","name":"yakax"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':('auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark'))&&document.body.setAttribute('theme','dark');</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class="fas fa-crosshairs fa-sm"></i></span><span id=id-1 class=typeit></span></a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>所有文章 </a><a class=menu-item href=/tags/>标签 </a><a class=menu-item href=/categories/>分类 </a><a class=menu-item href=/about/>关于 </a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i></a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop><input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span></span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class="fas fa-crosshairs fa-sm"></i></span><span id=id-2 class=typeit></span></a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/>所有文章</a><a class=menu-item href=/tags/>标签</a><a class=menu-item href=/categories/>分类</a><a class=menu-item href=/about/>关于</a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
 <i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">JVM初始化顺序</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>yakax</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/jvm/><i class="far fa-folder fa-fw"></i>JVM</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2018-12-07>2018-12-07</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1364 字&nbsp;
 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 3 分钟&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>目录</span>
 <span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><ul><li><ul><li><a href=#昨天在群里看到这个问题很有趣今天来分析一波>昨天在群里看到这个问题，很有趣，今天来分析一波</a></li></ul></li></ul></li></ul></nav></div></div><div class=content id=content><blockquote><p>类的静态成员 &ndash;> 类的实例成员 &ndash;> 类的构造方法
-说到这里，有一个很好的问题。比如一个类中静态变量是一个该类的实例，那么此时类的初始化顺序是什么样的呢？</p></blockquote><h4 id=昨天在群里看到这个问题很有趣今天来分析一波>昨天在群里看到这个问题，很有趣，今天来分析一波</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+说到这里，有一个很好的问题。比如一个类中静态变量是一个该类的实例，那么此时类的初始化顺序是什么样的呢？</p></blockquote><h4 id=昨天在群里看到这个问题很有趣今天来分析一波>昨天在群里看到这个问题，很有趣，今天来分析一波</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -62,26 +84,26 @@ public class test {
 </span><span class=lnt>11
 </span><span class=lnt>12
 </span><span class=lnt>13
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>test</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=n>test</span><span class=w>  </span><span class=n>t1</span><span class=o>=</span><span class=k>new</span><span class=w> </span><span class=n>test</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;执行1&#34;</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>static</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;执行2&#34;</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>test</span><span class=w> </span><span class=n>t2</span><span class=o>=</span><span class=k>new</span><span class=w> </span><span class=n>test</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
-</span></span></span></code></pre></td></tr></table></div></div><p>首先我们得理解的执行顺序</p><ol><li>由于test类是JVM启动类，所以首先被加载，也就是执行加载、连接、初始化这些流程。</li><li>进入初始化阶段，该阶段会对static域进行初始化。</li><li>同为static按顺序执行所以这时只初始化了t1</li><li><font color=red>由于这时test类已经处于初始化阶段了，static无需再次初始化，否则会导致static域多次初始化情况，所以暂时忽略static域初始化操作，对非static域进行初始化操作</font>这时打印了第一句话</li><li>然后这时再执行t2的操作由于t1已经加载，所以加载静态块然后在加载构造块。</li></ol><p>最后执行结果</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java><span class=kd>public</span> <span class=kd>class</span> <span class=nc>test</span> <span class=o>{</span>
+    <span class=kd>public</span> <span class=kd>static</span> <span class=n>test</span>  <span class=n>t1</span><span class=o>=</span><span class=k>new</span> <span class=n>test</span><span class=o>();</span>
+    <span class=o>{</span>
+        <span class=n>System</span><span class=o>.</span><span class=na>out</span><span class=o>.</span><span class=na>println</span><span class=o>(</span><span class=s>&#34;执行1&#34;</span><span class=o>);</span>
+    <span class=o>}</span>
+    <span class=kd>static</span>
+    <span class=o>{</span>
+        <span class=n>System</span><span class=o>.</span><span class=na>out</span><span class=o>.</span><span class=na>println</span><span class=o>(</span><span class=s>&#34;执行2&#34;</span><span class=o>);</span>
+    <span class=o>}</span>
+    <span class=kd>public</span> <span class=kd>static</span> <span class=kt>void</span> <span class=nf>main</span><span class=o>(</span><span class=n>String</span><span class=o>[]</span> <span class=n>args</span><span class=o>)</span> <span class=o>{</span>
+        <span class=n>test</span> <span class=n>t2</span><span class=o>=</span><span class=k>new</span> <span class=n>test</span><span class=o>();</span>
+    <span class=o>}</span>
+<span class=o>}</span>
+</code></pre></td></tr></table></div></div><p>首先我们得理解的执行顺序</p><ol><li>由于test类是JVM启动类，所以首先被加载，也就是执行加载、连接、初始化这些流程。</li><li>进入初始化阶段，该阶段会对static域进行初始化。</li><li>同为static按顺序执行所以这时只初始化了t1</li><li><font color=red>由于这时test类已经处于初始化阶段了，static无需再次初始化，否则会导致static域多次初始化情况，所以暂时忽略static域初始化操作，对非static域进行初始化操作</font>这时打印了第一句话</li><li>然后这时再执行t2的操作由于t1已经加载，所以加载静态块然后在加载构造块。</li></ol><p>最后执行结果</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>执行1
-</span></span><span class=line><span class=cl>执行2
-</span></span><span class=line><span class=cl>执行1
-</span></span></code></pre></td></tr></table></div></div><p>如果理解了上面：来看一哈Alibaba的14年的一道校招附加题</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>执行1
+执行2
+执行1
+</code></pre></td></tr></table></div></div><p>如果理解了上面：来看一哈Alibaba的14年的一道校招附加题</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -113,84 +135,84 @@ public class test {
 </span><span class=lnt>30
 </span><span class=lnt>31
 </span><span class=lnt>32
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>public class Alibaba {
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>    public static int k = 0;
-</span></span><span class=line><span class=cl>    public static Alibaba t1 = new Alibaba(&#34;t1&#34;);
-</span></span><span class=line><span class=cl>    public static Alibaba t2 = new Alibaba(&#34;t2&#34;);
-</span></span><span class=line><span class=cl>    public static int i = print(&#34;i&#34;);
-</span></span><span class=line><span class=cl>    public static int n = 99;
-</span></span><span class=line><span class=cl>    private int a = 0;
-</span></span><span class=line><span class=cl>    public int j = print(&#34;j&#34;);
-</span></span><span class=line><span class=cl>    {
-</span></span><span class=line><span class=cl>        print(&#34;构造块&#34;);
-</span></span><span class=line><span class=cl>    }
-</span></span><span class=line><span class=cl>    static {
-</span></span><span class=line><span class=cl>        print(&#34;静态块&#34;);
-</span></span><span class=line><span class=cl>    }
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>    public Alibaba(String str) {
-</span></span><span class=line><span class=cl>        System.out.println((++k) + &#34;:&#34; + str + &#34;   i=&#34; + i + &#34;    n=&#34; + n);
-</span></span><span class=line><span class=cl>        ++i;
-</span></span><span class=line><span class=cl>        ++n;
-</span></span><span class=line><span class=cl>    }
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>    public static int print(String str) {
-</span></span><span class=line><span class=cl>        System.out.println((++k) + &#34;:&#34; + str + &#34;   i=&#34; + i + &#34;    n=&#34; + n);
-</span></span><span class=line><span class=cl>        ++n;
-</span></span><span class=line><span class=cl>        return ++i;
-</span></span><span class=line><span class=cl>    }
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>    public static void main(String args[]) {
-</span></span><span class=line><span class=cl>        Alibaba t = new Alibaba(&#34;init&#34;);
-</span></span><span class=line><span class=cl>    }
-</span></span><span class=line><span class=cl>}
-</span></span></code></pre></td></tr></table></div></div><ol><li>由于Alibaba是 JVM 的启动类，属于主动调用，所以会依此进行 loading(加载)、linking(连接)、initialization(初始化)三个过程。</li><li>经过 loading与 linking 阶段后，所有的属性都有了默认值，然后进入最后的 initialization 阶段。</li><li>在 initialization 阶段，先对 static 属性赋值，然后在非 static 的。k 第一个显式赋值为 0 。</li><li>接下来是t1属性，由于这时Alibaba这个类已经处于initialization 阶段，static 变量无需再次初始化了，所以忽略 static 属性的赋值，只对非 static 的属性进行赋值，所有有了开始的：</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>public class Alibaba {
+
+    public static int k = 0;
+    public static Alibaba t1 = new Alibaba(&#34;t1&#34;);
+    public static Alibaba t2 = new Alibaba(&#34;t2&#34;);
+    public static int i = print(&#34;i&#34;);
+    public static int n = 99;
+    private int a = 0;
+    public int j = print(&#34;j&#34;);
+    {
+        print(&#34;构造块&#34;);
+    }
+    static {
+        print(&#34;静态块&#34;);
+    }
+
+    public Alibaba(String str) {
+        System.out.println((++k) + &#34;:&#34; + str + &#34;   i=&#34; + i + &#34;    n=&#34; + n);
+        ++i;
+        ++n;
+    }
+
+    public static int print(String str) {
+        System.out.println((++k) + &#34;:&#34; + str + &#34;   i=&#34; + i + &#34;    n=&#34; + n);
+        ++n;
+        return ++i;
+    }
+
+    public static void main(String args[]) {
+        Alibaba t = new Alibaba(&#34;init&#34;);
+    }
+}
+</code></pre></td></tr></table></div></div><ol><li>由于Alibaba是 JVM 的启动类，属于主动调用，所以会依此进行 loading(加载)、linking(连接)、initialization(初始化)三个过程。</li><li>经过 loading与 linking 阶段后，所有的属性都有了默认值，然后进入最后的 initialization 阶段。</li><li>在 initialization 阶段，先对 static 属性赋值，然后在非 static 的。k 第一个显式赋值为 0 。</li><li>接下来是t1属性，由于这时Alibaba这个类已经处于initialization 阶段，static 变量无需再次初始化了，所以忽略 static 属性的赋值，只对非 static 的属性进行赋值，所有有了开始的：</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
 </span><span class=lnt>6
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>// 这时调用的是第9行的代码进入print方法
-</span></span><span class=line><span class=cl>// 再执行构造块
-</span></span><span class=line><span class=cl>// 执行构造方法
-</span></span><span class=line><span class=cl>1:j   i=0    n=0
-</span></span><span class=line><span class=cl>2:构造块   i=1    n=1
-</span></span><span class=line><span class=cl>3:t1   i=2    n=2
-</span></span></code></pre></td></tr></table></div></div><ol start=5><li>接着对t2进行赋值，过程与t1相同</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>// 这时调用的是第9行的代码进入print方法
+// 再执行构造块
+// 执行构造方法
+1:j   i=0    n=0
+2:构造块   i=1    n=1
+3:t1   i=2    n=2
+</code></pre></td></tr></table></div></div><ol start=5><li>接着对t2进行赋值，过程与t1相同</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
 </span><span class=lnt>6
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>// 这时调用的是第9行的代码进入print方法
-</span></span><span class=line><span class=cl>// 再执行构造块
-</span></span><span class=line><span class=cl>// 执行构造方法
-</span></span><span class=line><span class=cl>4:j   i=3    n=3
-</span></span><span class=line><span class=cl>5:构造块   i=4    n=4
-</span></span><span class=line><span class=cl>6:t2   i=5    n=5
-</span></span></code></pre></td></tr></table></div></div><ol start=6><li>之后到了 static 的 i ：</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>// 这时调用的是第9行的代码进入print方法
+// 再执行构造块
+// 执行构造方法
+4:j   i=3    n=3
+5:构造块   i=4    n=4
+6:t2   i=5    n=5
+</code></pre></td></tr></table></div></div><ol start=6><li>之后到了 static 的 i ：</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>// 这时调用的是第9行的代码进入print方法
-</span></span><span class=line><span class=cl>7:i   i=6    n=6
-</span></span></code></pre></td></tr></table></div></div><ol start=7><li>执行static 的 n 赋值</li><li>到现在为止，所有的static的成员变量已经赋值完成，接下来就到了 static 代码块</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>// 这时调用的是第9行的代码进入print方法
+7:i   i=6    n=6
+</code></pre></td></tr></table></div></div><ol start=7><li>执行static 的 n 赋值</li><li>到现在为止，所有的static的成员变量已经赋值完成，接下来就到了 static 代码块</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>// 调用静态块
-</span></span><span class=line><span class=cl>8:静态块   i=7    n=99
-</span></span></code></pre></td></tr></table></div></div><ol start=9><li>至此，所有的 static 部分赋值完毕，接下来是非 static 的 j</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>// 调用静态块
+8:静态块   i=7    n=99
+</code></pre></td></tr></table></div></div><ol start=9><li>至此，所有的 static 部分赋值完毕，接下来是非 static 的 j</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>// 调用print
-</span></span><span class=line><span class=cl>9:j   i=8    n=100
-</span></span></code></pre></td></tr></table></div></div><ol start=10><li>所有属性都赋值完毕，然后是构造块</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>// 调用print
+9:j   i=8    n=100
+</code></pre></td></tr></table></div></div><ol start=10><li>所有属性都赋值完毕，然后是构造块</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>// 调用构造块{}
-</span></span><span class=line><span class=cl>10:构造块   i=9    n=101
-</span></span></code></pre></td></tr></table></div></div><ol start=11><li>执行构造函数</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>// 调用构造块{}
+10:构造块   i=9    n=101
+</code></pre></td></tr></table></div></div><ol start=11><li>执行构造函数</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>// 最后构造函数
-</span></span><span class=line><span class=cl>11:init   i=10    n=102
-</span></span></code></pre></td></tr></table></div></div><p>Alibaba这个类的初始化过程就算完成了。这里面比较容易出错的是认为会再次初始化 static 变量或代码块。而实际上是没必要，否则会出现多次初始化的情况。
-最后执行结果</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>// 最后构造函数
+11:init   i=10    n=102
+</code></pre></td></tr></table></div></div><p>Alibaba这个类的初始化过程就算完成了。这里面比较容易出错的是认为会再次初始化 static 变量或代码块。而实际上是没必要，否则会出现多次初始化的情况。
+最后执行结果</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -201,17 +223,16 @@ public class test {
 </span><span class=lnt> 9
 </span><span class=lnt>10
 </span><span class=lnt>11
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>1:j   i=0    n=0
-</span></span><span class=line><span class=cl>2:构造块   i=1    n=1
-</span></span><span class=line><span class=cl>3:t1   i=2    n=2
-</span></span><span class=line><span class=cl>4:j   i=3    n=3
-</span></span><span class=line><span class=cl>5:构造块   i=4    n=4
-</span></span><span class=line><span class=cl>6:t2   i=5    n=5
-</span></span><span class=line><span class=cl>7:i   i=6    n=6
-</span></span><span class=line><span class=cl>8:静态块   i=7    n=99
-</span></span><span class=line><span class=cl>9:j   i=8    n=100
-</span></span><span class=line><span class=cl>10:构造块   i=9    n=101
-</span></span><span class=line><span class=cl>11:init   i=10    n=102
-</span></span></code></pre></td></tr></table></div></div></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2018-12-07</span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/jvm/>JVM</a></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%982%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E4%BB%8B%E7%BB%8D%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%8F%8A%E8%BF%90%E8%A1%8C%E6%9C%BA%E7%90%86/ class=prev rel=prev title=MySQL性能调优(2)存储引擎介绍、体系结构及运行机理><i class="fas fa-angle-left fa-fw"></i>MySQL性能调优(2)存储引擎介绍、体系结构及运行机理</a>
-<a href=/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%984innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E7%9A%84%E4%BA%8B%E5%8A%A1/ class=next rel=next title=MySQL性能调优(4)Innodb存储引擎的事务>MySQL性能调优(4)Innodb存储引擎的事务<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments></div></article></div></main><script src=https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css><script src=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js></script><footer class=footer><div class=footer-container><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2018 - 2024</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>yakax</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i>
-</a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/typeit@7.0.4/dist/typeit.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:10},comment:{},data:{"id-1":"yakax.blog","id-2":"yakax.blog"},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"3MT6GW9D7W",algoliaIndex:"blog",algoliaSearchKey:"41ebe3571ca584723e8648600bbf45ce",highlightTag:"em",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:150,type:"algolia"},typeit:{cursorChar:"_",cursorSpeed:1e3,data:{"id-1":["id-1"],"id-2":["id-2"]},duration:-1,speed:200}}</script><script type=text/javascript src=/js/theme.min.js></script></body></html>
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>1:j   i=0    n=0
+2:构造块   i=1    n=1
+3:t1   i=2    n=2
+4:j   i=3    n=3
+5:构造块   i=4    n=4
+6:t2   i=5    n=5
+7:i   i=6    n=6
+8:静态块   i=7    n=99
+9:j   i=8    n=100
+10:构造块   i=9    n=101
+11:init   i=10    n=102
+</code></pre></td></tr></table></div></div></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2018-12-07</span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/jvm/>JVM</a></section><section><span><a href=javascript:void(0); onclick=window.history.back();>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%982%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E4%BB%8B%E7%BB%8D%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%8F%8A%E8%BF%90%E8%A1%8C%E6%9C%BA%E7%90%86/ class=prev rel=prev title=MySQL性能调优(2)存储引擎介绍、体系结构及运行机理><i class="fas fa-angle-left fa-fw"></i>MySQL性能调优(2)存储引擎介绍、体系结构及运行机理</a>
+<a href=/mysql%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%984innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E7%9A%84%E4%BA%8B%E5%8A%A1/ class=next rel=next title=MySQL性能调优(4)Innodb存储引擎的事务>MySQL性能调优(4)Innodb存储引擎的事务<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments></div></article></div></main><script src=https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css><script src=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js></script><footer class=footer><div class=footer-container><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2018 - 2024</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>yakax</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i></a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/typeit@7.0.4/dist/typeit.min.js></script><script type=text/javascript>window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{},"data":{"id-1":"yakax.blog","id-2":"yakax.blog"},"lightGallery":{"actualSize":false,"exThumbImage":"data-thumbnail","hideBarsDelay":2000,"selector":".lightgallery","speed":400,"thumbContHeight":80,"thumbWidth":80,"thumbnail":true},"search":{"algoliaAppID":"3MT6GW9D7W","algoliaIndex":"blog","algoliaSearchKey":"41ebe3571ca584723e8648600bbf45ce","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":150,"type":"algolia"},"typeit":{"cursorChar":"_","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":200}};</script><script type=text/javascript src=/js/theme.min.js></script></body></html>

@@ -2,7 +2,7 @@
 <p><font color=red>1-0.9=0.1是天经地义的，但在计算机的世界里，0.1恰恰是无法精确表示的一个小数，只有2的幂次倍小数才能够精确表示，如：0.5、0.25、0.125等。由于0.1是近似表达，在各种情形中的计算存在数位的取舍精度不一样，所以1-0.9未必等于0.9-0.8，所以浮点数之间的等值判断，基本数据类型不能用==来比较，包装数据类型不能用equals来判断。包装类型运算也是调用的浮点类型的计算</font></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -45,57 +45,59 @@
 </span><span class="lnt">41
 </span><span class="lnt">42
 </span><span class="lnt">43
+</span><span class="lnt">44
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">public class FloatPrimitiveTest {
-</span></span><span class="line"><span class="cl">    public static void main(String[] args) {
-</span></span><span class="line"><span class="cl">        float a = 1.0f - 0.9f;
-</span></span><span class="line"><span class="cl">        float b = 0.9f - 0.8f;
-</span></span><span class="line"><span class="cl">        if (a == b) {
-</span></span><span class="line"><span class="cl">            System.out.println(&#34;true&#34;);
-</span></span><span class="line"><span class="cl">        } else {
-</span></span><span class="line"><span class="cl">            System.out.println(&#34;false&#34;);
-</span></span><span class="line"><span class="cl">        }
-</span></span><span class="line"><span class="cl">    }
-</span></span><span class="line"><span class="cl">}
-</span></span><span class="line"><span class="cl">输出------------false
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">public class FloatWrapperTest {
-</span></span><span class="line"><span class="cl">    public static void main(String[] args) {
-</span></span><span class="line"><span class="cl">        Float a = Float.valueOf(1.0f - 0.9f);
-</span></span><span class="line"><span class="cl">        Float b = Float.valueOf(0.9f - 0.8f);
-</span></span><span class="line"><span class="cl">        if (a.equals(b)) {
-</span></span><span class="line"><span class="cl">            System.out.println(&#34;true&#34;);
-</span></span><span class="line"><span class="cl">        } else {
-</span></span><span class="line"><span class="cl">            System.out.println(&#34;false&#34;);
-</span></span><span class="line"><span class="cl">        }
-</span></span><span class="line"><span class="cl">    }
-</span></span><span class="line"><span class="cl">}
-</span></span><span class="line"><span class="cl">输出--------false
-</span></span><span class="line"><span class="cl">正例--------------------------------
-</span></span><span class="line"><span class="cl">(1) 指定一个误差范围，两个浮点数的差值在此范围之内，则认为是相等的。
-</span></span><span class="line"><span class="cl"> float a = 1.0f - 0.9f;
-</span></span><span class="line"><span class="cl"> float b = 0.9f - 0.8f;
-</span></span><span class="line"><span class="cl"> float diff = 1e-6f;
-</span></span><span class="line"><span class="cl"> if (Math.abs(a - b) &lt; diff) {
-</span></span><span class="line"><span class="cl">     System.out.println(&#34;true&#34;);
-</span></span><span class="line"><span class="cl"> }
-</span></span><span class="line"><span class="cl">(2) 使用 BigDecimal 来定义值，再进行浮点数的运算操作。
-</span></span><span class="line"><span class="cl"> BigDecimal a = new BigDecimal(&#34;1.0&#34;);
-</span></span><span class="line"><span class="cl"> BigDecimal b = new BigDecimal(&#34;0.9&#34;);
-</span></span><span class="line"><span class="cl"> BigDecimal c = new BigDecimal(&#34;0.8&#34;);
-</span></span><span class="line"><span class="cl"> BigDecimal x = a.subtract(b);
-</span></span><span class="line"><span class="cl"> BigDecimal y = b.subtract(c);
-</span></span><span class="line"><span class="cl"> if (x.equals(y)) {
-</span></span><span class="line"><span class="cl">     System.out.println(&#34;true&#34;);
-</span></span><span class="line"><span class="cl"> }
-</span></span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">public class FloatPrimitiveTest {
+    public static void main(String[] args) {
+        float a = 1.0f - 0.9f;
+        float b = 0.9f - 0.8f;
+        if (a == b) {
+            System.out.println(&#34;true&#34;);
+        } else {
+            System.out.println(&#34;false&#34;);
+        }
+    }
+}
+输出------------false
+
+
+public class FloatWrapperTest {
+    public static void main(String[] args) {
+        Float a = Float.valueOf(1.0f - 0.9f);
+        Float b = Float.valueOf(0.9f - 0.8f);
+        if (a.equals(b)) {
+            System.out.println(&#34;true&#34;);
+        } else {
+            System.out.println(&#34;false&#34;);
+        }
+    }
+}
+输出--------false
+正例--------------------------------
+(1) 指定一个误差范围，两个浮点数的差值在此范围之内，则认为是相等的。
+ float a = 1.0f - 0.9f;
+ float b = 0.9f - 0.8f;
+ float diff = 1e-6f;
+ if (Math.abs(a - b) &lt; diff) {
+     System.out.println(&#34;true&#34;);
+ }
+(2) 使用 BigDecimal 来定义值，再进行浮点数的运算操作。
+ BigDecimal a = new BigDecimal(&#34;1.0&#34;);
+ BigDecimal b = new BigDecimal(&#34;0.9&#34;);
+ BigDecimal c = new BigDecimal(&#34;0.8&#34;);
+ BigDecimal x = a.subtract(b);
+ BigDecimal y = b.subtract(c);
+ if (x.equals(y)) {
+     System.out.println(&#34;true&#34;);
+ }
+
+</code></pre></td></tr></table>
 </div>
 </div>]]></description></item><item><title>方法外对象地址交换</title><link>https://yakax.github.io/%E6%96%B9%E6%B3%95%E5%A4%96%E5%AF%B9%E8%B1%A1%E5%9C%B0%E5%9D%80%E4%BA%A4%E6%8D%A2/</link><pubDate>Tue, 02 Apr 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E6%96%B9%E6%B3%95%E5%A4%96%E5%AF%B9%E8%B1%A1%E5%9C%B0%E5%9D%80%E4%BA%A4%E6%8D%A2/</guid><description><![CDATA[<h4 id="面试题如下">面试题如下</h4>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -129,50 +131,50 @@
 </span><span class="lnt">32
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">public class Cat {
-</span></span><span class="line"><span class="cl">    private int inr;
-</span></span><span class="line"><span class="cl">    private Cat(int inr) {
-</span></span><span class="line"><span class="cl">        this.inr = inr;
-</span></span><span class="line"><span class="cl">    }
-</span></span><span class="line"><span class="cl">    private static void print(Cat cat) {
-</span></span><span class="line"><span class="cl">        System.out.println(cat.inr);
-</span></span><span class="line"><span class="cl">    }
-</span></span><span class="line"><span class="cl">    private void setInr(int inr) {
-</span></span><span class="line"><span class="cl">        this.inr = inr;
-</span></span><span class="line"><span class="cl">    }
-</span></span><span class="line"><span class="cl">    public static void main(String[] args) {
-</span></span><span class="line"><span class="cl">        Cat A = new Cat(100);
-</span></span><span class="line"><span class="cl">        Cat B = new Cat(101);
-</span></span><span class="line"><span class="cl">        System.out.println(A);
-</span></span><span class="line"><span class="cl">        System.out.println(B);
-</span></span><span class="line"><span class="cl">        swap(A, B);
-</span></span><span class="line"><span class="cl">        Cat.print(A);
-</span></span><span class="line"><span class="cl">        Cat.print(B);
-</span></span><span class="line"><span class="cl">    }
-</span></span><span class="line"><span class="cl">    private static void swap(Cat A, Cat B) {
-</span></span><span class="line"><span class="cl">        Cat temp = A;
-</span></span><span class="line"><span class="cl">        A = B;
-</span></span><span class="line"><span class="cl">        B = temp;
-</span></span><span class="line"><span class="cl">        System.out.println(A.inr);
-</span></span><span class="line"><span class="cl">        System.out.println(B.inr);
-</span></span><span class="line"><span class="cl">//        temp = new Cat(400);
-</span></span><span class="line"><span class="cl">//        B.setInr(400);
-</span></span><span class="line"><span class="cl">//        System.out.println(temp.inr);
-</span></span><span class="line"><span class="cl">//        System.out.println(B.inr);
-</span></span><span class="line"><span class="cl">    }
-</span></span><span class="line"><span class="cl">}
-</span></span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">public class Cat {
+    private int inr;
+    private Cat(int inr) {
+        this.inr = inr;
+    }
+    private static void print(Cat cat) {
+        System.out.println(cat.inr);
+    }
+    private void setInr(int inr) {
+        this.inr = inr;
+    }
+    public static void main(String[] args) {
+        Cat A = new Cat(100);
+        Cat B = new Cat(101);
+        System.out.println(A);
+        System.out.println(B);
+        swap(A, B);
+        Cat.print(A);
+        Cat.print(B);
+    }
+    private static void swap(Cat A, Cat B) {
+        Cat temp = A;
+        A = B;
+        B = temp;
+        System.out.println(A.inr);
+        System.out.println(B.inr);
+//        temp = new Cat(400);
+//        B.setInr(400);
+//        System.out.println(temp.inr);
+//        System.out.println(B.inr);
+    }
+}
+</code></pre></td></tr></table>
 </div>
 </div>]]></description></item><item><title>Switch中的参数可以为那些类型</title><link>https://yakax.github.io/switch%E4%B8%AD%E7%9A%84%E5%8F%82%E6%95%B0%E5%8F%AF%E4%BB%A5%E4%B8%BA%E9%82%A3%E4%BA%9B%E7%B1%BB%E5%9E%8B/</link><pubDate>Tue, 13 Nov 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/switch%E4%B8%AD%E7%9A%84%E5%8F%82%E6%95%B0%E5%8F%AF%E4%BB%A5%E4%B8%BA%E9%82%A3%E4%BA%9B%E7%B1%BB%E5%9E%8B/</guid><description><![CDATA[<p><strong>之前面试被问懵了一个很简单的问题，switch中的参数支持string吗，我当时想都没想，直接回答string可以为switch的参数，因为在我写的代码中我的确拿string当过参数：然而面试官说不可以。
 (经过我的验证，我发现jdk1.7以后switch就支持String类型了；面试官傻逼！)</strong></p>
 <h4 id="官方示例">官方示例</h4>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">https://docs.oracle.com/javase/tutorial/java/nutsandbolts/switch.html
-</span></span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">https://docs.oracle.com/javase/tutorial/java/nutsandbolts/switch.html
+</code></pre></td></tr></table>
 </div>
 </div>]]></description></item><item><title>序列化的作用</title><link>https://yakax.github.io/%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E4%BD%9C%E7%94%A8/</link><pubDate>Tue, 09 Oct 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E4%BD%9C%E7%94%A8/</guid><description><![CDATA[<h4 id="序列化的作用">序列化的作用</h4>
 <ol>

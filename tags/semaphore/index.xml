@@ -2,11 +2,11 @@
 <h3 id="基本结构图">基本结构图</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
+<pre class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">基本就是当state值更改为0时就开始唤醒aqs队列第一个节点 然后，就会调用 setHeadAndPropagate 这个方法 唤醒持续唤醒后继节点
-</span></span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">基本就是当state值更改为0时就开始唤醒aqs队列第一个节点 然后，就会调用 setHeadAndPropagate 这个方法 唤醒持续唤醒后继节点
+</code></pre></td></tr></table>
 </div>
 </div><p><a data-fancybox="gallery" href="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/Concurrent/aqs/QQ%E6%88%AA%E5%9B%BE20200922142430.png">
     
@@ -15,7 +15,7 @@
 <h4 id="示例代码">示例代码</h4>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -44,33 +44,33 @@
 </span><span class="lnt">27
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">    public static void main(String[] args) throws InterruptedException {
-</span></span><span class="line"><span class="cl">        CountDownLatch countDownLatch = new CountDownLatch(5);
-</span></span><span class="line"><span class="cl">        new Thread(() -&gt; {
-</span></span><span class="line"><span class="cl">            System.out.println(&#34;Thread1&#34;);
-</span></span><span class="line"><span class="cl">            countDownLatch.countDown(); //3-1=2
-</span></span><span class="line"><span class="cl">            System.out.println(&#34;Thread1执行完毕&#34;);
-</span></span><span class="line"><span class="cl">        }).start();
-</span></span><span class="line"><span class="cl">        new Thread(() -&gt; {
-</span></span><span class="line"><span class="cl">            System.out.println(&#34;Thread2&#34;);
-</span></span><span class="line"><span class="cl">            countDownLatch.countDown();//2-1=1
-</span></span><span class="line"><span class="cl">            System.out.println(&#34;Thread2执行完毕&#34;);
-</span></span><span class="line"><span class="cl">        }).start();
-</span></span><span class="line"><span class="cl">        new Thread(() -&gt; {
-</span></span><span class="line"><span class="cl">            System.out.println(&#34;Thread3&#34;);
-</span></span><span class="line"><span class="cl">            countDownLatch.countDown();//1-1=0
-</span></span><span class="line"><span class="cl">            System.out.println(&#34;Thread3执行完毕&#34;);
-</span></span><span class="line"><span class="cl">        }).start();
-</span></span><span class="line"><span class="cl">        countDownLatch.await();
-</span></span><span class="line"><span class="cl">    }
-</span></span><span class="line"><span class="cl">输出--------------------
-</span></span><span class="line"><span class="cl">Thread1
-</span></span><span class="line"><span class="cl">Thread2
-</span></span><span class="line"><span class="cl">Thread2执行完毕
-</span></span><span class="line"><span class="cl">Thread1执行完毕
-</span></span><span class="line"><span class="cl">Thread3
-</span></span><span class="line"><span class="cl">Thread3执行完毕
-</span></span><span class="line"><span class="cl">-----------不会结束
-</span></span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">    public static void main(String[] args) throws InterruptedException {
+        CountDownLatch countDownLatch = new CountDownLatch(5);
+        new Thread(() -&gt; {
+            System.out.println(&#34;Thread1&#34;);
+            countDownLatch.countDown(); //3-1=2
+            System.out.println(&#34;Thread1执行完毕&#34;);
+        }).start();
+        new Thread(() -&gt; {
+            System.out.println(&#34;Thread2&#34;);
+            countDownLatch.countDown();//2-1=1
+            System.out.println(&#34;Thread2执行完毕&#34;);
+        }).start();
+        new Thread(() -&gt; {
+            System.out.println(&#34;Thread3&#34;);
+            countDownLatch.countDown();//1-1=0
+            System.out.println(&#34;Thread3执行完毕&#34;);
+        }).start();
+        countDownLatch.await();
+    }
+输出--------------------
+Thread1
+Thread2
+Thread2执行完毕
+Thread1执行完毕
+Thread3
+Thread3执行完毕
+-----------不会结束
+</code></pre></td></tr></table>
 </div>
 </div>]]></description></item></channel></rss>

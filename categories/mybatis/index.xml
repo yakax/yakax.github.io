@@ -180,7 +180,7 @@ ReuseExecutor、BatchExecutor 处理不同</td>
 </a></p>]]></description></item><item><title>Mybatis3源码分析(1)生命周期与核心配置解读以及批量操作</title><link>https://yakax.github.io/mybatis3%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%901%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E4%B8%8E%E6%A0%B8%E5%BF%83%E9%85%8D%E7%BD%AE%E8%A7%A3%E8%AF%BB%E4%BB%A5%E5%8F%8A%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C/</link><pubDate>Thu, 02 May 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/mybatis3%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%901%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E4%B8%8E%E6%A0%B8%E5%BF%83%E9%85%8D%E7%BD%AE%E8%A7%A3%E8%AF%BB%E4%BB%A5%E5%8F%8A%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C/</guid><description><![CDATA[<h3 id="单独用mybatis编程式进行db操作">单独用mybatis编程式进行DB操作</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+<pre class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -205,29 +205,29 @@ ReuseExecutor、BatchExecutor 处理不同</td>
 </span><span class="lnt">23
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">--------------------利用mapper
-</span></span><span class="line"><span class="cl">String resource = &#34;mybatis-config.xml&#34;;
-</span></span><span class="line"><span class="cl">InputStream inputStream = Resources.getResourceAsStream(resource);
-</span></span><span class="line"><span class="cl">SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
-</span></span><span class="line"><span class="cl">SqlSession session = sqlSessionFactory.openSession();
-</span></span><span class="line"><span class="cl">try {
-</span></span><span class="line"><span class="cl">    BlogMapper mapper = session.getMapper(BlogMapper.class);
-</span></span><span class="line"><span class="cl">    Blog blog = mapper.selectBlogById(1);
-</span></span><span class="line"><span class="cl">    System.out.println(blog);
-</span></span><span class="line"><span class="cl">} finally {
-</span></span><span class="line"><span class="cl">    session.close();
-</span></span><span class="line"><span class="cl">}
-</span></span><span class="line"><span class="cl">--------------------利用mybatis的接口
-</span></span><span class="line"><span class="cl">String resource = &#34;mybatis-config.xml&#34;;
-</span></span><span class="line"><span class="cl">InputStream inputStream = Resources.getResourceAsStream(resource);
-</span></span><span class="line"><span class="cl">SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
-</span></span><span class="line"><span class="cl">SqlSession session = sqlSessionFactory.openSession(); // ExecutorType.BATCH
-</span></span><span class="line"><span class="cl">try {
-</span></span><span class="line"><span class="cl">    Blog blog = (Blog) session.selectOne(&#34;com.yakax.mapper.BlogMapper.selectBlogById&#34;, 1);
-</span></span><span class="line"><span class="cl">    System.out.println(blog);
-</span></span><span class="line"><span class="cl">} finally {
-</span></span><span class="line"><span class="cl">    session.close();
-</span></span><span class="line"><span class="cl">}
-</span></span></code></pre></td></tr></table>
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">--------------------利用mapper
+String resource = &#34;mybatis-config.xml&#34;;
+InputStream inputStream = Resources.getResourceAsStream(resource);
+SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+SqlSession session = sqlSessionFactory.openSession();
+try {
+    BlogMapper mapper = session.getMapper(BlogMapper.class);
+    Blog blog = mapper.selectBlogById(1);
+    System.out.println(blog);
+} finally {
+    session.close();
+}
+--------------------利用mybatis的接口
+String resource = &#34;mybatis-config.xml&#34;;
+InputStream inputStream = Resources.getResourceAsStream(resource);
+SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+SqlSession session = sqlSessionFactory.openSession(); // ExecutorType.BATCH
+try {
+    Blog blog = (Blog) session.selectOne(&#34;com.yakax.mapper.BlogMapper.selectBlogById&#34;, 1);
+    System.out.println(blog);
+} finally {
+    session.close();
+}
+</code></pre></td></tr></table>
 </div>
 </div>]]></description></item></channel></rss>

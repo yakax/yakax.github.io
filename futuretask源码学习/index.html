@@ -1,5 +1,4 @@
-<!doctype html><html lang=zh-CN><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=X-UA-Compatible content="IE=edge, chrome=1"><title>FutureTask源码学习 - yakax</title><meta name=Description content><meta property="og:url" content="https://yakax.github.io/futuretask%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/">
-<meta property="og:site_name" content="yakax"><meta property="og:title" content="FutureTask源码学习"><meta property="og:description" content="基本属性 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 /* Possible state transitions: * NEW -> COMPLETING -> NORMAL * NEW -> COMPLETING -> EXCEPTIONAL * NEW -> CANCELLED * NEW -> INTERRUPTING -> INTERRUPTED */ private volatile int state; //线程状态 private static final int NEW = 0; // 进来未执行的状态 private static final int COMPLETING = 1; // 表示正在结束，临时状态，用于结束前cas操作;异常和有结果前都会有 private static final int NORMAL = 2; // 正常结束 private static final int EXCEPTIONAL = 3; // 异常结束 private static final int CANCELLED = 4; // 任务被取消 private static final int INTERRUPTING = 5; // 中断中 也是临时状态 private static final int INTERRUPTED = 6; // 已中断 // 运行任务 private Callable<V> callable; // 整个任务周期中 存放值的对象，会有异常或者正常的值 private Object outcome; // 正在执行任务的线程 private volatile Thread runner; // get任务阻塞的线程 会存在这个队列里面 private volatile WaitNode waiters; "><meta property="og:locale" content="zh-CN"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2021-01-22T00:00:00+00:00"><meta property="article:modified_time" content="2021-01-22T00:00:00+00:00"><meta property="article:tag" content="FutureTask"><meta property="og:image" content="https://yakax.github.io/images/1.png"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://yakax.github.io/images/1.png"><meta name=twitter:title content="FutureTask源码学习"><meta name=twitter:description content="基本属性
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>FutureTask源码学习 - yakax</title><meta name=Description content><meta property="og:title" content="FutureTask源码学习"><meta property="og:description" content="基本属性
 
 
  1
@@ -49,21 +48,63 @@
     // 正在执行任务的线程 
     private volatile Thread runner;
     // get任务阻塞的线程 会存在这个队列里面
-    private volatile WaitNode waiters;
+    private volatile WaitNode waiters;"><meta property="og:type" content="article"><meta property="og:url" content="https://yakax.github.io/futuretask%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/"><meta property="og:image" content="https://yakax.github.io/images/1.png"><meta property="article:published_time" content="2021-01-22T00:00:00+00:00"><meta property="article:modified_time" content="2021-01-22T00:00:00+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://yakax.github.io/images/1.png"><meta name=twitter:title content="FutureTask源码学习"><meta name=twitter:description content="基本属性
 
 
-"><meta name=application-name content="yakax"><meta name=apple-mobile-web-app-title content="yakax"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><script>(function(e,t,n,s,o,i,a){e.DaoVoiceObject=o,e[o]=e[o]||function(){(e[o].q=e[o].q||[]).push(arguments)},e[o].l=1*new Date,i=t.createElement(n),a=t.getElementsByTagName(n)[0],i.async=1,i.src=s,i.charset="utf-8",a.parentNode.insertBefore(i,a)})(window,document,"script",("https:"==document.location.protocol?"https:":"http:")+"//widget.daovoice.io/widget/af744044.js","daovoice"),daovoice("init",{app_id:"af744044"}),daovoice("update")</script><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://yakax.github.io/futuretask%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/><link rel=prev href=https://yakax.github.io/reentrantlock--aqs%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/><link rel=next href=https://yakax.github.io/condition%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"FutureTask源码学习","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/yakax.github.io\/futuretask%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0\/"},"image":["https:\/\/yakax.github.io\/images\/avatar.png"],"genre":"posts","keywords":"FutureTask","wordcount":2554,"url":"https:\/\/yakax.github.io\/futuretask%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0\/","datePublished":"2021-01-22T00:00:00+00:00","dateModified":"2021-01-22T00:00:00+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"yakax","logo":"https:\/\/yakax.github.io\/images\/avatar.png"},"author":{"@type":"Person","name":"yakax"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class='fas fa-crosshairs fa-sm'></i></span><span id=id-1 class=typeit></span></a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>所有文章 </a><a class=menu-item href=/tags/>标签 </a><a class=menu-item href=/categories/>分类 </a><a class=menu-item href=/about/>关于 </a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i> </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
-<input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i>
-</a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i>
-</a><span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i>
-</span></span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class='fas fa-crosshairs fa-sm'></i></span><span id=id-2 class=typeit></span></a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i>
-</a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i>
-</a><span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/ title>所有文章</a><a class=menu-item href=/tags/ title>标签</a><a class=menu-item href=/categories/ title>分类</a><a class=menu-item href=/about/ title>关于</a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+
+
+  	/* Possible state transitions:
+     * NEW -> COMPLETING -> NORMAL
+     * NEW -> COMPLETING -> EXCEPTIONAL
+     * NEW -> CANCELLED
+     * NEW -> INTERRUPTING -> INTERRUPTED
+     */
+    private volatile int state; //线程状态
+    private static final int NEW          = 0; // 进来未执行的状态
+    private static final int COMPLETING   = 1; // 表示正在结束，临时状态，用于结束前cas操作;异常和有结果前都会有
+    private static final int NORMAL       = 2; // 正常结束
+    private static final int EXCEPTIONAL  = 3; // 异常结束
+    private static final int CANCELLED    = 4; // 任务被取消
+    private static final int INTERRUPTING = 5; // 中断中 也是临时状态
+    private static final int INTERRUPTED  = 6; // 已中断
+
+	// 运行任务
+    private Callable<V> callable; 
+    // 整个任务周期中 存放值的对象，会有异常或者正常的值
+    private Object outcome; 
+    // 正在执行任务的线程 
+    private volatile Thread runner;
+    // get任务阻塞的线程 会存在这个队列里面
+    private volatile WaitNode waiters;"><meta name=application-name content="yakax"><meta name=apple-mobile-web-app-title content="yakax"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><script>(function(i,s,o,g,r,a,m){i["DaoVoiceObject"]=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;a.charset="utf-8";m.parentNode.insertBefore(a,m)})(window,document,"script",('https:'==document.location.protocol?'https:':'http:')+"//widget.daovoice.io/widget/af744044.js","daovoice")
+daovoice('init',{app_id:"af744044"});daovoice('update');</script><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://yakax.github.io/futuretask%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/><link rel=prev href=https://yakax.github.io/reentrantlock-aqs%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/><link rel=next href=https://yakax.github.io/condition%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"FutureTask源码学习","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/yakax.github.io\/futuretask%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0\/"},"image":["https:\/\/yakax.github.io\/images\/avatar.png"],"genre":"posts","keywords":"FutureTask","wordcount":2554,"url":"https:\/\/yakax.github.io\/futuretask%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0\/","datePublished":"2021-01-22T00:00:00+00:00","dateModified":"2021-01-22T00:00:00+00:00","license":"This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher":{"@type":"Organization","name":"yakax","logo":"https:\/\/yakax.github.io\/images\/avatar.png"},"author":{"@type":"Person","name":"yakax"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem('theme')?localStorage.getItem('theme')==='dark':('auto'==='auto'?window.matchMedia('(prefers-color-scheme: dark)').matches:'auto'==='dark'))&&document.body.setAttribute('theme','dark');</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class="fas fa-crosshairs fa-sm"></i></span><span id=id-1 class=typeit></span></a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>所有文章 </a><a class=menu-item href=/tags/>标签 </a><a class=menu-item href=/categories/>分类 </a><a class=menu-item href=/about/>关于 </a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i></a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop><input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span></span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=yakax><span class=header-title-pre><i class="fas fa-crosshairs fa-sm"></i></span><span id=id-2 class=typeit></span></a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i></a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i></a><span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/>所有文章</a><a class=menu-item href=/tags/>标签</a><a class=menu-item href=/categories/>分类</a><a class=menu-item href=/about/>关于</a><a class=menu-item href=https://github.com/yakax title=GitHub rel="noopener noreffer" target=_blank><i class="fab fa-github fa-fw"></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
 <i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">FutureTask源码学习</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>yakax</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/><i class="far fa-folder fa-fw"></i>并发编程学习</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2021-01-22>2021-01-22</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 2554 字&nbsp;
 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 6 分钟&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>目录</span>
-<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><ul><li><ul><li><a href=#基本属性><strong>基本属性</strong></a></li><li><a href=#构造方法>构造方法</a></li><li><a href=#状态相关方法>状态相关方法</a><ul><li><a href=#取消任务>取消任务</a></li></ul></li><li><a href=#执行任务方法><strong>执行任务方法</strong></a><ul><li><a href=#设置返回值><strong>设置返回值</strong></a></li><li><a href=#唤醒所有节点--注意-done方法>唤醒所有节点 注意 done();方法</a></li></ul></li><li><a href=#get-方法阻塞队列>get <strong>方法阻塞队列</strong></a><ul><li><a href=#report-返回值><strong>report 返回值</strong></a></li><li><a href=#awaitdone-阻塞分析><strong>awaitDone 阻塞分析</strong></a></li></ul></li></ul></li></ul></li></ul></nav></div></div><div class=content id=content><h4 id=基本属性><strong>基本属性</strong></h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><ul><li><ul><li><a href=#基本属性><strong>基本属性</strong></a></li><li><a href=#构造方法>构造方法</a></li><li><a href=#状态相关方法>状态相关方法</a><ul><li><a href=#取消任务>取消任务</a></li></ul></li><li><a href=#执行任务方法><strong>执行任务方法</strong></a><ul><li><a href=#设置返回值><strong>设置返回值</strong></a></li><li><a href=#唤醒所有节点--注意-done方法>唤醒所有节点 注意 done();方法</a></li></ul></li><li><a href=#get-方法阻塞队列>get <strong>方法阻塞队列</strong></a><ul><li><a href=#report-返回值><strong>report 返回值</strong></a></li><li><a href=#awaitdone-阻塞分析><strong>awaitDone 阻塞分析</strong></a></li></ul></li></ul></li></ul></li></ul></nav></div></div><div class=content id=content><h4 id=基本属性><strong>基本属性</strong></h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -86,30 +127,30 @@
 </span><span class=lnt>21
 </span><span class=lnt>22
 </span><span class=lnt>23
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=w>  	</span><span class=cm>/* Possible state transitions:
-</span></span></span><span class=line><span class=cl><span class=cm>     * NEW -&gt; COMPLETING -&gt; NORMAL
-</span></span></span><span class=line><span class=cl><span class=cm>     * NEW -&gt; COMPLETING -&gt; EXCEPTIONAL
-</span></span></span><span class=line><span class=cl><span class=cm>     * NEW -&gt; CANCELLED
-</span></span></span><span class=line><span class=cl><span class=cm>     * NEW -&gt; INTERRUPTING -&gt; INTERRUPTED
-</span></span></span><span class=line><span class=cl><span class=cm>     */</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>volatile</span><span class=w> </span><span class=kt>int</span><span class=w> </span><span class=n>state</span><span class=p>;</span><span class=w> </span><span class=c1>//线程状态</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kd>final</span><span class=w> </span><span class=kt>int</span><span class=w> </span><span class=n>NEW</span><span class=w>          </span><span class=o>=</span><span class=w> </span><span class=n>0</span><span class=p>;</span><span class=w> </span><span class=c1>// 进来未执行的状态</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kd>final</span><span class=w> </span><span class=kt>int</span><span class=w> </span><span class=n>COMPLETING</span><span class=w>   </span><span class=o>=</span><span class=w> </span><span class=n>1</span><span class=p>;</span><span class=w> </span><span class=c1>// 表示正在结束，临时状态，用于结束前cas操作;异常和有结果前都会有</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kd>final</span><span class=w> </span><span class=kt>int</span><span class=w> </span><span class=n>NORMAL</span><span class=w>       </span><span class=o>=</span><span class=w> </span><span class=n>2</span><span class=p>;</span><span class=w> </span><span class=c1>// 正常结束</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kd>final</span><span class=w> </span><span class=kt>int</span><span class=w> </span><span class=n>EXCEPTIONAL</span><span class=w>  </span><span class=o>=</span><span class=w> </span><span class=n>3</span><span class=p>;</span><span class=w> </span><span class=c1>// 异常结束</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kd>final</span><span class=w> </span><span class=kt>int</span><span class=w> </span><span class=n>CANCELLED</span><span class=w>    </span><span class=o>=</span><span class=w> </span><span class=n>4</span><span class=p>;</span><span class=w> </span><span class=c1>// 任务被取消</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kd>final</span><span class=w> </span><span class=kt>int</span><span class=w> </span><span class=n>INTERRUPTING</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>5</span><span class=p>;</span><span class=w> </span><span class=c1>// 中断中 也是临时状态</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kd>final</span><span class=w> </span><span class=kt>int</span><span class=w> </span><span class=n>INTERRUPTED</span><span class=w>  </span><span class=o>=</span><span class=w> </span><span class=n>6</span><span class=p>;</span><span class=w> </span><span class=c1>// 已中断</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>	</span><span class=c1>// 运行任务</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=n>Callable</span><span class=o>&lt;</span><span class=n>V</span><span class=o>&gt;</span><span class=w> </span><span class=n>callable</span><span class=p>;</span><span class=w> 
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c1>// 整个任务周期中 存放值的对象，会有异常或者正常的值</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=n>Object</span><span class=w> </span><span class=n>outcome</span><span class=p>;</span><span class=w> 
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c1>// 正在执行任务的线程 </span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>volatile</span><span class=w> </span><span class=n>Thread</span><span class=w> </span><span class=n>runner</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c1>// get任务阻塞的线程 会存在这个队列里面</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>volatile</span><span class=w> </span><span class=n>WaitNode</span><span class=w> </span><span class=n>waiters</span><span class=p>;</span><span class=w>
-</span></span></span></code></pre></td></tr></table></div></div><h4 id=构造方法>构造方法</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java>  	<span class=cm>/* Possible state transitions:
+</span><span class=cm>     * NEW -&gt; COMPLETING -&gt; NORMAL
+</span><span class=cm>     * NEW -&gt; COMPLETING -&gt; EXCEPTIONAL
+</span><span class=cm>     * NEW -&gt; CANCELLED
+</span><span class=cm>     * NEW -&gt; INTERRUPTING -&gt; INTERRUPTED
+</span><span class=cm>     */</span>
+    <span class=kd>private</span> <span class=kd>volatile</span> <span class=kt>int</span> <span class=n>state</span><span class=o>;</span> <span class=c1>//线程状态
+</span><span class=c1></span>    <span class=kd>private</span> <span class=kd>static</span> <span class=kd>final</span> <span class=kt>int</span> <span class=n>NEW</span>          <span class=o>=</span> <span class=n>0</span><span class=o>;</span> <span class=c1>// 进来未执行的状态
+</span><span class=c1></span>    <span class=kd>private</span> <span class=kd>static</span> <span class=kd>final</span> <span class=kt>int</span> <span class=n>COMPLETING</span>   <span class=o>=</span> <span class=n>1</span><span class=o>;</span> <span class=c1>// 表示正在结束，临时状态，用于结束前cas操作;异常和有结果前都会有
+</span><span class=c1></span>    <span class=kd>private</span> <span class=kd>static</span> <span class=kd>final</span> <span class=kt>int</span> <span class=n>NORMAL</span>       <span class=o>=</span> <span class=n>2</span><span class=o>;</span> <span class=c1>// 正常结束
+</span><span class=c1></span>    <span class=kd>private</span> <span class=kd>static</span> <span class=kd>final</span> <span class=kt>int</span> <span class=n>EXCEPTIONAL</span>  <span class=o>=</span> <span class=n>3</span><span class=o>;</span> <span class=c1>// 异常结束
+</span><span class=c1></span>    <span class=kd>private</span> <span class=kd>static</span> <span class=kd>final</span> <span class=kt>int</span> <span class=n>CANCELLED</span>    <span class=o>=</span> <span class=n>4</span><span class=o>;</span> <span class=c1>// 任务被取消
+</span><span class=c1></span>    <span class=kd>private</span> <span class=kd>static</span> <span class=kd>final</span> <span class=kt>int</span> <span class=n>INTERRUPTING</span> <span class=o>=</span> <span class=n>5</span><span class=o>;</span> <span class=c1>// 中断中 也是临时状态
+</span><span class=c1></span>    <span class=kd>private</span> <span class=kd>static</span> <span class=kd>final</span> <span class=kt>int</span> <span class=n>INTERRUPTED</span>  <span class=o>=</span> <span class=n>6</span><span class=o>;</span> <span class=c1>// 已中断
+</span><span class=c1></span>
+	<span class=c1>// 运行任务
+</span><span class=c1></span>    <span class=kd>private</span> <span class=n>Callable</span><span class=o>&lt;</span><span class=n>V</span><span class=o>&gt;</span> <span class=n>callable</span><span class=o>;</span> 
+    <span class=c1>// 整个任务周期中 存放值的对象，会有异常或者正常的值
+</span><span class=c1></span>    <span class=kd>private</span> <span class=n>Object</span> <span class=n>outcome</span><span class=o>;</span> 
+    <span class=c1>// 正在执行任务的线程 
+</span><span class=c1></span>    <span class=kd>private</span> <span class=kd>volatile</span> <span class=n>Thread</span> <span class=n>runner</span><span class=o>;</span>
+    <span class=c1>// get任务阻塞的线程 会存在这个队列里面
+</span><span class=c1></span>    <span class=kd>private</span> <span class=kd>volatile</span> <span class=n>WaitNode</span> <span class=n>waiters</span><span class=o>;</span>
+</code></pre></td></tr></table></div></div><h4 id=构造方法>构造方法</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -123,21 +164,21 @@
 </span><span class=lnt>12
 </span><span class=lnt>13
 </span><span class=lnt>14
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=nf>FutureTask</span><span class=p>(</span><span class=n>Callable</span><span class=o>&lt;</span><span class=n>V</span><span class=o>&gt;</span><span class=w> </span><span class=n>callable</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>callable</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>NullPointerException</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>//callable就是程序员自己实现的业务类</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>this</span><span class=p>.</span><span class=na>callable</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>callable</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>//设置当前任务状态为 NEW</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>this</span><span class=p>.</span><span class=na>state</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>NEW</span><span class=p>;</span><span class=w>       </span><span class=c1>// ensure visibility of callable</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    
-</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=nf>FutureTask</span><span class=p>(</span><span class=n>Runnable</span><span class=w> </span><span class=n>runnable</span><span class=p>,</span><span class=w> </span><span class=n>V</span><span class=w> </span><span class=n>result</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>// 利用适配器模式 把runnable 换成Callable</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>this</span><span class=p>.</span><span class=na>callable</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Executors</span><span class=p>.</span><span class=na>callable</span><span class=p>(</span><span class=n>runnable</span><span class=p>,</span><span class=w> </span><span class=n>result</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>this</span><span class=p>.</span><span class=na>state</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>NEW</span><span class=p>;</span><span class=w>       </span><span class=c1>// ensure visibility of callable</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
-</span></span></span></code></pre></td></tr></table></div></div><h4 id=状态相关方法>状态相关方法</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java><span class=kd>public</span> <span class=nf>FutureTask</span><span class=o>(</span><span class=n>Callable</span><span class=o>&lt;</span><span class=n>V</span><span class=o>&gt;</span> <span class=n>callable</span><span class=o>)</span> <span class=o>{</span>
+        <span class=k>if</span> <span class=o>(</span><span class=n>callable</span> <span class=o>==</span> <span class=kc>null</span><span class=o>)</span>
+            <span class=k>throw</span> <span class=k>new</span> <span class=n>NullPointerException</span><span class=o>();</span>
+        <span class=c1>//callable就是程序员自己实现的业务类
+</span><span class=c1></span>        <span class=k>this</span><span class=o>.</span><span class=na>callable</span> <span class=o>=</span> <span class=n>callable</span><span class=o>;</span>
+        <span class=c1>//设置当前任务状态为 NEW
+</span><span class=c1></span>        <span class=k>this</span><span class=o>.</span><span class=na>state</span> <span class=o>=</span> <span class=n>NEW</span><span class=o>;</span>       <span class=c1>// ensure visibility of callable
+</span><span class=c1></span>    <span class=o>}</span>
+    
+<span class=kd>public</span> <span class=nf>FutureTask</span><span class=o>(</span><span class=n>Runnable</span> <span class=n>runnable</span><span class=o>,</span> <span class=n>V</span> <span class=n>result</span><span class=o>)</span> <span class=o>{</span>
+        <span class=c1>// 利用适配器模式 把runnable 换成Callable
+</span><span class=c1></span>        <span class=k>this</span><span class=o>.</span><span class=na>callable</span> <span class=o>=</span> <span class=n>Executors</span><span class=o>.</span><span class=na>callable</span><span class=o>(</span><span class=n>runnable</span><span class=o>,</span> <span class=n>result</span><span class=o>);</span>
+        <span class=k>this</span><span class=o>.</span><span class=na>state</span> <span class=o>=</span> <span class=n>NEW</span><span class=o>;</span>       <span class=c1>// ensure visibility of callable
+</span><span class=c1></span>    <span class=o>}</span>
+</code></pre></td></tr></table></div></div><h4 id=状态相关方法>状态相关方法</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
@@ -145,15 +186,15 @@
 </span><span class=lnt>6
 </span><span class=lnt>7
 </span><span class=lnt>8
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=c1>// 是否中断   </span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kt>boolean</span><span class=w> </span><span class=nf>isCancelled</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>return</span><span class=w> </span><span class=n>state</span><span class=w> </span><span class=o>&gt;=</span><span class=w> </span><span class=n>CANCELLED</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w></span><span class=c1>// 只要是不等于new 都属于线程已经开始执行的标记</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kt>boolean</span><span class=w> </span><span class=nf>isDone</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>return</span><span class=w> </span><span class=n>state</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=n>NEW</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
-</span></span></span></code></pre></td></tr></table></div></div><h5 id=取消任务>取消任务</h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java><span class=c1>// 是否中断   
+</span><span class=c1></span><span class=kd>public</span> <span class=kt>boolean</span> <span class=nf>isCancelled</span><span class=o>()</span> <span class=o>{</span>
+    <span class=k>return</span> <span class=n>state</span> <span class=o>&gt;=</span> <span class=n>CANCELLED</span><span class=o>;</span>
+<span class=o>}</span>
+<span class=c1>// 只要是不等于new 都属于线程已经开始执行的标记
+</span><span class=c1></span><span class=kd>public</span> <span class=kt>boolean</span> <span class=nf>isDone</span><span class=o>()</span> <span class=o>{</span>
+    <span class=k>return</span> <span class=n>state</span> <span class=o>!=</span> <span class=n>NEW</span><span class=o>;</span>
+<span class=o>}</span>
+</code></pre></td></tr></table></div></div><h5 id=取消任务>取消任务</h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -178,32 +219,32 @@
 </span><span class=lnt>23
 </span><span class=lnt>24
 </span><span class=lnt>25
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kt>boolean</span><span class=w> </span><span class=nf>cancel</span><span class=p>(</span><span class=kt>boolean</span><span class=w> </span><span class=n>mayInterruptIfRunning</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c1>// 如果状态等于new 并且 修改状态成功 说明可以取消  否则返回false 取消是失败</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c1>// mayInterruptIfRunning 是否会发生中断情况 说白了就是以中断抛异常结束，</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=o>!</span><span class=p>(</span><span class=n>state</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=n>NEW</span><span class=w> </span><span class=o>&amp;&amp;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>              </span><span class=n>UNSAFE</span><span class=p>.</span><span class=na>compareAndSwapInt</span><span class=p>(</span><span class=k>this</span><span class=p>,</span><span class=w> </span><span class=n>stateOffset</span><span class=p>,</span><span class=w> </span><span class=n>NEW</span><span class=p>,</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                  </span><span class=n>mayInterruptIfRunning</span><span class=w> </span><span class=o>?</span><span class=w> </span><span class=n>INTERRUPTING</span><span class=w> </span><span class=p>:</span><span class=w> </span><span class=n>CANCELLED</span><span class=p>)))</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>return</span><span class=w> </span><span class=kc>false</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>    </span><span class=c1>// in case call to interrupt throws exception</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>mayInterruptIfRunning</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>	
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>Thread</span><span class=w> </span><span class=n>t</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>runner</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>t</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                        </span><span class=c1>// 加中断标记，具体看线程是否响应中断，捕获异常 自己处理</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                        </span><span class=n>t</span><span class=p>.</span><span class=na>interrupt</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>}</span><span class=w> </span><span class=k>finally</span><span class=w> </span><span class=p>{</span><span class=w> </span><span class=c1>// final state</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=c1>//设置任务状态为 中断完成。</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>UNSAFE</span><span class=p>.</span><span class=na>putOrderedInt</span><span class=p>(</span><span class=k>this</span><span class=p>,</span><span class=w> </span><span class=n>stateOffset</span><span class=p>,</span><span class=w> </span><span class=n>INTERRUPTED</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w> </span><span class=k>finally</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>// 使阻塞队列的线程全部唤醒退出</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>finishCompletion</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=kc>true</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
-</span></span></span></code></pre></td></tr></table></div></div><h4 id=执行任务方法><strong>执行任务方法</strong></h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java><span class=kd>public</span> <span class=kt>boolean</span> <span class=nf>cancel</span><span class=o>(</span><span class=kt>boolean</span> <span class=n>mayInterruptIfRunning</span><span class=o>)</span> <span class=o>{</span>
+    <span class=c1>// 如果状态等于new 并且 修改状态成功 说明可以取消  否则返回false 取消是失败
+</span><span class=c1></span>    <span class=c1>// mayInterruptIfRunning 是否会发生中断情况 说白了就是以中断抛异常结束，
+</span><span class=c1></span>        <span class=k>if</span> <span class=o>(!(</span><span class=n>state</span> <span class=o>==</span> <span class=n>NEW</span> <span class=o>&amp;&amp;</span>
+              <span class=n>UNSAFE</span><span class=o>.</span><span class=na>compareAndSwapInt</span><span class=o>(</span><span class=k>this</span><span class=o>,</span> <span class=n>stateOffset</span><span class=o>,</span> <span class=n>NEW</span><span class=o>,</span>
+                  <span class=n>mayInterruptIfRunning</span> <span class=o>?</span> <span class=n>INTERRUPTING</span> <span class=o>:</span> <span class=n>CANCELLED</span><span class=o>)))</span>
+            <span class=k>return</span> <span class=kc>false</span><span class=o>;</span>
+        <span class=k>try</span> <span class=o>{</span>    <span class=c1>// in case call to interrupt throws exception
+</span><span class=c1></span>            <span class=k>if</span> <span class=o>(</span><span class=n>mayInterruptIfRunning</span><span class=o>)</span> <span class=o>{</span>
+                <span class=k>try</span> <span class=o>{</span>	
+                    <span class=n>Thread</span> <span class=n>t</span> <span class=o>=</span> <span class=n>runner</span><span class=o>;</span>
+                    <span class=k>if</span> <span class=o>(</span><span class=n>t</span> <span class=o>!=</span> <span class=kc>null</span><span class=o>)</span>
+                        <span class=c1>// 加中断标记，具体看线程是否响应中断，捕获异常 自己处理
+</span><span class=c1></span>                        <span class=n>t</span><span class=o>.</span><span class=na>interrupt</span><span class=o>();</span>
+                <span class=o>}</span> <span class=k>finally</span> <span class=o>{</span> <span class=c1>// final state
+</span><span class=c1></span>                    <span class=c1>//设置任务状态为 中断完成。
+</span><span class=c1></span>                    <span class=n>UNSAFE</span><span class=o>.</span><span class=na>putOrderedInt</span><span class=o>(</span><span class=k>this</span><span class=o>,</span> <span class=n>stateOffset</span><span class=o>,</span> <span class=n>INTERRUPTED</span><span class=o>);</span>
+                <span class=o>}</span>
+            <span class=o>}</span>
+        <span class=o>}</span> <span class=k>finally</span> <span class=o>{</span>
+            <span class=c1>// 使阻塞队列的线程全部唤醒退出
+</span><span class=c1></span>            <span class=n>finishCompletion</span><span class=o>();</span>
+        <span class=o>}</span>
+        <span class=k>return</span> <span class=kc>true</span><span class=o>;</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table></div></div><h4 id=执行任务方法><strong>执行任务方法</strong></h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -241,45 +282,45 @@
 </span><span class=lnt>36
 </span><span class=lnt>37
 </span><span class=lnt>38
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=w> </span><span class=kd>public</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>run</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>     </span><span class=c1>// 判断线程状态 是否已经执行过或 cas失败 说明runnerOffset 已经被别的线程修改了</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>     </span><span class=c1>// runnerOffset 时futuretask的局部变量</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>state</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=n>NEW</span><span class=w> </span><span class=o>||</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=o>!</span><span class=n>UNSAFE</span><span class=p>.</span><span class=na>compareAndSwapObject</span><span class=p>(</span><span class=k>this</span><span class=p>,</span><span class=w> </span><span class=n>runnerOffset</span><span class=p>,</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                                         </span><span class=kc>null</span><span class=p>,</span><span class=w> </span><span class=n>Thread</span><span class=p>.</span><span class=na>currentThread</span><span class=p>()))</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>return</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>Callable</span><span class=o>&lt;</span><span class=n>V</span><span class=o>&gt;</span><span class=w> </span><span class=n>c</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>callable</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>// 判断任务是否存在 状态是否是新状态 </span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>c</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>null</span><span class=w> </span><span class=o>&amp;&amp;</span><span class=w> </span><span class=n>state</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=n>NEW</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>V</span><span class=w> </span><span class=n>result</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=kt>boolean</span><span class=w> </span><span class=n>ran</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=c1>// 执行任务</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>result</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>c</span><span class=p>.</span><span class=na>call</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>ran</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=kc>true</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>Throwable</span><span class=w> </span><span class=n>ex</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=c1>// 抛异常</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>result</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=kc>null</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>ran</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=kc>false</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=c1>// 设置异常值</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>setException</span><span class=p>(</span><span class=n>ex</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>ran</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=c1>// 设置返回值</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>set</span><span class=p>(</span><span class=n>result</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w> </span><span class=k>finally</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>           </span><span class=c1>//设置当前线程引用为空</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>runner</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=kc>null</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=kt>int</span><span class=w> </span><span class=n>s</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>state</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>              </span><span class=c1>// 如果正在中断中</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>s</span><span class=w> </span><span class=o>&gt;=</span><span class=w> </span><span class=n>INTERRUPTING</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                 </span><span class=c1>// 直到中断结束 或者改变成其他状态</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>handlePossibleCancellationInterrupt</span><span class=p>(</span><span class=n>s</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
-</span></span></span></code></pre></td></tr></table></div></div><h5 id=设置返回值><strong>设置返回值</strong></h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java> <span class=kd>public</span> <span class=kt>void</span> <span class=nf>run</span><span class=o>()</span> <span class=o>{</span>
+     <span class=c1>// 判断线程状态 是否已经执行过或 cas失败 说明runnerOffset 已经被别的线程修改了
+</span><span class=c1></span>     <span class=c1>// runnerOffset 时futuretask的局部变量
+</span><span class=c1></span>        <span class=k>if</span> <span class=o>(</span><span class=n>state</span> <span class=o>!=</span> <span class=n>NEW</span> <span class=o>||</span>
+            <span class=o>!</span><span class=n>UNSAFE</span><span class=o>.</span><span class=na>compareAndSwapObject</span><span class=o>(</span><span class=k>this</span><span class=o>,</span> <span class=n>runnerOffset</span><span class=o>,</span>
+                                         <span class=kc>null</span><span class=o>,</span> <span class=n>Thread</span><span class=o>.</span><span class=na>currentThread</span><span class=o>()))</span>
+            <span class=k>return</span><span class=o>;</span>
+        <span class=k>try</span> <span class=o>{</span>
+            <span class=n>Callable</span><span class=o>&lt;</span><span class=n>V</span><span class=o>&gt;</span> <span class=n>c</span> <span class=o>=</span> <span class=n>callable</span><span class=o>;</span>
+            <span class=c1>// 判断任务是否存在 状态是否是新状态 
+</span><span class=c1></span>            <span class=k>if</span> <span class=o>(</span><span class=n>c</span> <span class=o>!=</span> <span class=kc>null</span> <span class=o>&amp;&amp;</span> <span class=n>state</span> <span class=o>==</span> <span class=n>NEW</span><span class=o>)</span> <span class=o>{</span>
+                <span class=n>V</span> <span class=n>result</span><span class=o>;</span>
+                <span class=kt>boolean</span> <span class=n>ran</span><span class=o>;</span>
+                <span class=k>try</span> <span class=o>{</span>
+                    <span class=c1>// 执行任务
+</span><span class=c1></span>                    <span class=n>result</span> <span class=o>=</span> <span class=n>c</span><span class=o>.</span><span class=na>call</span><span class=o>();</span>
+                    <span class=n>ran</span> <span class=o>=</span> <span class=kc>true</span><span class=o>;</span>
+                <span class=o>}</span> <span class=k>catch</span> <span class=o>(</span><span class=n>Throwable</span> <span class=n>ex</span><span class=o>)</span> <span class=o>{</span>
+                    <span class=c1>// 抛异常
+</span><span class=c1></span>                    <span class=n>result</span> <span class=o>=</span> <span class=kc>null</span><span class=o>;</span>
+                    <span class=n>ran</span> <span class=o>=</span> <span class=kc>false</span><span class=o>;</span>
+                    <span class=c1>// 设置异常值
+</span><span class=c1></span>                    <span class=n>setException</span><span class=o>(</span><span class=n>ex</span><span class=o>);</span>
+                <span class=o>}</span>
+                <span class=k>if</span> <span class=o>(</span><span class=n>ran</span><span class=o>)</span>
+                    <span class=c1>// 设置返回值
+</span><span class=c1></span>                    <span class=n>set</span><span class=o>(</span><span class=n>result</span><span class=o>);</span>
+            <span class=o>}</span>
+        <span class=o>}</span> <span class=k>finally</span> <span class=o>{</span>
+           <span class=c1>//设置当前线程引用为空
+</span><span class=c1></span>            <span class=n>runner</span> <span class=o>=</span> <span class=kc>null</span><span class=o>;</span>
+            <span class=kt>int</span> <span class=n>s</span> <span class=o>=</span> <span class=n>state</span><span class=o>;</span>
+              <span class=c1>// 如果正在中断中
+</span><span class=c1></span>            <span class=k>if</span> <span class=o>(</span><span class=n>s</span> <span class=o>&gt;=</span> <span class=n>INTERRUPTING</span><span class=o>)</span>
+                 <span class=c1>// 直到中断结束 或者改变成其他状态
+</span><span class=c1></span>                <span class=n>handlePossibleCancellationInterrupt</span><span class=o>(</span><span class=n>s</span><span class=o>);</span>
+        <span class=o>}</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table></div></div><h5 id=设置返回值><strong>设置返回值</strong></h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -299,27 +340,27 @@
 </span><span class=lnt>18
 </span><span class=lnt>19
 </span><span class=lnt>20
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>protected</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>setException</span><span class=p>(</span><span class=n>Throwable</span><span class=w> </span><span class=n>t</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>//使用CAS方式设置当前任务状态为 完成中..</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>//失败的话 外部线程等不及了，直接在set执行CAS之前 将  task取消了。  很小概率事件。</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>UNSAFE</span><span class=p>.</span><span class=na>compareAndSwapInt</span><span class=p>(</span><span class=k>this</span><span class=p>,</span><span class=w> </span><span class=n>stateOffset</span><span class=p>,</span><span class=w> </span><span class=n>NEW</span><span class=p>,</span><span class=w> </span><span class=n>COMPLETING</span><span class=p>))</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>//引用的是 callable 向上层抛出来的异常。</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>outcome</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>t</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>//将当前任务的状态 修改为 EXCEPTIONAL</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>UNSAFE</span><span class=p>.</span><span class=na>putOrderedInt</span><span class=p>(</span><span class=k>this</span><span class=p>,</span><span class=w> </span><span class=n>stateOffset</span><span class=p>,</span><span class=w> </span><span class=n>EXCEPTIONAL</span><span class=p>);</span><span class=w> </span><span class=c1>// final state</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>// 唤醒获取数据的节点</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>finishCompletion</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>protected</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>set</span><span class=p>(</span><span class=n>V</span><span class=w> </span><span class=n>v</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>UNSAFE</span><span class=p>.</span><span class=na>compareAndSwapInt</span><span class=p>(</span><span class=k>this</span><span class=p>,</span><span class=w> </span><span class=n>stateOffset</span><span class=p>,</span><span class=w> </span><span class=n>NEW</span><span class=p>,</span><span class=w> </span><span class=n>COMPLETING</span><span class=p>))</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>outcome</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>v</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>//将结果赋值给 outcome之后，马上会将当前任务状态修改为 NORMAL 正常结束状态。</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>UNSAFE</span><span class=p>.</span><span class=na>putOrderedInt</span><span class=p>(</span><span class=k>this</span><span class=p>,</span><span class=w> </span><span class=n>stateOffset</span><span class=p>,</span><span class=w> </span><span class=n>NORMAL</span><span class=p>);</span><span class=w> 
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>finishCompletion</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
-</span></span></span></code></pre></td></tr></table></div></div><h5 id=唤醒所有节点--注意-done方法>唤醒所有节点 注意 done();方法</h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java><span class=kd>protected</span> <span class=kt>void</span> <span class=nf>setException</span><span class=o>(</span><span class=n>Throwable</span> <span class=n>t</span><span class=o>)</span> <span class=o>{</span>
+        <span class=c1>//使用CAS方式设置当前任务状态为 完成中..
+</span><span class=c1></span>        <span class=c1>//失败的话 外部线程等不及了，直接在set执行CAS之前 将  task取消了。  很小概率事件。
+</span><span class=c1></span>        <span class=k>if</span> <span class=o>(</span><span class=n>UNSAFE</span><span class=o>.</span><span class=na>compareAndSwapInt</span><span class=o>(</span><span class=k>this</span><span class=o>,</span> <span class=n>stateOffset</span><span class=o>,</span> <span class=n>NEW</span><span class=o>,</span> <span class=n>COMPLETING</span><span class=o>))</span> <span class=o>{</span>
+            <span class=c1>//引用的是 callable 向上层抛出来的异常。
+</span><span class=c1></span>            <span class=n>outcome</span> <span class=o>=</span> <span class=n>t</span><span class=o>;</span>
+            <span class=c1>//将当前任务的状态 修改为 EXCEPTIONAL
+</span><span class=c1></span>            <span class=n>UNSAFE</span><span class=o>.</span><span class=na>putOrderedInt</span><span class=o>(</span><span class=k>this</span><span class=o>,</span> <span class=n>stateOffset</span><span class=o>,</span> <span class=n>EXCEPTIONAL</span><span class=o>);</span> <span class=c1>// final state
+</span><span class=c1></span>            <span class=c1>// 唤醒获取数据的节点
+</span><span class=c1></span>            <span class=n>finishCompletion</span><span class=o>();</span>
+        <span class=o>}</span>
+    <span class=o>}</span>
+<span class=kd>protected</span> <span class=kt>void</span> <span class=nf>set</span><span class=o>(</span><span class=n>V</span> <span class=n>v</span><span class=o>)</span> <span class=o>{</span>
+        <span class=k>if</span> <span class=o>(</span><span class=n>UNSAFE</span><span class=o>.</span><span class=na>compareAndSwapInt</span><span class=o>(</span><span class=k>this</span><span class=o>,</span> <span class=n>stateOffset</span><span class=o>,</span> <span class=n>NEW</span><span class=o>,</span> <span class=n>COMPLETING</span><span class=o>))</span> <span class=o>{</span>
+            <span class=n>outcome</span> <span class=o>=</span> <span class=n>v</span><span class=o>;</span>
+            <span class=c1>//将结果赋值给 outcome之后，马上会将当前任务状态修改为 NORMAL 正常结束状态。
+</span><span class=c1></span>            <span class=n>UNSAFE</span><span class=o>.</span><span class=na>putOrderedInt</span><span class=o>(</span><span class=k>this</span><span class=o>,</span> <span class=n>stateOffset</span><span class=o>,</span> <span class=n>NORMAL</span><span class=o>);</span> 
+            <span class=n>finishCompletion</span><span class=o>();</span>
+        <span class=o>}</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table></div></div><h5 id=唤醒所有节点--注意-done方法>唤醒所有节点 注意 done();方法</h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -353,41 +394,41 @@
 </span><span class=lnt>32
 </span><span class=lnt>33
 </span><span class=lnt>34
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>private</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>finishCompletion</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>//q指向waiters 链表的头结点。</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>for</span><span class=w> </span><span class=p>(</span><span class=n>WaitNode</span><span class=w> </span><span class=n>q</span><span class=p>;</span><span class=w> </span><span class=p>(</span><span class=n>q</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>waiters</span><span class=p>)</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>null</span><span class=p>;)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>   		 </span><span class=c1>//使用cas设置 waiters 为 null 为了保证只有一个线程在循环这个唤醒操作 因为外部方法cancel也会触发唤醒节点操作</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>UNSAFE</span><span class=p>.</span><span class=na>compareAndSwapObject</span><span class=p>(</span><span class=k>this</span><span class=p>,</span><span class=w> </span><span class=n>waitersOffset</span><span class=p>,</span><span class=w> </span><span class=n>q</span><span class=p>,</span><span class=w> </span><span class=kc>null</span><span class=p>))</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=c1>//自循环 唤醒所有获取数据的线程</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>for</span><span class=w> </span><span class=p>(;;)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=c1>//获取当前node节点封装的 thread</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>Thread</span><span class=w> </span><span class=n>t</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>q</span><span class=p>.</span><span class=na>thread</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=c1>//条件成立：说明当前线程不为null</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>t</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                        </span><span class=n>q</span><span class=p>.</span><span class=na>thread</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=kc>null</span><span class=p>;</span><span class=c1>//help GC</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                        </span><span class=c1>//唤醒当前节点对应的线程</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                        </span><span class=n>LockSupport</span><span class=p>.</span><span class=na>unpark</span><span class=p>(</span><span class=n>t</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=c1>//next 当前节点的下一个节点 继续唤醒</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>WaitNode</span><span class=w> </span><span class=n>next</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>q</span><span class=p>.</span><span class=na>next</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=c1>// 当下一个几点为空时 说明是最后节点咯</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>next</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                        </span><span class=k>break</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>q</span><span class=p>.</span><span class=na>next</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=kc>null</span><span class=p>;</span><span class=w> </span><span class=c1>// unlink to help gc</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>q</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>next</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>break</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c1>// 这个方法 就是我们执行完task任务的回调方法 一般我们都会重写逻辑在里面 </span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>done</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>//将callable 设置为null helpGC</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>callable</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=kc>null</span><span class=p>;</span><span class=w>      
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
-</span></span></span></code></pre></td></tr></table></div></div><h4 id=get-方法阻塞队列>get <strong>方法阻塞队列</strong></h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java><span class=kd>private</span> <span class=kt>void</span> <span class=nf>finishCompletion</span><span class=o>()</span> <span class=o>{</span>
+        <span class=c1>//q指向waiters 链表的头结点。
+</span><span class=c1></span>        <span class=k>for</span> <span class=o>(</span><span class=n>WaitNode</span> <span class=n>q</span><span class=o>;</span> <span class=o>(</span><span class=n>q</span> <span class=o>=</span> <span class=n>waiters</span><span class=o>)</span> <span class=o>!=</span> <span class=kc>null</span><span class=o>;)</span> <span class=o>{</span>
+   		 <span class=c1>//使用cas设置 waiters 为 null 为了保证只有一个线程在循环这个唤醒操作 因为外部方法cancel也会触发唤醒节点操作
+</span><span class=c1></span>            <span class=k>if</span> <span class=o>(</span><span class=n>UNSAFE</span><span class=o>.</span><span class=na>compareAndSwapObject</span><span class=o>(</span><span class=k>this</span><span class=o>,</span> <span class=n>waitersOffset</span><span class=o>,</span> <span class=n>q</span><span class=o>,</span> <span class=kc>null</span><span class=o>))</span> <span class=o>{</span>
+                <span class=c1>//自循环 唤醒所有获取数据的线程
+</span><span class=c1></span>                <span class=k>for</span> <span class=o>(;;)</span> <span class=o>{</span>
+                    <span class=c1>//获取当前node节点封装的 thread
+</span><span class=c1></span>                    <span class=n>Thread</span> <span class=n>t</span> <span class=o>=</span> <span class=n>q</span><span class=o>.</span><span class=na>thread</span><span class=o>;</span>
+                    <span class=c1>//条件成立：说明当前线程不为null
+</span><span class=c1></span>                    <span class=k>if</span> <span class=o>(</span><span class=n>t</span> <span class=o>!=</span> <span class=kc>null</span><span class=o>)</span> <span class=o>{</span>
+
+                        <span class=n>q</span><span class=o>.</span><span class=na>thread</span> <span class=o>=</span> <span class=kc>null</span><span class=o>;</span><span class=c1>//help GC
+</span><span class=c1></span>                        <span class=c1>//唤醒当前节点对应的线程
+</span><span class=c1></span>                        <span class=n>LockSupport</span><span class=o>.</span><span class=na>unpark</span><span class=o>(</span><span class=n>t</span><span class=o>);</span>
+                    <span class=o>}</span>
+                    <span class=c1>//next 当前节点的下一个节点 继续唤醒
+</span><span class=c1></span>                    <span class=n>WaitNode</span> <span class=n>next</span> <span class=o>=</span> <span class=n>q</span><span class=o>.</span><span class=na>next</span><span class=o>;</span>
+                    <span class=c1>// 当下一个几点为空时 说明是最后节点咯
+</span><span class=c1></span>                    <span class=k>if</span> <span class=o>(</span><span class=n>next</span> <span class=o>==</span> <span class=kc>null</span><span class=o>)</span>
+                        <span class=k>break</span><span class=o>;</span>
+                    <span class=n>q</span><span class=o>.</span><span class=na>next</span> <span class=o>=</span> <span class=kc>null</span><span class=o>;</span> <span class=c1>// unlink to help gc
+</span><span class=c1></span>                    <span class=n>q</span> <span class=o>=</span> <span class=n>next</span><span class=o>;</span>
+                <span class=o>}</span>
+
+                <span class=k>break</span><span class=o>;</span>
+            <span class=o>}</span>
+        <span class=o>}</span>
+    <span class=c1>// 这个方法 就是我们执行完task任务的回调方法 一般我们都会重写逻辑在里面 
+</span><span class=c1></span>        <span class=n>done</span><span class=o>();</span>
+
+        <span class=c1>//将callable 设置为null helpGC
+</span><span class=c1></span>        <span class=n>callable</span> <span class=o>=</span> <span class=kc>null</span><span class=o>;</span>      
+    <span class=o>}</span>
+</code></pre></td></tr></table></div></div><h4 id=get-方法阻塞队列>get <strong>方法阻塞队列</strong></h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -400,20 +441,20 @@
 </span><span class=lnt>11
 </span><span class=lnt>12
 </span><span class=lnt>13
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=c1>// 可以带有超时时间</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=n>V</span><span class=w> </span><span class=nf>get</span><span class=p>(</span><span class=kt>long</span><span class=w> </span><span class=n>timeout</span><span class=p>,</span><span class=w> </span><span class=n>TimeUnit</span><span class=w> </span><span class=n>unit</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=kd>throws</span><span class=w> </span><span class=n>InterruptedException</span><span class=p>,</span><span class=w> </span><span class=n>ExecutionException</span><span class=p>,</span><span class=w> </span><span class=n>TimeoutException</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>unit</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>NullPointerException</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>int</span><span class=w> </span><span class=n>s</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>state</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>           </span><span class=c1>// 只有小于COMPLETING 正在结束 状态的线程才会进行阻塞  直到唤醒线程 如果唤醒后状态还是没变 就超时</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>s</span><span class=w> </span><span class=o>&lt;=</span><span class=w> </span><span class=n>COMPLETING</span><span class=w> </span><span class=o>&amp;&amp;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>(</span><span class=n>s</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>awaitDone</span><span class=p>(</span><span class=kc>true</span><span class=p>,</span><span class=w> </span><span class=n>unit</span><span class=p>.</span><span class=na>toNanos</span><span class=p>(</span><span class=n>timeout</span><span class=p>)))</span><span class=w> </span><span class=o>&lt;=</span><span class=w> </span><span class=n>COMPLETING</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>TimeoutException</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    	</span><span class=c1>// 上面执行完 就能返回值</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=n>report</span><span class=p>(</span><span class=n>s</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
-</span></span></span></code></pre></td></tr></table></div></div><h5 id=report-返回值><strong>report 返回值</strong></h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java><span class=c1>// 可以带有超时时间
+</span><span class=c1></span><span class=kd>public</span> <span class=n>V</span> <span class=nf>get</span><span class=o>(</span><span class=kt>long</span> <span class=n>timeout</span><span class=o>,</span> <span class=n>TimeUnit</span> <span class=n>unit</span><span class=o>)</span>
+            <span class=kd>throws</span> <span class=n>InterruptedException</span><span class=o>,</span> <span class=n>ExecutionException</span><span class=o>,</span> <span class=n>TimeoutException</span> <span class=o>{</span>
+        <span class=k>if</span> <span class=o>(</span><span class=n>unit</span> <span class=o>==</span> <span class=kc>null</span><span class=o>)</span>
+            <span class=k>throw</span> <span class=k>new</span> <span class=n>NullPointerException</span><span class=o>();</span>
+        <span class=kt>int</span> <span class=n>s</span> <span class=o>=</span> <span class=n>state</span>
+           <span class=c1>// 只有小于COMPLETING 正在结束 状态的线程才会进行阻塞  直到唤醒线程 如果唤醒后状态还是没变 就超时
+</span><span class=c1></span>        <span class=k>if</span> <span class=o>(</span><span class=n>s</span> <span class=o>&lt;=</span> <span class=n>COMPLETING</span> <span class=o>&amp;&amp;</span>
+                <span class=o>(</span><span class=n>s</span> <span class=o>=</span> <span class=n>awaitDone</span><span class=o>(</span><span class=kc>true</span><span class=o>,</span> <span class=n>unit</span><span class=o>.</span><span class=na>toNanos</span><span class=o>(</span><span class=n>timeout</span><span class=o>)))</span> <span class=o>&lt;=</span> <span class=n>COMPLETING</span><span class=o>)</span>
+            <span class=k>throw</span> <span class=k>new</span> <span class=n>TimeoutException</span><span class=o>();</span>
+    	<span class=c1>// 上面执行完 就能返回值
+</span><span class=c1></span>        <span class=k>return</span> <span class=n>report</span><span class=o>(</span><span class=n>s</span><span class=o>);</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table></div></div><h5 id=report-返回值><strong>report 返回值</strong></h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -427,21 +468,21 @@
 </span><span class=lnt>12
 </span><span class=lnt>13
 </span><span class=lnt>14
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>private</span><span class=w> </span><span class=n>V</span><span class=w> </span><span class=nf>report</span><span class=p>(</span><span class=kt>int</span><span class=w> </span><span class=n>s</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>ExecutionException</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>//正常情况下，outcome 保存的是callable运行结束的结果</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>//非正常，保存的是 callable 抛出的异常。</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Object</span><span class=w> </span><span class=n>x</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>outcome</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>//条件成立：当前任务状态正常结束</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>s</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=n>NORMAL</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>//直接返回callable运算结果</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>return</span><span class=w> </span><span class=p>(</span><span class=n>V</span><span class=p>)</span><span class=n>x</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>//被取消状态</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>s</span><span class=w> </span><span class=o>&gt;=</span><span class=w> </span><span class=n>CANCELLED</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>CancellationException</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>//执行到这，说明callable接口实现中，是有bug的...</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ExecutionException</span><span class=p>((</span><span class=n>Throwable</span><span class=p>)</span><span class=n>x</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
-</span></span></span></code></pre></td></tr></table></div></div><h5 id=awaitdone-阻塞分析><strong>awaitDone 阻塞分析</strong></h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java><span class=kd>private</span> <span class=n>V</span> <span class=nf>report</span><span class=o>(</span><span class=kt>int</span> <span class=n>s</span><span class=o>)</span> <span class=kd>throws</span> <span class=n>ExecutionException</span> <span class=o>{</span>
+        <span class=c1>//正常情况下，outcome 保存的是callable运行结束的结果
+</span><span class=c1></span>        <span class=c1>//非正常，保存的是 callable 抛出的异常。
+</span><span class=c1></span>        <span class=n>Object</span> <span class=n>x</span> <span class=o>=</span> <span class=n>outcome</span><span class=o>;</span>
+        <span class=c1>//条件成立：当前任务状态正常结束
+</span><span class=c1></span>        <span class=k>if</span> <span class=o>(</span><span class=n>s</span> <span class=o>==</span> <span class=n>NORMAL</span><span class=o>)</span>
+            <span class=c1>//直接返回callable运算结果
+</span><span class=c1></span>            <span class=k>return</span> <span class=o>(</span><span class=n>V</span><span class=o>)</span><span class=n>x</span><span class=o>;</span>
+        <span class=c1>//被取消状态
+</span><span class=c1></span>        <span class=k>if</span> <span class=o>(</span><span class=n>s</span> <span class=o>&gt;=</span> <span class=n>CANCELLED</span><span class=o>)</span>
+            <span class=k>throw</span> <span class=k>new</span> <span class=n>CancellationException</span><span class=o>();</span>
+        <span class=c1>//执行到这，说明callable接口实现中，是有bug的...
+</span><span class=c1></span>        <span class=k>throw</span> <span class=k>new</span> <span class=n>ExecutionException</span><span class=o>((</span><span class=n>Throwable</span><span class=o>)</span><span class=n>x</span><span class=o>);</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table></div></div><h5 id=awaitdone-阻塞分析><strong>awaitDone 阻塞分析</strong></h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -500,65 +541,64 @@
 </span><span class=lnt>57
 </span><span class=lnt>58
 </span><span class=lnt>59
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>private</span><span class=w> </span><span class=kt>int</span><span class=w> </span><span class=nf>awaitDone</span><span class=p>(</span><span class=kt>boolean</span><span class=w> </span><span class=n>timed</span><span class=p>,</span><span class=w> </span><span class=kt>long</span><span class=w> </span><span class=n>nanos</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=kd>throws</span><span class=w> </span><span class=n>InterruptedException</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>// 超时时间</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kd>final</span><span class=w> </span><span class=kt>long</span><span class=w> </span><span class=n>deadline</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>timed</span><span class=w> </span><span class=o>?</span><span class=w> </span><span class=n>System</span><span class=p>.</span><span class=na>nanoTime</span><span class=p>()</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>nanos</span><span class=w> </span><span class=p>:</span><span class=w> </span><span class=n>0L</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>//引用当前线程 封装成 WaitNode 对象</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>WaitNode</span><span class=w> </span><span class=n>q</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=kc>null</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>//表示当前线程 waitNode对象 有没有 入队/压栈</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>boolean</span><span class=w> </span><span class=n>queued</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=kc>false</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>//自旋</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>for</span><span class=w> </span><span class=p>(;;)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>//条件成立：说明当前线程唤醒 是被其它线程使用中断这种方式喊醒的。interrupted()</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>//返回true 后会将 Thread的中断标记重置回false.</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>Thread</span><span class=p>.</span><span class=na>interrupted</span><span class=p>())</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=c1>//当前线程node出队</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>removeWaiter</span><span class=p>(</span><span class=n>q</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=c1>//抛出中断异常</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>InterruptedException</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>//假设当前线程是被其它线程 使用unpark(thread) 唤醒的话。会正常自旋，走下面逻辑。</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=kt>int</span><span class=w> </span><span class=n>s</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>state</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>//条件成立：说明当前任务 已经有结果了.. 可能有结果 可能有异常</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>s</span><span class=w> </span><span class=o>&gt;</span><span class=w> </span><span class=n>COMPLETING</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                 </span><span class=c1>// 这里正常情况下都是外面自循环已经创建好了节点才会出现</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=c1>//条件成立：说明已经为当前线程创建过node了，此时需要将 node.thread = null helpGC</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>q</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>q</span><span class=p>.</span><span class=na>thread</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=kc>null</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=c1>//直接返回当前状态.</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>return</span><span class=w> </span><span class=n>s</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>//条件成立：说明当前任务接近完成状态...这里让当前线程再释放cpu ，进行下一次抢占cpu。</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>else</span><span class=w> </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>s</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=n>COMPLETING</span><span class=p>)</span><span class=w> </span><span class=c1>// cannot time out yet</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>Thread</span><span class=p>.</span><span class=na>yield</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>//条件成立：第一次自旋，当前线程还未创建 WaitNode 对象，此时为当前线程创建 WaitNode对象</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>else</span><span class=w> </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>q</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>q</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>WaitNode</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>//条件成立：第二次自旋，当前线程已经创建 WaitNode对象了，但是node对象还未入队</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>else</span><span class=w> </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=o>!</span><span class=n>queued</span><span class=p>){</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=c1>//当前线程node节点 next 指向 原 队列的头节点   waiters 一直指向队列的头！</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>q</span><span class=p>.</span><span class=na>next</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>waiters</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=c1>//cas方式设置waiters引用指向 当前线程node， 成功的话 queued == true 否则，可能其它线程先你一步入队了。</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>queued</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>UNSAFE</span><span class=p>.</span><span class=na>compareAndSwapObject</span><span class=p>(</span><span class=k>this</span><span class=p>,</span><span class=w> </span><span class=n>waitersOffset</span><span class=p>,</span><span class=w> </span><span class=n>waiters</span><span class=p>,</span><span class=w> </span><span class=n>q</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>//第三次自旋，会到这里。</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>else</span><span class=w> </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>timed</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>nanos</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>deadline</span><span class=w> </span><span class=o>-</span><span class=w> </span><span class=n>System</span><span class=p>.</span><span class=na>nanoTime</span><span class=p>();</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>nanos</span><span class=w> </span><span class=o>&lt;=</span><span class=w> </span><span class=n>0L</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>removeWaiter</span><span class=p>(</span><span class=n>q</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=k>return</span><span class=w> </span><span class=n>state</span><span class=p>;</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=c1>// 阻塞 等待唤醒或中断</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>LockSupport</span><span class=p>.</span><span class=na>parkNanos</span><span class=p>(</span><span class=k>this</span><span class=p>,</span><span class=w> </span><span class=n>nanos</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>else</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=c1>//当前get操作的线程就会被park了。  线程状态会变为 WAITING状态，相当于休眠了..</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=c1>//除非有其它线程将你唤醒  或者 将当前线程 中断。</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>LockSupport</span><span class=p>.</span><span class=na>park</span><span class=p>(</span><span class=k>this</span><span class=p>);</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
-</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
-</span></span></span></code></pre></td></tr></table></div></div></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2021-01-22</span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/futuretask/>FutureTask</a></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/reentrantlock--aqs%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/ class=prev rel=prev title="ReentrantLock + AQS源码学习"><i class="fas fa-angle-left fa-fw"></i>ReentrantLock + AQS源码学习</a>
-<a href=/condition%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/ class=next rel=next title=Condition源码学习>Condition源码学习<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments></div></article></div></main><script src=https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css><script src=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js></script><footer class=footer><div class=footer-container><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2018 - 2024</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>yakax</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i>
-</a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/typeit@7.0.4/dist/typeit.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:10},comment:{},data:{"id-1":"yakax.blog","id-2":"yakax.blog"},lightGallery:{actualSize:!1,exThumbImage:"data-thumbnail",hideBarsDelay:2e3,selector:".lightgallery",speed:400,thumbContHeight:80,thumbWidth:80,thumbnail:!0},search:{algoliaAppID:"3MT6GW9D7W",algoliaIndex:"blog",algoliaSearchKey:"41ebe3571ca584723e8648600bbf45ce",highlightTag:"em",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:150,type:"algolia"},typeit:{cursorChar:"_",cursorSpeed:1e3,data:{"id-1":["id-1"],"id-2":["id-2"]},duration:-1,speed:200}}</script><script type=text/javascript src=/js/theme.min.js></script></body></html>
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-java data-lang=java><span class=kd>private</span> <span class=kt>int</span> <span class=nf>awaitDone</span><span class=o>(</span><span class=kt>boolean</span> <span class=n>timed</span><span class=o>,</span> <span class=kt>long</span> <span class=n>nanos</span><span class=o>)</span>
+            <span class=kd>throws</span> <span class=n>InterruptedException</span> <span class=o>{</span>
+        <span class=c1>// 超时时间
+</span><span class=c1></span>        <span class=kd>final</span> <span class=kt>long</span> <span class=n>deadline</span> <span class=o>=</span> <span class=n>timed</span> <span class=o>?</span> <span class=n>System</span><span class=o>.</span><span class=na>nanoTime</span><span class=o>()</span> <span class=o>+</span> <span class=n>nanos</span> <span class=o>:</span> <span class=n>0L</span><span class=o>;</span>
+        <span class=c1>//引用当前线程 封装成 WaitNode 对象
+</span><span class=c1></span>        <span class=n>WaitNode</span> <span class=n>q</span> <span class=o>=</span> <span class=kc>null</span><span class=o>;</span>
+        <span class=c1>//表示当前线程 waitNode对象 有没有 入队/压栈
+</span><span class=c1></span>        <span class=kt>boolean</span> <span class=n>queued</span> <span class=o>=</span> <span class=kc>false</span><span class=o>;</span>
+        <span class=c1>//自旋
+</span><span class=c1></span>        <span class=k>for</span> <span class=o>(;;)</span> <span class=o>{</span>
+            <span class=c1>//条件成立：说明当前线程唤醒 是被其它线程使用中断这种方式喊醒的。interrupted()
+</span><span class=c1></span>            <span class=c1>//返回true 后会将 Thread的中断标记重置回false.
+</span><span class=c1></span>            <span class=k>if</span> <span class=o>(</span><span class=n>Thread</span><span class=o>.</span><span class=na>interrupted</span><span class=o>())</span> <span class=o>{</span>
+                <span class=c1>//当前线程node出队
+</span><span class=c1></span>                <span class=n>removeWaiter</span><span class=o>(</span><span class=n>q</span><span class=o>);</span>
+                <span class=c1>//抛出中断异常
+</span><span class=c1></span>                <span class=k>throw</span> <span class=k>new</span> <span class=n>InterruptedException</span><span class=o>();</span>
+            <span class=o>}</span>
+
+            <span class=c1>//假设当前线程是被其它线程 使用unpark(thread) 唤醒的话。会正常自旋，走下面逻辑。
+</span><span class=c1></span>            <span class=kt>int</span> <span class=n>s</span> <span class=o>=</span> <span class=n>state</span><span class=o>;</span>
+            <span class=c1>//条件成立：说明当前任务 已经有结果了.. 可能有结果 可能有异常
+</span><span class=c1></span>            <span class=k>if</span> <span class=o>(</span><span class=n>s</span> <span class=o>&gt;</span> <span class=n>COMPLETING</span><span class=o>)</span> <span class=o>{</span>
+                 <span class=c1>// 这里正常情况下都是外面自循环已经创建好了节点才会出现
+</span><span class=c1></span>                <span class=c1>//条件成立：说明已经为当前线程创建过node了，此时需要将 node.thread = null helpGC
+</span><span class=c1></span>                <span class=k>if</span> <span class=o>(</span><span class=n>q</span> <span class=o>!=</span> <span class=kc>null</span><span class=o>)</span>
+                    <span class=n>q</span><span class=o>.</span><span class=na>thread</span> <span class=o>=</span> <span class=kc>null</span><span class=o>;</span>
+                <span class=c1>//直接返回当前状态.
+</span><span class=c1></span>                <span class=k>return</span> <span class=n>s</span><span class=o>;</span>
+            <span class=o>}</span>
+            <span class=c1>//条件成立：说明当前任务接近完成状态...这里让当前线程再释放cpu ，进行下一次抢占cpu。
+</span><span class=c1></span>            <span class=k>else</span> <span class=k>if</span> <span class=o>(</span><span class=n>s</span> <span class=o>==</span> <span class=n>COMPLETING</span><span class=o>)</span> <span class=c1>// cannot time out yet
+</span><span class=c1></span>                <span class=n>Thread</span><span class=o>.</span><span class=na>yield</span><span class=o>();</span>
+            <span class=c1>//条件成立：第一次自旋，当前线程还未创建 WaitNode 对象，此时为当前线程创建 WaitNode对象
+</span><span class=c1></span>            <span class=k>else</span> <span class=k>if</span> <span class=o>(</span><span class=n>q</span> <span class=o>==</span> <span class=kc>null</span><span class=o>)</span>
+                <span class=n>q</span> <span class=o>=</span> <span class=k>new</span> <span class=n>WaitNode</span><span class=o>();</span>
+            <span class=c1>//条件成立：第二次自旋，当前线程已经创建 WaitNode对象了，但是node对象还未入队
+</span><span class=c1></span>            <span class=k>else</span> <span class=k>if</span> <span class=o>(!</span><span class=n>queued</span><span class=o>){</span>
+                <span class=c1>//当前线程node节点 next 指向 原 队列的头节点   waiters 一直指向队列的头！
+</span><span class=c1></span>                <span class=n>q</span><span class=o>.</span><span class=na>next</span> <span class=o>=</span> <span class=n>waiters</span><span class=o>;</span>
+                <span class=c1>//cas方式设置waiters引用指向 当前线程node， 成功的话 queued == true 否则，可能其它线程先你一步入队了。
+</span><span class=c1></span>                <span class=n>queued</span> <span class=o>=</span> <span class=n>UNSAFE</span><span class=o>.</span><span class=na>compareAndSwapObject</span><span class=o>(</span><span class=k>this</span><span class=o>,</span> <span class=n>waitersOffset</span><span class=o>,</span> <span class=n>waiters</span><span class=o>,</span> <span class=n>q</span><span class=o>);</span>
+            <span class=o>}</span>
+            <span class=c1>//第三次自旋，会到这里。
+</span><span class=c1></span>            <span class=k>else</span> <span class=k>if</span> <span class=o>(</span><span class=n>timed</span><span class=o>)</span> <span class=o>{</span>
+                <span class=n>nanos</span> <span class=o>=</span> <span class=n>deadline</span> <span class=o>-</span> <span class=n>System</span><span class=o>.</span><span class=na>nanoTime</span><span class=o>();</span>
+                <span class=k>if</span> <span class=o>(</span><span class=n>nanos</span> <span class=o>&lt;=</span> <span class=n>0L</span><span class=o>)</span> <span class=o>{</span>
+                    <span class=n>removeWaiter</span><span class=o>(</span><span class=n>q</span><span class=o>);</span>
+                    <span class=k>return</span> <span class=n>state</span><span class=o>;</span>
+                <span class=o>}</span>
+                <span class=c1>// 阻塞 等待唤醒或中断
+</span><span class=c1></span>                <span class=n>LockSupport</span><span class=o>.</span><span class=na>parkNanos</span><span class=o>(</span><span class=k>this</span><span class=o>,</span> <span class=n>nanos</span><span class=o>);</span>
+            <span class=o>}</span>
+            <span class=k>else</span>
+                <span class=c1>//当前get操作的线程就会被park了。  线程状态会变为 WAITING状态，相当于休眠了..
+</span><span class=c1></span>                <span class=c1>//除非有其它线程将你唤醒  或者 将当前线程 中断。
+</span><span class=c1></span>                <span class=n>LockSupport</span><span class=o>.</span><span class=na>park</span><span class=o>(</span><span class=k>this</span><span class=o>);</span>
+        <span class=o>}</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table></div></div></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2021-01-22</span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw"></i>&nbsp;<a href=/tags/futuretask/>FutureTask</a></section><section><span><a href=javascript:void(0); onclick=window.history.back();>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/reentrantlock-aqs%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/ class=prev rel=prev title="ReentrantLock + AQS源码学习"><i class="fas fa-angle-left fa-fw"></i>ReentrantLock + AQS源码学习</a>
+<a href=/condition%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/ class=next rel=next title=Condition源码学习>Condition源码学习<i class="fas fa-angle-right fa-fw"></i></a></div></div><div id=comments></div></article></div></main><script src=https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css><script src=https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js></script><footer class=footer><div class=footer-container><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2018 - 2024</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>yakax</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i></a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css><script type=text/javascript src=https://cdn.jsdelivr.net/npm/smooth-scroll@16.1.3/dist/smooth-scroll.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/autocomplete.js@0.37.1/dist/autocomplete.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/algoliasearch@4.2.0/dist/algoliasearch-lite.umd.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lazysizes@5.2.2/lazysizes.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/js/lightgallery.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-thumbnail.js@1.2.0/dist/lg-thumbnail.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/lg-zoom.js@1.2.0/dist/lg-zoom.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js></script><script type=text/javascript src=https://cdn.jsdelivr.net/npm/typeit@7.0.4/dist/typeit.min.js></script><script type=text/javascript>window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{},"data":{"id-1":"yakax.blog","id-2":"yakax.blog"},"lightGallery":{"actualSize":false,"exThumbImage":"data-thumbnail","hideBarsDelay":2000,"selector":".lightgallery","speed":400,"thumbContHeight":80,"thumbWidth":80,"thumbnail":true},"search":{"algoliaAppID":"3MT6GW9D7W","algoliaIndex":"blog","algoliaSearchKey":"41ebe3571ca584723e8648600bbf45ce","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":150,"type":"algolia"},"typeit":{"cursorChar":"_","cursorSpeed":1000,"data":{"id-1":["id-1"],"id-2":["id-2"]},"duration":-1,"speed":200}};</script><script type=text/javascript src=/js/theme.min.js></script></body></html>
