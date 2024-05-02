@@ -1,4 +1,4 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>面试 - 分类 - yakax</title><link>https://yakax.gitee.io/categories/%E9%9D%A2%E8%AF%95/</link><description>面试 - 分类 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 03 Jul 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.gitee.io/categories/%E9%9D%A2%E8%AF%95/" rel="self" type="application/rss+xml"/><item><title>Java开发手册-(转自阿里云栖社区)</title><link>https://yakax.gitee.io/java%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C-%E8%BD%AC%E8%87%AA%E9%98%BF%E9%87%8C%E4%BA%91%E6%A0%96%E7%A4%BE%E5%8C%BA/</link><pubDate>Wed, 03 Jul 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/java%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C-%E8%BD%AC%E8%87%AA%E9%98%BF%E9%87%8C%E4%BA%91%E6%A0%96%E7%A4%BE%E5%8C%BA/</guid><description><![CDATA[<p><a href="https://github.com/alibaba/p3c" target="_blank" rel="noopener noreffer">Java开发手册下载链接</a></p>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>面试 - 分类 - yakax</title><link>https://yakax.github.io/categories/%E9%9D%A2%E8%AF%95/</link><description>面试 - 分类 - yakax</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>yakax1569@gmail.com (yakax)</managingEditor><webMaster>yakax1569@gmail.com (yakax)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 03 Jul 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://yakax.github.io/categories/%E9%9D%A2%E8%AF%95/" rel="self" type="application/rss+xml"/><item><title>Java开发手册-(转自阿里云栖社区)</title><link>https://yakax.github.io/java%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C-%E8%BD%AC%E8%87%AA%E9%98%BF%E9%87%8C%E4%BA%91%E6%A0%96%E7%A4%BE%E5%8C%BA/</link><pubDate>Wed, 03 Jul 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/java%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8C-%E8%BD%AC%E8%87%AA%E9%98%BF%E9%87%8C%E4%BA%91%E6%A0%96%E7%A4%BE%E5%8C%BA/</guid><description><![CDATA[<p><a href="https://github.com/alibaba/p3c" target="_blank" rel="noopener noreffer">Java开发手册下载链接</a></p>
 <p><font color=red>1-0.9=0.1是天经地义的，但在计算机的世界里，0.1恰恰是无法精确表示的一个小数，只有2的幂次倍小数才能够精确表示，如：0.5、0.25、0.125等。由于0.1是近似表达，在各种情形中的计算存在数位的取舍精度不一样，所以1-0.9未必等于0.9-0.8，所以浮点数之间的等值判断，基本数据类型不能用==来比较，包装数据类型不能用equals来判断。包装类型运算也是调用的浮点类型的计算</font></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -92,7 +92,7 @@
 </span></span><span class="line"><span class="cl"> }
 </span></span></code></pre></td></tr></table>
 </div>
-</div>]]></description></item><item><title>方法外对象地址交换</title><link>https://yakax.gitee.io/%E6%96%B9%E6%B3%95%E5%A4%96%E5%AF%B9%E8%B1%A1%E5%9C%B0%E5%9D%80%E4%BA%A4%E6%8D%A2/</link><pubDate>Tue, 02 Apr 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/%E6%96%B9%E6%B3%95%E5%A4%96%E5%AF%B9%E8%B1%A1%E5%9C%B0%E5%9D%80%E4%BA%A4%E6%8D%A2/</guid><description><![CDATA[<h4 id="面试题如下">面试题如下</h4>
+</div>]]></description></item><item><title>方法外对象地址交换</title><link>https://yakax.github.io/%E6%96%B9%E6%B3%95%E5%A4%96%E5%AF%B9%E8%B1%A1%E5%9C%B0%E5%9D%80%E4%BA%A4%E6%8D%A2/</link><pubDate>Tue, 02 Apr 2019 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E6%96%B9%E6%B3%95%E5%A4%96%E5%AF%B9%E8%B1%A1%E5%9C%B0%E5%9D%80%E4%BA%A4%E6%8D%A2/</guid><description><![CDATA[<h4 id="面试题如下">面试题如下</h4>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -163,7 +163,7 @@
 </span></span><span class="line"><span class="cl">}
 </span></span></code></pre></td></tr></table>
 </div>
-</div>]]></description></item><item><title>Switch中的参数可以为那些类型</title><link>https://yakax.gitee.io/switch%E4%B8%AD%E7%9A%84%E5%8F%82%E6%95%B0%E5%8F%AF%E4%BB%A5%E4%B8%BA%E9%82%A3%E4%BA%9B%E7%B1%BB%E5%9E%8B/</link><pubDate>Tue, 13 Nov 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/switch%E4%B8%AD%E7%9A%84%E5%8F%82%E6%95%B0%E5%8F%AF%E4%BB%A5%E4%B8%BA%E9%82%A3%E4%BA%9B%E7%B1%BB%E5%9E%8B/</guid><description><![CDATA[<p><strong>之前面试被问懵了一个很简单的问题，switch中的参数支持string吗，我当时想都没想，直接回答string可以为switch的参数，因为在我写的代码中我的确拿string当过参数：然而面试官说不可以。
+</div>]]></description></item><item><title>Switch中的参数可以为那些类型</title><link>https://yakax.github.io/switch%E4%B8%AD%E7%9A%84%E5%8F%82%E6%95%B0%E5%8F%AF%E4%BB%A5%E4%B8%BA%E9%82%A3%E4%BA%9B%E7%B1%BB%E5%9E%8B/</link><pubDate>Tue, 13 Nov 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/switch%E4%B8%AD%E7%9A%84%E5%8F%82%E6%95%B0%E5%8F%AF%E4%BB%A5%E4%B8%BA%E9%82%A3%E4%BA%9B%E7%B1%BB%E5%9E%8B/</guid><description><![CDATA[<p><strong>之前面试被问懵了一个很简单的问题，switch中的参数支持string吗，我当时想都没想，直接回答string可以为switch的参数，因为在我写的代码中我的确拿string当过参数：然而面试官说不可以。
 (经过我的验证，我发现jdk1.7以后switch就支持String类型了；面试官傻逼！)</strong></p>
 <h4 id="官方示例">官方示例</h4>
 <div class="highlight"><div class="chroma">
@@ -174,7 +174,7 @@
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">https://docs.oracle.com/javase/tutorial/java/nutsandbolts/switch.html
 </span></span></code></pre></td></tr></table>
 </div>
-</div>]]></description></item><item><title>序列化的作用</title><link>https://yakax.gitee.io/%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E4%BD%9C%E7%94%A8/</link><pubDate>Tue, 09 Oct 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E4%BD%9C%E7%94%A8/</guid><description><![CDATA[<h4 id="序列化的作用">序列化的作用</h4>
+</div>]]></description></item><item><title>序列化的作用</title><link>https://yakax.github.io/%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E4%BD%9C%E7%94%A8/</link><pubDate>Tue, 09 Oct 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E4%BD%9C%E7%94%A8/</guid><description><![CDATA[<h4 id="序列化的作用">序列化的作用</h4>
 <ol>
 <li>序列化</li>
 </ol>
@@ -186,7 +186,7 @@
 </ol>
 <blockquote>
 <p>有的时候我们想要从一个字节流中恢复一个Java对象。：比如在网络中接受到一个json格式字符串，把它转化为某个对象。</p>
-</blockquote>]]></description></item><item><title>谈谈Java多线程与高并发</title><link>https://yakax.gitee.io/%E8%B0%88%E8%B0%88java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%8E%E9%AB%98%E5%B9%B6%E5%8F%91/</link><pubDate>Mon, 08 Oct 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/%E8%B0%88%E8%B0%88java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%8E%E9%AB%98%E5%B9%B6%E5%8F%91/</guid><description><![CDATA[<h4 id="目前我接触的多线程编程基本上都是基于javautilconcurrent-这个包下的开发的下面就以这个包来分析java的多线程与高并发">目前我接触的多线程编程基本上都是基于java.util.concurrent 这个包下的开发的，下面就以这个包来分析Java的多线程与高并发</h4>
+</blockquote>]]></description></item><item><title>谈谈Java多线程与高并发</title><link>https://yakax.github.io/%E8%B0%88%E8%B0%88java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%8E%E9%AB%98%E5%B9%B6%E5%8F%91/</link><pubDate>Mon, 08 Oct 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E8%B0%88%E8%B0%88java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%8E%E9%AB%98%E5%B9%B6%E5%8F%91/</guid><description><![CDATA[<h4 id="目前我接触的多线程编程基本上都是基于javautilconcurrent-这个包下的开发的下面就以这个包来分析java的多线程与高并发">目前我接触的多线程编程基本上都是基于java.util.concurrent 这个包下的开发的，下面就以这个包来分析Java的多线程与高并发</h4>
 <h4 id="分析面试题">分析面试题</h4>
 <ol>
 <li>在java中wait和sleep方法的不同？</li>
@@ -227,7 +227,7 @@
 <a data-fancybox="gallery" href="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2018-11-5/8.png">
     
 </a></li>
-</ol>]]></description></item><item><title>关于类型转换与运算问题</title><link>https://yakax.gitee.io/%E7%B1%BB%E5%9E%8B%E7%9A%84%E8%BD%AC%E6%8D%A2%E5%9F%BA%E6%9C%AC%E9%97%AE%E9%A2%98/</link><pubDate>Sun, 07 Oct 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/%E7%B1%BB%E5%9E%8B%E7%9A%84%E8%BD%AC%E6%8D%A2%E5%9F%BA%E6%9C%AC%E9%97%AE%E9%A2%98/</guid><description><![CDATA[<p><strong>一个经典的类型转换问题</strong></p>
+</ol>]]></description></item><item><title>关于类型转换与运算问题</title><link>https://yakax.github.io/%E7%B1%BB%E5%9E%8B%E7%9A%84%E8%BD%AC%E6%8D%A2%E5%9F%BA%E6%9C%AC%E9%97%AE%E9%A2%98/</link><pubDate>Sun, 07 Oct 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E7%B1%BB%E5%9E%8B%E7%9A%84%E8%BD%AC%E6%8D%A2%E5%9F%BA%E6%9C%AC%E9%97%AE%E9%A2%98/</guid><description><![CDATA[<p><strong>一个经典的类型转换问题</strong></p>
 <blockquote>
 <p>高位转低位需要强制转换，低位转高位是自动转换，表达式两侧的转换规则是向左边的类型看齐</p>
 </blockquote>
@@ -242,7 +242,7 @@
 </ol>
 <blockquote>
 <p>因为java语言规范中关于复合赋值的解释是这样的：e1+=e2实际上是e1=(T1)(e1+e2),这里的T1的数据类型。所以不会报错。</p>
-</blockquote>]]></description></item><item><title>理解java反射</title><link>https://yakax.gitee.io/%E7%90%86%E8%A7%A3java%E5%8F%8D%E5%B0%84/</link><pubDate>Sun, 07 Oct 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/%E7%90%86%E8%A7%A3java%E5%8F%8D%E5%B0%84/</guid><description><![CDATA[<p><strong>Java 反射是可以让我们在运行时获取类的方法、属性、父类、接口等类的内部信息的机制</strong></p>
+</blockquote>]]></description></item><item><title>理解java反射</title><link>https://yakax.github.io/%E7%90%86%E8%A7%A3java%E5%8F%8D%E5%B0%84/</link><pubDate>Sun, 07 Oct 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E7%90%86%E8%A7%A3java%E5%8F%8D%E5%B0%84/</guid><description><![CDATA[<p><strong>Java 反射是可以让我们在运行时获取类的方法、属性、父类、接口等类的内部信息的机制</strong></p>
 <h4 id="为什么用反射">为什么用反射</h4>
 <p>假如你写了一段代码：Object o=new Object();
 运行了起来！扔给jvm去跑，跑完就over了，jvm关闭，你的程序也停止了;
@@ -250,7 +250,7 @@
 反射是什么呢？当我们的程序在运行时，需要动态的加载一些类这些类可能之前用不到所以不用加载到jvm，而是在运行时根据需要才加载，这样的好处对于服务器来说不言而喻。</p>
 <blockquote>
 <p>反射是框架的灵魂</p>
-</blockquote>]]></description></item><item><title>谈谈对JVM内存分配</title><link>https://yakax.gitee.io/%E8%B0%88%E8%B0%88%E5%AF%B9jvm%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D/</link><pubDate>Fri, 05 Oct 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/%E8%B0%88%E8%B0%88%E5%AF%B9jvm%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D/</guid><description><![CDATA[<p><strong>JVM的分区可分为三个：堆（heap）、栈（stack）和方法区（method）：堆主要用来存放对象的，栈主要是用来执行程序的</strong></p>
+</blockquote>]]></description></item><item><title>谈谈对JVM内存分配</title><link>https://yakax.github.io/%E8%B0%88%E8%B0%88%E5%AF%B9jvm%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D/</link><pubDate>Fri, 05 Oct 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/%E8%B0%88%E8%B0%88%E5%AF%B9jvm%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D/</guid><description><![CDATA[<p><strong>JVM的分区可分为三个：堆（heap）、栈（stack）和方法区（method）：堆主要用来存放对象的，栈主要是用来执行程序的</strong></p>
 <h4 id="堆区">堆区</h4>
 <ol>
 <li>存储的是对象，并且JVM只有一个堆区，被所有线程共享。</li>
@@ -270,7 +270,7 @@
 int a = 3;
 int b = 3；
 编译器先处理int a = 3；首先它会在栈中创建一个变量为a的引用，然后查找栈中是否有3这个值，如果没找到，就将3存放进来，然后将a指向3。接着处理int b = 3；在创建完b的引用变量后，因为在栈中已经有3这个值，便将b直接指向3。这样，就出现了a与b同时均指向3的情况。</p>
-</blockquote>]]></description></item><item><title>Mybatis与hibernate</title><link>https://yakax.gitee.io/mybatis%E4%B8%8Ehibernate/</link><pubDate>Wed, 03 Oct 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/mybatis%E4%B8%8Ehibernate/</guid><description><![CDATA[<p><strong>总的来说，Hibernate使用的是封装好的，通用的SQL来应付所有场景，而Mybatis是针对响应的场景设计的SQL。Mybatis的SQL会更灵活、可控性更好、更优化</strong></p>
+</blockquote>]]></description></item><item><title>Mybatis与hibernate</title><link>https://yakax.github.io/mybatis%E4%B8%8Ehibernate/</link><pubDate>Wed, 03 Oct 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/mybatis%E4%B8%8Ehibernate/</guid><description><![CDATA[<p><strong>总的来说，Hibernate使用的是封装好的，通用的SQL来应付所有场景，而Mybatis是针对响应的场景设计的SQL。Mybatis的SQL会更灵活、可控性更好、更优化</strong></p>
 <blockquote>
 <ul>
 <li>Hibernate的查询会将表中的所有字段查询出来，这一点会有性能消耗。</li>
@@ -278,7 +278,7 @@ int b = 3；
 <li>Mybatis的SQL是手动编写的，所以可以按需求指定查询的字段。</li>
 <li>hibernate迁移性相对mybatis较好，因为hibernate不是依赖数据库。</li>
 </ul>
-</blockquote>]]></description></item><item><title>Servlet面试题总结</title><link>https://yakax.gitee.io/servlet%E9%9D%A2%E8%AF%95%E9%A2%98%E6%80%BB%E7%BB%93/</link><pubDate>Wed, 03 Oct 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.gitee.io/servlet%E9%9D%A2%E8%AF%95%E9%A2%98%E6%80%BB%E7%BB%93/</guid><description><![CDATA[<p><strong>事实上，Servlet就是一个Java接口：具体可以看这里：</strong></p>
+</blockquote>]]></description></item><item><title>Servlet面试题总结</title><link>https://yakax.github.io/servlet%E9%9D%A2%E8%AF%95%E9%A2%98%E6%80%BB%E7%BB%93/</link><pubDate>Wed, 03 Oct 2018 00:00:00 +0000</pubDate><author>作者</author><guid>https://yakax.github.io/servlet%E9%9D%A2%E8%AF%95%E9%A2%98%E6%80%BB%E7%BB%93/</guid><description><![CDATA[<p><strong>事实上，Servlet就是一个Java接口：具体可以看这里：</strong></p>
 <p><a data-fancybox="gallery" href="https://yakax.oss-cn-hangzhou.aliyuncs.com/blog/2018-11-5/15.png">
     
 </a></p>]]></description></item></channel></rss>
